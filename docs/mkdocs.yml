@@ -1,0 +1,156 @@
+site_name: DataIndexer
+site_description: >-
+  DataIndexer is an Unreal Engine plugin for building structured,
+  indexable game data assets with a dedicated editor workflow.
+docs_dir: docs
+site_dir: site
+
+repo_name: DataIndexerProject
+repo_url: https://github.com/koorinonaka/DataIndexerProject
+edit_uri: ""
+
+theme:
+  name: material
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  font:
+    text: Inter
+    code: JetBrains Mono
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.indexes
+    - navigation.top
+    - toc.integrate
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+extra_css:
+  - assets/stylesheets/extra.css
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - toc:
+      permalink: true
+      title: On this page
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.caret
+  - pymdownx.tilde
+
+plugins:
+  - search:
+      separator: '[\s​\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - i18n:
+      docs_structure: suffix
+      fallback_to_default: true
+      reconfigure_material: true
+      reconfigure_search: true
+      languages:
+        - locale: en
+          default: true
+          name: English
+          build: true
+        - locale: ja
+          name: 日本語
+          build: true
+          nav_translations:
+            Home: ホーム
+            Installation: インストール
+            Quick Start: クイックスタート
+            Core Concepts: コアコンセプト
+            Repository: リポジトリ
+            Schema: スキーマ
+            Keys & Handles: キーとハンドル
+            Indexes: インデックス
+            Blueprint API: Blueprint API
+            Function Library: 関数ライブラリ
+            Custom K2 Nodes: カスタム K2 ノード
+            Driven Collection: ドリブンコレクション
+            Editor Guide: エディタガイド
+            Asset Creation: アセット作成
+            Data View: データビュー
+            JSON Import & Export: JSON インポート / エクスポート
+            Editor Settings: エディタ設定
+            C++ API: C++ API
+            Repository API: リポジトリ API
+            Schema API: スキーマ API
+            Native Schema Interface: ネイティブスキーマインターフェース
+            Changelog: 変更履歴
+  - minify:
+      minify_html: true
+
+nav:
+  - Home: index.md
+  - Installation: installation.md
+  - Quick Start: quick-start.md
+  - Core Concepts:
+    - concepts/index.md
+    - Repository: concepts/repository.md
+    - Schema: concepts/schema.md
+    - Keys & Handles: concepts/keys-and-handles.md
+    - Indexes: concepts/indexes.md
+  - Blueprint API:
+    - blueprint-api/index.md
+    - Function Library: blueprint-api/function-library.md
+    - Custom K2 Nodes: blueprint-api/k2-nodes.md
+    - Driven Collection: blueprint-api/driven-collection.md
+  - Editor Guide:
+    - editor-guide/index.md
+    - Asset Creation: editor-guide/asset-creation.md
+    - Data View: editor-guide/data-view.md
+    - JSON Import & Export: editor-guide/json-import-export.md
+    - Editor Settings: editor-guide/editor-settings.md
+  - C++ API:
+    - cpp-api/index.md
+    - Repository API: cpp-api/repository-api.md
+    - Schema API: cpp-api/schema-api.md
+    - Native Schema Interface: cpp-api/native-schema-interface.md
+  - Changelog: changelog.md
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/koorinonaka/DataIndexerProject
+
+copyright: Copyright &copy; 2024 DataIndexer Contributors

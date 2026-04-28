@@ -1,0 +1,242 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   DataIndexer Docs — Notion-inspired design overrides for MkDocs Material
+   Reference: DESIGN-notion.md (in docs root, not published)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Color system (light) ─────────────────────────────────────────────────── */
+[data-md-color-scheme="default"] {
+  /* Notion Blue as primary */
+  --md-primary-fg-color:              #0075de;
+  --md-primary-fg-color--light:       #62aef0;
+  --md-primary-fg-color--dark:        #005bab;
+  --md-accent-fg-color:               #0075de;
+  --md-accent-fg-color--transparent:  rgba(0, 117, 222, 0.08);
+
+  /* Warm near-black text (not pure black) */
+  --md-default-fg-color:              rgba(0, 0, 0, 0.95);
+  --md-default-fg-color--light:       #615d59;
+  --md-default-fg-color--lighter:     #a39e98;
+  --md-default-fg-color--lightest:    rgba(0, 0, 0, 0.08);
+
+  /* Warm white backgrounds */
+  --md-default-bg-color:              #ffffff;
+  --md-default-bg-color--light:       #f6f5f4;
+  --md-default-bg-color--lighter:     #f6f5f4;
+  --md-default-bg-color--lightest:    #f6f5f4;
+
+  /* Code blocks — warm white, not cold gray */
+  --md-code-fg-color:                 rgba(0, 0, 0, 0.9);
+  --md-code-bg-color:                 #f6f5f4;
+
+  /* Whisper border */
+  --di-border:                        1px solid rgba(0, 0, 0, 0.1);
+
+  /* Card shadow (4-layer Notion stack) */
+  --di-shadow-card:
+    rgba(0, 0, 0, 0.04) 0px 4px 18px,
+    rgba(0, 0, 0, 0.027) 0px 2px 8px,
+    rgba(0, 0, 0, 0.02) 0px 0.8px 3px,
+    rgba(0, 0, 0, 0.01) 0px 0.175px 1px;
+}
+
+/* ── Color system (dark / slate) ──────────────────────────────────────────── */
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color:              #0075de;
+  --md-primary-fg-color--light:       #62aef0;
+  --md-primary-fg-color--dark:        #005bab;
+  --md-accent-fg-color:               #62aef0;
+  --md-accent-fg-color--transparent:  rgba(98, 174, 240, 0.1);
+  --md-default-bg-color--light:       #31302e;
+  --md-code-bg-color:                 #31302e;
+
+  /* Whisper border (dark) */
+  --di-border:                        1px solid rgba(255, 255, 255, 0.1);
+
+  /* Card shadow (dark) */
+  --di-shadow-card:
+    rgba(0, 0, 0, 0.2) 0px 4px 18px,
+    rgba(0, 0, 0, 0.14) 0px 2px 8px,
+    rgba(0, 0, 0, 0.1) 0px 0.8px 3px,
+    rgba(0, 0, 0, 0.06) 0px 0.175px 1px;
+}
+
+/* ── Header — whisper shadow, not heavy ───────────────────────────────────── */
+.md-header {
+  box-shadow: 0 1px 0 var(--md-default-fg-color--lightest);
+}
+
+[data-md-color-scheme="default"] .md-header {
+  background-color: #ffffff;
+  /* Material uses --md-primary-bg-color for header text; override for white bg */
+  --md-primary-bg-color:       rgba(0, 0, 0, 0.87);
+  --md-primary-bg-color--light: rgba(0, 0, 0, 0.54);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background-color: var(--md-default-bg-color);
+}
+
+/* ── Sidebar — warm white tint ────────────────────────────────────────────── */
+[data-md-color-scheme="default"] .md-sidebar {
+  background-color: #f6f5f4;
+}
+
+[data-md-color-scheme="slate"] .md-sidebar {
+  background-color: var(--md-default-bg-color);
+}
+
+/* ── Navigation typography — Inter 15px weight 500-600 ───────────────────── */
+.md-nav__link {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.md-nav__link--active {
+  font-weight: 600;
+  color: #0075de;
+}
+
+/* ── Content headings — Notion letter-spacing compression ─────────────────── */
+.md-typeset h1 {
+  letter-spacing: -1.0px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.md-typeset h2 {
+  letter-spacing: -0.5px;
+  font-weight: 700;
+  line-height: 1.23;
+}
+
+.md-typeset h3 {
+  letter-spacing: -0.25px;
+  font-weight: 700;
+}
+
+/* ── Body text ────────────────────────────────────────────────────────────── */
+.md-typeset p,
+.md-typeset li {
+  line-height: 1.65;
+}
+
+/* ── Code blocks — warm background, 8px radius ───────────────────────────── */
+.md-typeset .highlight {
+  border-radius: 8px;
+  border: var(--di-border);
+}
+
+.md-typeset code {
+  border-radius: 4px;
+  background-color: var(--md-code-bg-color);
+  color: var(--md-code-fg-color);
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+}
+
+/* ── Tables — whisper borders ─────────────────────────────────────────────── */
+.md-typeset table:not([class]) {
+  border-radius: 8px;
+  overflow: hidden;
+  border: var(--di-border);
+  box-shadow: var(--di-shadow-card);
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-default-bg-color--light);
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  font-size: 0.8rem;
+}
+
+.md-typeset table:not([class]) td {
+  border-color: var(--md-default-fg-color--lightest);
+}
+
+/* ── Admonitions — 8px radius, whisper border ────────────────────────────── */
+.md-typeset .admonition {
+  border-radius: 8px;
+  border-width: 1px;
+  box-shadow: none;
+}
+
+.md-typeset .admonition-title {
+  border-radius: 7px 7px 0 0;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.025em;
+}
+
+/* ── Cards grid — Notion card style ──────────────────────────────────────── */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+  border: var(--di-border);
+  border-radius: 12px;
+  box-shadow: var(--di-shadow-card);
+  transition: box-shadow 0.15s ease;
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover {
+  box-shadow:
+    rgba(0, 0, 0, 0.06) 0px 6px 24px,
+    rgba(0, 0, 0, 0.04) 0px 2px 8px,
+    rgba(0, 0, 0, 0.02) 0px 1px 3px;
+}
+
+/* ── Links — Notion Blue ──────────────────────────────────────────────────── */
+.md-typeset a {
+  color: #0075de;
+}
+
+.md-typeset a:hover {
+  color: #005bab;
+  text-decoration: underline;
+}
+
+/* ── Tags / pill badges ───────────────────────────────────────────────────── */
+.md-tag {
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  background-color: #f2f9ff;
+  color: #097fe8;
+  padding: 3px 8px;
+}
+
+/* ── TOC — warm muted text ────────────────────────────────────────────────── */
+.md-nav--secondary .md-nav__link {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.8rem;
+}
+
+.md-nav--secondary .md-nav__link:hover,
+.md-nav--secondary .md-nav__link--active {
+  color: #0075de;
+}
+
+/* ── Footer — whisper separator ──────────────────────────────────────────── */
+.md-footer {
+  border-top: var(--di-border);
+}
+
+[data-md-color-scheme="default"] .md-footer {
+  background-color: #f6f5f4;
+}
+
+[data-md-color-scheme="slate"] .md-footer {
+  background-color: var(--md-default-bg-color);
+}
+
+/* ── Search ───────────────────────────────────────────────────────────────── */
+.md-search__form {
+  border-radius: 8px;
+  border: var(--di-border);
+  background-color: var(--md-default-fg-color--lightest);
+}
+
+.md-search__form:focus-within {
+  border-color: #0075de;
+  background-color: var(--md-default-bg-color);
+}

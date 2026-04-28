@@ -1,0 +1,55 @@
+# Visual Studio
+.vs/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+
+# Compiled Object files
+*.slo
+*.lo
+*.o
+*.obj
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Compiled Dynamic libraries
+*.so
+*.dylib
+*.dll
+
+# Compiled Static libraries
+*.lai
+*.la
+*.a
+*.lib
+
+# Executables
+*.exe
+*.out
+*.app
+*.ipa
+
+# Xcode
+*.xcodeproj
+*.xcworkspace
+
+# UE5 generated
+Binaries/
+Plugins/**/Binaries/
+Build/
+Saved/
+Intermediate/
+Plugins/**/Intermediate/
+DerivedDataCache/
+*_BuiltData.uasset
+
+# MkDocs
+docs/site/
+docs/.venv/
+docs/__pycache__/
+docs/.cache/

@@ -1,0 +1,3 @@
+[submodule "Plugins/DataIndexer"]
+	path = Plugins/DataIndexer
+	url = https://github.com/koorinonaka/DataIndexer.git
