@@ -1,5 +1,10 @@
 # Visual Studio
 .vs/
+.vsconfig
+.vscode
+.claude
+.github
+.idea
 *.sln
 *.suo
 *.opensdf
@@ -44,6 +49,7 @@ Plugins/**/Binaries/
 Build/
 Saved/
 Intermediate/
+Plugins/Developer
 Plugins/**/Intermediate/
 DerivedDataCache/
 *_BuiltData.uasset
