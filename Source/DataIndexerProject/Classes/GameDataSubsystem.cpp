@@ -35,6 +35,23 @@ TArray<FDataIndexerPrimaryKey> UGameDataSubsystem::GetItemsByRarity( EItemRarity
 		*Settings->ItemRepository, FDataIndexerIndex( UItemSchema::ByRarityIndex().Identifier ), Query );
 }
 
+TArray<FDataIndexerPrimaryKey> UGameDataSubsystem::GetItemsByTypeAndRarity(
+	EItemType Type, EItemRarity Rarity ) const
+{
+	const UGameDataSettings* Settings = UGameDataSettings::Get();
+	if ( !Settings || !Settings->ItemRepository )
+	{
+		return {};
+	}
+
+	FItemRow Query;
+	Query.Type = Type;
+	Query.Rarity = Rarity;
+
+	return FItemInterface::GetPrimaryKeys(
+		*Settings->ItemRepository, UItemSchema::ByTypeAndRarityIndex(), Query );
+}
+
 TArray<FDataIndexerPrimaryKey> UGameDataSubsystem::GetCharactersByClass( ECharacterClass Class ) const
 {
 	const UGameDataSettings* Settings = UGameDataSettings::Get();
