@@ -22,5 +22,3 @@ Most Blueprint nodes are runtime-safe and available in packaged builds. A small 
 [**Custom K2 Nodes**](k2-nodes.md)
 : The `GetRow`, `SelectPrimaryKey`, and `SwitchPrimaryKey` graph nodes that provide typed row access and key-based dispatch.
 
-[**Driven Collection**](driven-collection.md)
-: `UDataIndexerDrivenCollection` — the base class for assets that auto-rebuild from a repository.

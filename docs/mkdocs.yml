@@ -11,6 +11,7 @@ edit_uri: ""
 
 theme:
   name: material
+  custom_dir: overrides
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
@@ -44,6 +45,7 @@ theme:
     repo: fontawesome/brands/github
 
 extra_css:
+  - assets/stylesheets/tokens.css
   - assets/stylesheets/extra.css
 
 markdown_extensions:
@@ -111,7 +113,6 @@ plugins:
             Asset Creation: アセット作成
             Data View: データビュー
             JSON Import & Export: JSON インポート / エクスポート
-            Editor Settings: エディタ設定
             C++ API: C++ API
             Repository API: リポジトリ API
             Schema API: スキーマ API
@@ -130,17 +131,16 @@ nav:
     - Schema: concepts/schema.md
     - Keys & Handles: concepts/keys-and-handles.md
     - Indexes: concepts/indexes.md
-  - Blueprint API:
-    - blueprint-api/index.md
-    - Function Library: blueprint-api/function-library.md
-    - Custom K2 Nodes: blueprint-api/k2-nodes.md
-    - Driven Collection: blueprint-api/driven-collection.md
   - Editor Guide:
     - editor-guide/index.md
     - Asset Creation: editor-guide/asset-creation.md
     - Data View: editor-guide/data-view.md
     - JSON Import & Export: editor-guide/json-import-export.md
-    - Editor Settings: editor-guide/editor-settings.md
+    - Driven Collection: editor-guide/driven-collection.md
+  - Blueprint API:
+    - blueprint-api/index.md
+    - Function Library: blueprint-api/function-library.md
+    - Custom K2 Nodes: blueprint-api/k2-nodes.md
   - C++ API:
     - cpp-api/index.md
     - Repository API: cpp-api/repository-api.md
@@ -149,8 +149,9 @@ nav:
   - Changelog: changelog.md
 
 extra:
+  generator: false
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/koorinonaka/DataIndexerProject
 
-copyright: Copyright &copy; 2024 DataIndexer Contributors
+copyright: Copyright &copy; 2026 Koorinonaka

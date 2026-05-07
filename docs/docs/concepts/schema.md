@@ -15,7 +15,7 @@ A schema does three things:
 1. Create a **Blueprint Class** with parent `DataIndexerSchema`
 2. In **Class Defaults**, assign **Row Struct** to your `USTRUCT`
 3. Override `GetRowDisplayName` to return a meaningful `FText` from the row struct fields
-4. Use the **Build Index Key Functions** map to register index builders (see [Indexes](indexes.md))
+4. Use the **Build Index Functions** map to register index builders (see [Indexes](indexes.md))
 5. Use the **Property Text Customizations** map to register custom text rendering per property
 
 ## C++ subclassing
@@ -26,8 +26,14 @@ class UMyItemSchema : public UDataIndexerSchema
 {
     GENERATED_BODY()
 
+public:
+    DI_DEFINE_INDEX(ByCategoryIndex);
+
 protected:
     virtual void PostInitProperties() override;
+
+    UFUNCTION()
+    static FGuid BuildCategoryIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName);
 
 public:
     virtual FText GetRowDisplayName_Implementation(
@@ -39,16 +45,14 @@ public:
 ```cpp
 void UMyItemSchema::PostInitProperties()
 {
-    Super::PostInitProperties();
-
     if (HasAnyFlags(RF_ClassDefaultObject))
     {
-        // RowStruct is set automatically from the CDO of the C++ type.
-        // Register an index key builder for the "Category" index:
-        RegisterFunction_BuildIndexKey(
-            CategoryIndex,   // FDataIndexerIndex (static FGuid)
-            GET_FUNCTION_NAME_CHECKED(UMyItemSchema, BuildCategoryKey));
+        RowStruct = FMyItemRow::StaticStruct();
+        RegisterFunction_BuildIndex(
+            ByCategoryIndex(),
+            GET_FUNCTION_NAME_CHECKED(ThisClass, BuildCategoryIndex));
     }
+    Super::PostInitProperties();
 }
 ```
 

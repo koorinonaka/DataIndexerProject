@@ -47,28 +47,27 @@ void ForEachPrimaryKeys(const TFunctionRef<void(const FDataIndexerPrimaryKey&)>&
 
 Iterates all primary keys visible through this repository (including parents). Order matches `LocalEntries` insertion order for local rows; parent rows follow.
 
-### `ForEachPrimaryKeys(Index, IndexKey, Callback)`
+### `ForEachPrimaryKeys(Index, Query, Callback)`
 
 ```cpp
 void ForEachPrimaryKeys(
     const FDataIndexerIndex& Index,
-    const FDataIndexerIndexKey& IndexKey,
+    const FConstStructView Query,
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback) const;
 ```
 
-Iterates primary keys that match a secondary index lookup. The `ReverseLookups` table is consulted directly — no per-row iteration.
+Iterates primary keys that match a secondary index lookup. `Query` is a partially-filled row struct — the schema's builder function is called on it to derive the lookup GUID, then `ReverseLookups` is consulted directly. No per-row iteration.
 
-### `GetDisplayName(PrimaryKey)` / `GetDisplayName(Index, IndexKey)`
+### `GetDisplayName(PrimaryKey)`
 
 ```cpp
 FText GetDisplayName(const FDataIndexerPrimaryKey& PrimaryKey) const;
-FText GetDisplayName(const FDataIndexerIndex& Index, const FDataIndexerIndexKey& IndexKey) const;
 ```
 
 Delegates to the schema's `GetRowDisplayName`. Used by the editor and Blueprint nodes for human-readable labels.
 
 ## Serialization
 
-The binary asset format serializes `LocalEntries`, `EntryOwners`, and `ReverseLookups` via a custom `Serialize` override. `ReverseLookups` are rebuilt at save time from `BuildIndexKeyFunctions` on the schema.
+The binary asset format serializes `LocalEntries`, `EntryOwners`, and `ReverseLookups` via a custom `Serialize` override. `ReverseLookups` are rebuilt at save time from `BuildIndexFunctions` on the schema.
 
 JSON export produces a sidecar that is human-readable and diff-friendly. See [JSON Import & Export](../editor-guide/json-import-export.md).

@@ -1,0 +1,595 @@
+/* DataIndexer Docs — design tokens
+   Notion-inspired warm neutral base, tuned denser for a developer doc tool.
+   3 layouts share these tokens; each layout overrides chrome only. */
+
+:root, [data-theme="light"] {
+  /* Type */
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-jp: "Inter", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  /* Warm neutrals */
+  --bg: #ffffff;
+  --bg-alt: #f7f6f3;        /* warm white, slightly cooler than Notion to read as 'tool' */
+  --bg-sunken: #f1efeb;
+  --bg-code: #f7f6f3;
+  --bg-pre: #1a1917;        /* warm near-black for code blocks */
+
+  --text: rgba(15, 14, 13, 0.92);   /* near-black warm */
+  --text-strong: rgba(10, 9, 8, 0.96);
+  --text-muted: #6b6660;
+  --text-faint: #a39e98;
+
+  --border: rgba(15, 14, 13, 0.10);
+  --border-strong: rgba(15, 14, 13, 0.16);
+  --border-faint: rgba(15, 14, 13, 0.06);
+
+  /* Accent: UE blueprint-leaning blue (matches developer-tool vibe, distinct from Notion's #0075de) */
+  --accent: #2e6ee0;
+  --accent-hover: #224fb0;
+  --accent-soft: #ecf2ff;
+  --accent-soft-text: #1e4fb5;
+
+  /* Semantic — for admonitions */
+  --warn: #b6571a;
+  --warn-soft: #fbf0e6;
+  --tip: #1f7a52;
+  --tip-soft: #ecf6f0;
+  --note: #5a4ea3;
+  --note-soft: #f0eef9;
+
+  /* Code highlighting (dark theme, low chroma) */
+  --hl-bg: var(--bg-pre);
+  --hl-fg: #e6e1d8;
+  --hl-comment: #7a766c;
+  --hl-keyword: #c5a8ff;
+  --hl-type: #7fc6e3;
+  --hl-string: #d4c08e;
+  --hl-fn: #ffd28a;
+  --hl-num: #e89a82;
+  --hl-macro: #b8d39c;
+
+  /* Spacing scale (8px base) */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 20px;
+  --s-6: 24px;
+  --s-8: 32px;
+  --s-10: 40px;
+  --s-12: 48px;
+  --s-16: 64px;
+
+  /* Radii */
+  --r-1: 3px;
+  --r-2: 5px;
+  --r-3: 8px;
+  --r-4: 12px;
+  --r-pill: 9999px;
+
+  /* Shadows — Notion-style multi-layer, very low opacity */
+  --sh-card:
+    rgba(0,0,0,0.04) 0px 4px 18px,
+    rgba(0,0,0,0.027) 0px 2px 7.85px,
+    rgba(0,0,0,0.02) 0px 0.8px 2.93px,
+    rgba(0,0,0,0.01) 0px 0.175px 1.04px;
+  --sh-pop:
+    rgba(0,0,0,0.04) 0px 14px 28px,
+    rgba(0,0,0,0.05) 0px 23px 52px,
+    rgba(0,0,0,0.02) 0px 1px 3px;
+
+  /* Layout */
+  --reading-width: 720px;
+  --header-h: 52px;
+}
+
+/* Reset within artboard scopes */
+.di-doc, .di-doc * {
+  box-sizing: border-box;
+}
+.di-doc {
+  font-family: var(--font-sans);
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.55;
+  font-feature-settings: "ss01", "cv11", "lnum";
+  -webkit-font-smoothing: antialiased;
+  background: var(--bg);
+  letter-spacing: -0.005em;
+}
+.di-doc h1, .di-doc h2, .di-doc h3, .di-doc h4 {
+  color: var(--text-strong);
+  font-weight: 700;
+  letter-spacing: -0.022em;
+  margin: 0;
+}
+.di-doc h1 { font-size: 36px; line-height: 1.12; letter-spacing: -0.03em; }
+.di-doc h2 { font-size: 22px; line-height: 1.25; margin-top: var(--s-10); }
+.di-doc h3 { font-size: 17px; line-height: 1.35; margin-top: var(--s-6); }
+.di-doc p  { margin: var(--s-3) 0; }
+.di-doc p:first-child { margin-top: 0; }
+
+.di-doc a { color: var(--accent); text-decoration: none; border-bottom: 1px solid transparent; }
+.di-doc a:hover { border-bottom-color: var(--accent); }
+
+.di-doc code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: var(--bg-code);
+  border: 1px solid var(--border-faint);
+  border-radius: var(--r-1);
+  padding: 1px 5px;
+  color: #2d2a26;
+}
+
+.di-doc pre {
+  font-family: var(--font-mono);
+  background: var(--bg-pre);
+  color: var(--hl-fg);
+  border-radius: var(--r-3);
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-x: auto;
+  margin: var(--s-4) 0;
+}
+.di-doc pre code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+}
+
+.di-doc .tok-c { color: var(--hl-comment); font-style: italic; }
+.di-doc .tok-k { color: var(--hl-keyword); }
+.di-doc .tok-t { color: var(--hl-type); }
+.di-doc .tok-s { color: var(--hl-string); }
+.di-doc .tok-f { color: var(--hl-fn); }
+.di-doc .tok-n { color: var(--hl-num); }
+.di-doc .tok-m { color: var(--hl-macro); }
+
+.di-doc table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  margin: var(--s-4) 0;
+}
+.di-doc thead th {
+  text-align: left;
+  font-weight: 600;
+  padding: 8px 12px;
+  background: var(--bg-alt);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-strong);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+.di-doc tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border-faint);
+  vertical-align: top;
+}
+.di-doc tbody tr:last-child td { border-bottom: 0; }
+
+/* Admonitions */
+.di-adm {
+  border: 1px solid var(--border);
+  border-left-width: 3px;
+  background: var(--bg-alt);
+  border-radius: var(--r-2);
+  padding: 12px 14px 12px 14px;
+  margin: var(--s-4) 0;
+  font-size: 14px;
+}
+.di-adm .di-adm-title {
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.di-adm.tip { border-left-color: var(--tip); background: var(--tip-soft); }
+.di-adm.tip .di-adm-title { color: var(--tip); }
+.di-adm.warn { border-left-color: var(--warn); background: var(--warn-soft); }
+.di-adm.warn .di-adm-title { color: var(--warn); }
+.di-adm.note { border-left-color: var(--note); background: var(--note-soft); }
+.di-adm.note .di-adm-title { color: var(--note); }
+
+/* Pill */
+.di-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--accent-soft);
+  color: var(--accent-soft-text);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  font-feature-settings: "ss01";
+  border: 1px solid rgba(46, 110, 224, 0.15);
+}
+.di-pill.gray {
+  background: var(--bg-alt);
+  color: var(--text-muted);
+  border-color: var(--border);
+}
+.di-pill.warn {
+  background: var(--warn-soft);
+  color: var(--warn);
+  border-color: rgba(182, 87, 26, 0.2);
+}
+
+/* Generic chrome — header / sidebar / footer shared across layouts */
+.di-frame {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-family: var(--font-sans);
+  color: var(--text);
+}
+
+.di-header {
+  height: var(--header-h);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 14px;
+  background: var(--bg);
+  flex-shrink: 0;
+}
+.di-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: var(--text-strong);
+}
+.di-logo-mark {
+  width: 22px; height: 22px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #2e6ee0 0%, #1e4fb5 100%);
+  display: grid; place-items: center;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-family: var(--font-mono);
+}
+.di-version-pill {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  padding: 1px 6px;
+  border-radius: var(--r-pill);
+  font-family: var(--font-mono);
+  letter-spacing: 0;
+}
+
+.di-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: var(--r-2);
+  padding: 5px 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+  min-width: 220px;
+  cursor: text;
+}
+.di-search .di-kbd {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 1px 5px;
+  color: var(--text-muted);
+}
+
+.di-headlinks {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.di-headlinks .active { color: var(--text-strong); }
+
+/* Sidebar nav (used by layouts A & C) */
+.di-side {
+  border-right: 1px solid var(--border);
+  background: var(--bg);
+  overflow-y: auto;
+  padding: 18px 8px 32px 18px;
+  font-size: 13.5px;
+}
+.di-side-group {
+  margin-bottom: 18px;
+}
+.di-side-group .label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  padding: 4px 10px;
+  margin-bottom: 2px;
+}
+.di-side a {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
+  border-radius: var(--r-2);
+  color: var(--text-muted);
+  font-weight: 500;
+  border: 0;
+  line-height: 1.4;
+}
+.di-side a.active {
+  background: var(--accent-soft);
+  color: var(--accent-soft-text);
+  font-weight: 600;
+}
+.di-side a:hover:not(.active) {
+  background: var(--bg-alt);
+  color: var(--text-strong);
+}
+
+/* TOC */
+.di-toc {
+  padding: 18px 16px;
+  font-size: 13px;
+  border-left: 1px solid var(--border);
+  overflow-y: auto;
+}
+.di-toc h6 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 0 0 10px 4px;
+}
+.di-toc ul { list-style: none; padding: 0; margin: 0; }
+.di-toc li { margin: 0; }
+.di-toc a {
+  display: block;
+  padding: 4px 10px;
+  border-radius: var(--r-1);
+  color: var(--text-muted);
+  border-left: 2px solid transparent;
+  border-bottom: 0;
+  font-weight: 500;
+}
+.di-toc a:hover { color: var(--text-strong); background: var(--bg-alt); }
+.di-toc a.active {
+  color: var(--text-strong);
+  border-left-color: var(--accent);
+  background: var(--accent-soft);
+}
+.di-toc a.depth-3 { padding-left: 22px; font-size: 12.5px; color: var(--text-faint); }
+
+/* Breadcrumb */
+.di-crumbs {
+  font-size: 12px;
+  color: var(--text-faint);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-weight: 500;
+}
+.di-crumbs span.sep { opacity: 0.5; }
+.di-crumbs a { color: var(--text-muted); border: 0; }
+
+/* Page meta footer */
+.di-pagemeta {
+  margin-top: var(--s-12);
+  padding-top: var(--s-5);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.di-pagemeta .next, .di-pagemeta .prev {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  padding: 12px 16px;
+  border-radius: var(--r-3);
+  min-width: 200px;
+  cursor: pointer;
+  background: var(--bg);
+}
+.di-pagemeta .next:hover, .di-pagemeta .prev:hover {
+  background: var(--bg-alt);
+}
+.di-pagemeta .next { text-align: right; }
+.di-pagemeta .next .label, .di-pagemeta .prev .label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.di-pagemeta .next .title, .di-pagemeta .prev .title {
+  font-weight: 600;
+  color: var(--text-strong);
+  font-size: 14px;
+  margin-top: 2px;
+}
+
+/* Edit-on-github / page actions */
+.di-pageactions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: var(--s-3);
+}
+.di-pageactions a {
+  color: var(--text-muted);
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.di-pageactions a:hover { color: var(--accent); }
+
+/* Lead paragraph */
+.di-lead {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  margin-bottom: var(--s-6);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+/* Inline kbd */
+.di-doc kbd {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-bottom-width: 2px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  color: var(--text-strong);
+}
+
+/* Tag chips, tab variants, etc. */
+.di-tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  margin: 0 0 -1px 0;
+}
+.di-tabs button {
+  border: 0;
+  background: transparent;
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 500;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.di-tabs button.active {
+  color: var(--text-strong);
+  border-bottom-color: var(--accent);
+}
+
+/* ─────────────────────────────────────────────────────────
+   Dark theme — warm dark, not blue. Inspired by Notion's
+   #31302e dark with slightly lower L for code-heavy reading.
+   ───────────────────────────────────────────────────────── */
+[data-theme="dark"] {
+  --bg: #1a1917;
+  --bg-alt: #1f1d1a;
+  --bg-sunken: #161513;
+  --bg-code: #232120;
+  --bg-pre: #0e0d0c;
+
+  --text: rgba(245, 240, 232, 0.92);
+  --text-strong: rgba(252, 248, 240, 0.98);
+  --text-muted: #9a948a;
+  --text-faint: #6a655d;
+
+  --border: rgba(255, 248, 235, 0.10);
+  --border-strong: rgba(255, 248, 235, 0.18);
+  --border-faint: rgba(255, 248, 235, 0.05);
+
+  --accent: #7aa8ef;
+  --accent-hover: #96bbf5;
+  --accent-soft: rgba(122, 168, 239, 0.14);
+  --accent-soft-text: #b0ccf8;
+
+  --warn: #e89461;
+  --warn-soft: rgba(232, 148, 97, 0.10);
+  --tip: #6cc89a;
+  --tip-soft: rgba(108, 200, 154, 0.10);
+  --note: #b69ce0;
+  --note-soft: rgba(182, 156, 224, 0.10);
+
+  --hl-fg: #ebe5d8;
+  --hl-comment: #6e6a60;
+  --hl-keyword: #c9b3ff;
+  --hl-type: #84c9e4;
+  --hl-string: #d8c693;
+  --hl-fn: #ffd089;
+  --hl-num: #eb9b80;
+  --hl-macro: #b4d49b;
+
+  --sh-card:
+    rgba(0,0,0,0.30) 0px 4px 18px,
+    rgba(0,0,0,0.20) 0px 2px 7.85px,
+    rgba(0,0,0,0.12) 0px 0.8px 2.93px;
+  --sh-pop:
+    rgba(0,0,0,0.40) 0px 14px 28px,
+    rgba(0,0,0,0.50) 0px 23px 52px;
+}
+
+[data-theme="dark"] .di-doc code {
+  color: #e6deca;
+  background: var(--bg-code);
+}
+[data-theme="dark"] .di-logo-mark {
+  background: linear-gradient(135deg, #7aa8ef 0%, #4d7dc7 100%);
+}
+[data-theme="dark"] .di-search { background: var(--bg-sunken); }
+[data-theme="dark"] .di-search .di-kbd { background: var(--bg-alt); border-color: var(--border-strong); }
+
+/* ─────────────────────────────────────────────────────────
+   Accent override — orange (UE-leaning)
+   Apply with [data-accent="orange"] on the same node as the theme
+   ───────────────────────────────────────────────────────── */
+[data-accent="orange"] {
+  --accent: #d96b1d;
+  --accent-hover: #b35517;
+  --accent-soft: #fbeee2;
+  --accent-soft-text: #a64f10;
+}
+[data-accent="orange"][data-theme="dark"] {
+  --accent: #f0975a;
+  --accent-hover: #f7ad79;
+  --accent-soft: rgba(240, 151, 90, 0.14);
+  --accent-soft-text: #f3b990;
+}
+[data-accent="orange"] .di-logo-mark {
+  background: linear-gradient(135deg, #f0975a 0%, #d96b1d 100%);
+}
+
+/* JP locale font tweak */
+[data-locale="ja"] .di-doc,
+[data-locale="ja"] .di-doc h1,
+[data-locale="ja"] .di-doc h2,
+[data-locale="ja"] .di-doc h3,
+[data-locale="ja"] .di-frame {
+  font-family: var(--font-jp);
+  letter-spacing: 0;
+}
+[data-locale="ja"] .di-doc h1 { letter-spacing: -0.015em; }

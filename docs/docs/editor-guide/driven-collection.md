@@ -1,16 +1,16 @@
 # Driven Collection
 
-`UDataIndexerDrivenCollection` is an abstract `UDataAsset` base class for assets whose entries are automatically synchronized with a source repository.
+`UDataIndexerDrivenCollection` is an abstract `UDataAsset` base class for editor assets that manage per-key sub-assets — such as icons, ability class references, or other `UObject` pointers — keyed by `FDataIndexerPrimaryKey`. Entries are automatically synchronized with a source repository.
 
 ## Concept
 
-A driven collection is a derived asset: it watches a `UDataIndexerRepository` and maintains a parallel map keyed by the same `FDataIndexerPrimaryKey` set. When rows are added or removed from the source repository in the editor, the collection rebuilds its entries automatically.
+A driven collection is a companion asset to a `UDataIndexerRepository`. It maintains a `TMap` keyed by the same `FDataIndexerPrimaryKey` set as the repository, where each value is an asset or struct that cannot or should not live inside the row data itself. When rows are added or removed from the source repository in the editor, the collection rebuilds its entries automatically.
 
 **Typical use cases:**
 
-- Per-row editor configuration that shouldn't live inside the repository (e.g., curve assets, spawn data overrides)
+- Per-row asset references that don't belong in row data (e.g., icons, meshes, ability classes)
+- Per-row editor configuration (e.g., curve assets, spawn data overrides)
 - Derived lookup tables that need a different value type than the repository's row struct
-- Assets that aggregate repository data into a form optimized for runtime access
 
 ## SourceRepository
 

@@ -1,10 +1,10 @@
-# Native Schema Interface
+# ネイティブスキーマインターフェース
 
-`DataIndexer::TNativeSchemaInterface<TRowType>` (`DataIndexerSchemaInterface.h`) is a typed C++ façade over `UDataIndexerRepository`. It provides compile-time type safety for row queries without requiring any virtual dispatch or casting in calling code.
+`DataIndexer::TNativeSchemaInterface<TRowType>`（`DataIndexerSchemaInterface.h`）は `UDataIndexerRepository` に対する型安全な C++ ファサードです。仮想ディスパッチやキャストなしに、コンパイル時型チェックを伴うクエリが書けます。
 
-## Setup
+## セットアップ
 
-Define a project-level type alias alongside the row struct. In the sample project, the alias is declared at the bottom of the same header:
+行構造体と同じヘッダーの末尾でエイリアスを宣言するのが推奨パターンです。
 
 ```cpp title="ItemTypes.h"
 #pragma once
@@ -38,7 +38,7 @@ struct DATAINDEXERPROJECT_API FItemRow
 using FItemInterface = DataIndexer::TNativeSchemaInterface<FItemRow>;
 ```
 
-Include the header wherever you query the item repository — no separate setup file needed.
+このヘッダーをインクルードするだけで `FItemInterface` が使えます。別のセットアップファイルは不要です。
 
 ---
 
@@ -50,7 +50,7 @@ static FText GetDisplayName(
     const FDataIndexerPrimaryKey& PrimaryKey);
 ```
 
-Calls the schema's `GetRowDisplayName` with the row entity fetched from the repository. Returns `FText::FromName(NAME_None)` if the schema is null.
+リポジトリからフェッチした行エンティティでスキーマの `GetRowDisplayName` を呼び出します。スキーマが null の場合は `FText::FromName(NAME_None)` を返します。
 
 ```cpp
 FText UGameDataSubsystem::GetItemDisplayName(
@@ -62,7 +62,7 @@ FText UGameDataSubsystem::GetItemDisplayName(
 
 ---
 
-## FindRow (by PrimaryKey)
+## FindRow（PrimaryKey 指定）
 
 ```cpp
 static const TRowType* FindRow(
@@ -70,7 +70,7 @@ static const TRowType* FindRow(
     const FDataIndexerPrimaryKey& PrimaryKey);
 ```
 
-Delegates to `Repository.FindRowEntity(PrimaryKey)`, then returns a typed pointer. Returns `nullptr` if the key is not found or the struct type does not match.
+`Repository.FindRowEntity(PrimaryKey)` に委譲した後、`TRowType` へのポインタを返します。キーが見つからない場合・型が一致しない場合は `nullptr` を返します。
 
 ```cpp
 const FItemRow* UGameDataSubsystem::FindItemRow(
@@ -80,7 +80,7 @@ const FItemRow* UGameDataSubsystem::FindItemRow(
 }
 ```
 
-Typical null-check pattern at the call site:
+呼び出し側では null チェックしてから使います。
 
 ```cpp
 if (const FItemRow* Row = FItemInterface::FindRow(*ItemRepository, Key))
@@ -92,14 +92,16 @@ if (const FItemRow* Row = FItemInterface::FindRow(*ItemRepository, Key))
 
 ---
 
-## FindRow (by RowHandle)
+## FindRow（RowHandle 指定）
 
 ```cpp
 static const TRowType* FindRow(
     const FDataIndexerRowHandle& RowHandle);
 ```
 
-Convenience overload that validates the handle and delegates to `FindRow(*RowHandle.Repository, RowHandle.PrimaryKey)`. Returns `nullptr` if the handle is invalid.
+ハンドルを検証してから `FindRow(*RowHandle.Repository, RowHandle.PrimaryKey)` に委譲します。ハンドルが無効な場合は `nullptr` を返します。
+
+行に保存されたリポジトリ間リレーションを解決するときに使います。
 
 ```cpp
 const FItemRow* UGameDataSubsystem::FindItemRow(const FDataIndexerRowHandle& Handle) const
@@ -108,7 +110,7 @@ const FItemRow* UGameDataSubsystem::FindItemRow(const FDataIndexerRowHandle& Han
 }
 ```
 
-Typical use when resolving a cross-repository relation stored in a row. `FCharacterRow::DefaultWeapon` is an `FDataIndexerRowHandle` that points at the item repository:
+`FCharacterRow::DefaultWeapon`（ItemRepository を指す `FDataIndexerRowHandle`）を解決する例：
 
 ```cpp
 // CharacterTypes.h
@@ -118,6 +120,7 @@ FDataIndexerRowHandle DefaultWeapon;
 ```
 
 ```cpp
+// 使用例
 if (const FItemRow* Weapon = FItemInterface::FindRow(Character->DefaultWeapon))
 {
     // Weapon->DisplayName, Weapon->BaseValue, ...
@@ -126,7 +129,7 @@ if (const FItemRow* Weapon = FItemInterface::FindRow(Character->DefaultWeapon))
 
 ---
 
-## ForEachPrimaryKeys (all rows)
+## ForEachPrimaryKeys（全行）
 
 ```cpp
 static void ForEachPrimaryKeys(
@@ -134,7 +137,7 @@ static void ForEachPrimaryKeys(
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback);
 ```
 
-Iterates all primary keys in the repository (including parents). Thin delegate to `Repository.ForEachPrimaryKeys(Callback)`.
+リポジトリ内（親を含む）のすべての PrimaryKey を走査します。
 
 ```cpp
 void UGameDataSubsystem::ForEachItem(
@@ -147,7 +150,7 @@ void UGameDataSubsystem::ForEachItem(
 
 ---
 
-## ForEachPrimaryKeys (by index)
+## ForEachPrimaryKeys（インデックス指定）
 
 ```cpp
 static void ForEachPrimaryKeys(
@@ -157,7 +160,7 @@ static void ForEachPrimaryKeys(
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback);
 ```
 
-Computes the index key from `Row` by calling the schema's registered builder for `Index`, then iterates only matching primary keys. Pass a partially filled row to express "find all rows with the same field as this query":
+`Row` からインデックスキーを計算し、そのキーに一致する PrimaryKey だけを走査します。「このクエリ行と同じフィールド値を持つ行をすべて取得する」意図でフィールドを部分的に埋めた行を渡します。
 
 ```cpp
 void UGameDataSubsystem::ForEachItemsByType(
@@ -185,17 +188,17 @@ static TArray<FDataIndexerPrimaryKey> GetPrimaryKeys(
     const TRowType& Row);
 ```
 
-Convenience wrappers over `ForEachPrimaryKeys` that collect results into a `TArray`.
+`ForEachPrimaryKeys` の結果を `TArray` にまとめるラッパーです。
 
 ```cpp
-// All rows
+// 全 Row のキーを取得
 TArray<FDataIndexerPrimaryKey> UGameDataSubsystem::GetAllItemKeys(
     const UDataIndexerRepository& Repository) const
 {
     return FItemInterface::GetPrimaryKeys(Repository);
 }
 
-// Filter by Type
+// Type で絞り込み
 TArray<FDataIndexerPrimaryKey> UGameDataSubsystem::GetItemsByType(
     const UDataIndexerRepository& Repository, EItemType Type) const
 {
@@ -204,7 +207,7 @@ TArray<FDataIndexerPrimaryKey> UGameDataSubsystem::GetItemsByType(
     return FItemInterface::GetPrimaryKeys(Repository, UItemSchema::ByTypeIndex(), Query);
 }
 
-// Filter by Rarity
+// Rarity で絞り込み
 TArray<FDataIndexerPrimaryKey> UGameDataSubsystem::GetItemsByRarity(
     const UDataIndexerRepository& Repository, EItemRarity Rarity) const
 {
@@ -213,7 +216,7 @@ TArray<FDataIndexerPrimaryKey> UGameDataSubsystem::GetItemsByRarity(
     return FItemInterface::GetPrimaryKeys(Repository, UItemSchema::ByRarityIndex(), Query);
 }
 
-// Composite index: Type × Rarity
+// Type × Rarity の複合インデックスで絞り込み
 TArray<FDataIndexerPrimaryKey> UGameDataSubsystem::GetItemsByTypeAndRarity(
     const UDataIndexerRepository& Repository, EItemType Type, EItemRarity Rarity) const
 {

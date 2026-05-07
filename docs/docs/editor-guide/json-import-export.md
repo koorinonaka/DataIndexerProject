@@ -71,6 +71,43 @@ The JSON export is the recommended format for code review and version control di
 
 The JSON sidecar remains text-diffable even as the binary changes.
 
+### What a diff looks like
+
+When rows are added, modified, or removed, the diff clearly shows exactly what changed:
+
+```diff
+ [
+   {
+     "PrimaryKey": "A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
+     "Row": {
+-      "DisplayName": "Iron Sword",
+-      "MaxStack": 1
++      "DisplayName": "Iron Sword (Rusted)",
++      "MaxStack": 1,
++      "Category": "Weapon"
+     }
+   },
++  {
++    "PrimaryKey": "C3D4E5F6-A7B8-9012-CDEF-012345678901",
++    "Row": {
++      "DisplayName": "Steel Shield",
++      "MaxStack": 1,
++      "Category": "Armor"
++    }
++  },
+   {
+     "PrimaryKey": "B2C3D4E5-F6A7-8901-BCDE-F12345678901",
+     "Row": {
+       "DisplayName": "Health Potion",
+       "MaxStack": 10,
+       "Category": "Consumable"
+     }
+   }
+ ]
+```
+
+Each row change is a self-contained diff block — reviewers can understand data edits without opening Unreal Editor.
+
 ## Merge support
 
 DataIndexer provides merge hooks for the binary `.uasset` format. When a merge conflict occurs on a repository asset:

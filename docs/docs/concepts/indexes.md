@@ -6,54 +6,68 @@ Indexes are secondary lookup dimensions that let you retrieve a set of rows by a
 
 | Type | Role |
 |------|------|
-| `FDataIndexerIndex` | Identifies a lookup dimension (extends `FGuid`) |
-| `FDataIndexerIndexKey` | A computed key value for a row within an index (extends `FGuid`) |
-| `FDataIndexerImmutableKey` | A stable, named identifier for an index definition — holds the `FGuid` and an optional `DevComment` |
+| `FDataIndexerIndex` | Identifies a lookup dimension; holds a deterministic GUID and an optional `DevComment` (editor-only) |
+
+Index keys are raw `FGuid` values computed by the builder function — there is no separate `FDataIndexerIndexKey` type.
 
 ## How indexes work
 
-At save time, the compiler calls each registered **BuildIndexKey** function for every row. The result is a `(FDataIndexerIndexKey, FText display)` pair that is stored in the repository's `ReverseLookups` table:
+At save time, the compiler calls each registered **BuildIndex** function for every row. The builder returns a `FGuid` (the index key) and optionally sets a `FText` display name for editor labelling. The result is stored in the repository's `ReverseLookups` table:
 
 ```
-ReverseLookups[Index][ImmutableKey] → TMultiMap<FDataIndexerImmutableKey, FDataIndexerPrimaryKey>
+ReverseLookups[FDataIndexerIndex] → { TMap<FGuid, TArray<FDataIndexerPrimaryKey>> }
 ```
 
-At runtime, `Repository.ForEachPrimaryKeys(Index, IndexKey, Callback)` performs a direct multimap lookup — O(matches), not O(all rows).
+At runtime, `Repository.ForEachPrimaryKeys(Index, Query, Callback)` calls the builder on the query struct to derive the lookup GUID, then performs a direct map lookup — O(matches), not O(all rows).
 
 ## Defining an index
 
 ### In C++
 
-Declare a static `FDataIndexerImmutableKey` for each index, then register the builder in `PostInitProperties`:
+Use `DI_DEFINE_INDEX` to declare each index on the schema class. The macro generates a static accessor function that returns a stable `FDataIndexerIndex` with a deterministic GUID derived from the class path and the name:
 
 ```cpp
-// MyItemSchema.h
-static inline FDataIndexerImmutableKey CategoryIndex{
-    FGuid(0x11223344, 0x55667788, 0x99AABBCC, 0xDDEEFF00),
-    INVTEXT("Category")
-};
-
-// MyItemSchema.cpp
-void UMyItemSchema::PostInitProperties()
+// ItemSchema.h
+UCLASS()
+class UItemSchema : public UDataIndexerSchema
 {
-    Super::PostInitProperties();
+    GENERATED_BODY()
+public:
+    DI_DEFINE_INDEX(ByTypeIndex);
+    DI_DEFINE_INDEX(ByRarityIndex);
+
+protected:
+    virtual void PostInitProperties() override;
+
+    UFUNCTION()
+    static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName);
+
+    UFUNCTION()
+    static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName);
+};
+```
+
+Register the builders in `PostInitProperties`. Call `Super::PostInitProperties()` **after** the CDO block:
+
+```cpp
+// ItemSchema.cpp
+void UItemSchema::PostInitProperties()
+{
     if (HasAnyFlags(RF_ClassDefaultObject))
     {
-        RegisterFunction_BuildIndexKey(
-            FDataIndexerIndex(CategoryIndex.Identifier),
-            GET_FUNCTION_NAME_CHECKED(UMyItemSchema, BuildCategoryKey));
+        RowStruct = FItemRow::StaticStruct();
+        RegisterFunction_BuildIndex(ByTypeIndex(),   GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeIndex));
+        RegisterFunction_BuildIndex(ByRarityIndex(), GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
     }
+    Super::PostInitProperties();
 }
 
-FDataIndexerIndexKey UMyItemSchema::BuildCategoryKey(
-    const FInstancedStruct& RowEntity, FText& OutDisplayName)
+FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName)
 {
-    if (const FMyItemRow* Row = RowEntity.GetPtr<const FMyItemRow>())
+    if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
     {
-        OutDisplayName = UEnum::GetDisplayValueAsText(Row->Category);
-        // Convert the enum value to a deterministic GUID
-        return FDataIndexerIndexKey(FGuid(
-            static_cast<uint32>(Row->Category), 0, 0, 0));
+        OutDisplayName = UEnum::GetDisplayValueAsText(Row->Type);
+        return FGuid(static_cast<uint32>(Row->Type), 0, 0, 0);
     }
     return {};
 }
@@ -62,31 +76,42 @@ FDataIndexerIndexKey UMyItemSchema::BuildCategoryKey(
 ### In Blueprint
 
 1. Open the Schema Blueprint → Class Defaults
-2. In **Build Index Key Functions**, add an entry:
-   - **Key**: An `FDataIndexerImmutableKey` (create a static Blueprint variable with a fixed GUID)
-   - **Value**: A function reference matching the `Prototype_BuildIndexKey` signature (`RowEntity → IndexKey + OutDisplayName`)
+2. In **Build Index Functions**, add an entry:
+   - **Key**: An `FDataIndexerIndex` variable (set a fixed GUID in the variable defaults)
+   - **Value**: A function reference matching the `Prototype_BuildIndex` signature (`RowEntity → FGuid`)
 
 ## Querying by index
 
-**C++:**
+**C++** — pass a partially filled row value to express "find all rows with the same field as this query":
 
 ```cpp
-Repository.ForEachPrimaryKeys(
-    FDataIndexerIndex(UMyItemSchema::CategoryIndex.Identifier),
-    WeaponIndexKey,
-    [&](const FDataIndexerPrimaryKey& Key)
-    {
-        // process Key...
-    });
+// All Weapon-type items
+FItemRow Query;
+Query.Type = EItemType::Weapon;
+
+TArray<FDataIndexerPrimaryKey> Keys =
+    FItemInterface::GetPrimaryKeys(*Repository, UItemSchema::ByTypeIndex(), Query);
+```
+
+For a reverse index (e.g., all characters whose `DefaultWeapon` points to a specific item):
+
+```cpp
+FCharacterRow Query;
+Query.DefaultWeapon.PrimaryKey = WeaponKey;
+
+TArray<FDataIndexerPrimaryKey> Characters =
+    FCharacterInterface::GetPrimaryKeys(*Repository, UCharacterSchema::ByDefaultWeaponIndex(), Query);
 ```
 
 **Blueprint:**
 
-Use a `FDataIndexerRowsHandle` UPROPERTY and the **Get Rows Handle Keys** function library node to retrieve the matching primary keys.
+Use a `FDataIndexerRowsHandle` UPROPERTY and the **Get Rows Handle Keys** function library node. The node takes the handle and a **Query** wildcard struct pin — fill in the fields that drive the index (e.g., set `Type = Weapon` for a `ByType` index).
 
 ## Index key stability
 
-`FDataIndexerIndexKey` values must be stable across editor sessions. Use deterministic GUIDs derived from enum values, string hashes, or other stable domain attributes — never from `FGuid::NewGuid()` in a builder function.
+The GUID returned by a builder function must be stable across editor sessions. Use deterministic values derived from enum ordinals, string hashes, or other stable domain attributes — never `FGuid::NewGuid()` inside a builder.
+
+`DI_DEFINE_INDEX` uses `FGuid::NewDeterministicGuid(StaticClass()->GetPathName() + "." + IndexName)` for the index identifier, so renaming the index or the schema class (which changes `GetPathName()`) would change its GUID. Treat those names as stable API.
 
 !!! warning "Rebuild on schema change"
     If you change which index key a builder returns for existing rows, re-save the repository to rebuild the `ReverseLookups` table.

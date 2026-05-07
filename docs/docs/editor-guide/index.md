@@ -1,36 +1,43 @@
 # Editor Guide
 
-The `DataIndexerEd` module adds a custom editor workflow on top of the runtime asset types. This section covers how to use the editor to author and manage data.
+The `DataIndexerEd` module adds a custom editing workflow on top of the runtime asset types. Use the editor to define schemas, create repositories, and author row data — no code required.
 
 !!! note "Editor-only"
     Everything in this section requires Unreal Editor. The `DataIndexerEd` module is declared `UncookedOnly` and is not available in packaged builds.
 
 ## Workflow overview
 
+Setting up a new data table follows this sequence:
+
 ```
-1. Create Schema Blueprint
+1. Create a Blueprint struct
+        (defines the shape of a single row)
         ↓
-2. Create Repository Asset
+2. Create a Schema Blueprint
+        (DataIndexerSchema subclass — binds to the struct from step 1)
         ↓
-3. Bind Schema to Repository
+3. Create a Repository asset
+        (DataIndexerRepository)
         ↓
-4. Open Repository in custom editor
+4. Set Schema Class on the Repository
         ↓
-5. Author rows in the Data View
+5. Double-click the Repository to open the Data View
         ↓
-6. Save → ReverseLookups rebuilt automatically
+6. Press Insert to add rows — edit inline or via the Selection Details panel
+        ↓
+7. Save — reverse lookup tables rebuild automatically
 ```
 
 ## Pages in this section
 
 [**Asset Creation**](asset-creation.md)
-: How to create Schema Blueprints and Repository data assets, and how to bind them together.
+: Create the Blueprint struct and Schema Blueprint, create the Repository asset, and bind the schema. Also covers setting up parent repositories for inherited rows.
 
 [**Data View**](data-view.md)
-: The three-panel custom editor, row authoring, and column layout configuration.
+: The three-panel custom editor. Insert, edit, and delete rows; configure which columns appear; navigate between parent and child repositories.
 
 [**JSON Import & Export**](json-import-export.md)
-: Export rows to JSON for diff workflows, and import JSON back into a repository.
+: Export row data to a diff-friendly JSON format for code review, and import JSON back as a merge operation.
 
-[**Editor Settings**](editor-settings.md)
-: Project-level editor settings that control the Data View behavior.
+[**Driven Collection**](driven-collection.md)
+: `UDataIndexerDrivenCollection` — C++ base class for editor assets that manage per-key sub-assets (icons, ability classes, etc.) keyed by `FDataIndexerPrimaryKey`.

@@ -43,14 +43,14 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 
 - `IsValid()` — returns true if both `Repository` and `PrimaryKey` are non-null/non-zero.
 - `FindRowEntity()` — delegates to `Repository->FindRowEntity(PrimaryKey)`.
-- `GetRowDisplayName()` — returns the schema-driven display label.
+- `GetRowDisplayName()` — returns `TOptional<FText>` with the schema-driven display label; empty if the handle is invalid.
 - The editor renders this as a named row picker, showing display names from the schema.
 
 **When to use:** UPROPERTY on actors, data assets, or save game structs when you want to point to a specific row. Blueprint variables for row references.
 
 ## FDataIndexerRowsHandle
 
-`FDataIndexerRowsHandle` addresses a set of rows via a secondary index. It stores a repository, an index identifier, and an index key value.
+`FDataIndexerRowsHandle` addresses a set of rows via a secondary index. It stores a repository and an index identifier. The matching row set is determined at query time by passing a partially-filled row struct.
 
 ```cpp
 USTRUCT(BlueprintType)
@@ -61,25 +61,22 @@ struct DATAINDEXER_API FDataIndexerRowsHandle
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     FDataIndexerIndex Index;
-
-    UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FDataIndexerIndexKey IndexKey;
     ...
 };
 ```
 
 **Key properties:**
 
-- `IsValid()` — checks Repository, Index, and IndexKey are non-null/non-zero.
-- `ForEachPrimaryKeys(Callback)` — delegates to `Repository->ForEachPrimaryKeys(Index, IndexKey, Callback)`.
-- Use `GetRowsHandleKeys` from the Blueprint function library to get a `TArray<FDataIndexerPrimaryKey>`.
+- `IsValid()` — checks Repository and Index are non-null/non-zero.
+- `ForEachPrimaryKeys(Query, Callback)` — calls `Repository->ForEachPrimaryKeys(Index, Query, Callback)`, where `Query` is a `FConstStructView` of a partially-filled row struct.
+- Use `GetRowsHandleKeys(Handle, Query)` from the Blueprint function library to get a `TArray<FDataIndexerPrimaryKey>`. `Query` is a wildcard struct pin in Blueprint.
 
-**When to use:** When a Blueprint or asset needs to express "the set of items with Category = Weapon" without enumerating them at authoring time. The exact set is resolved at runtime from the repository's reverse lookup tables.
+**When to use:** When a Blueprint or asset needs to express "look up rows by this index" without fixing the filter value at authoring time. The filter (query struct) is supplied at call time and resolved against the repository's reverse lookup tables.
 
 ## Summary
 
-| Type | Addresses | Blueprint-friendly | Stores repository |
-|------|-----------|-------------------|-------------------|
-| `FDataIndexerPrimaryKey` | 1 row | Yes (BlueprintType) | No |
-| `FDataIndexerRowHandle` | 1 row | Yes (BlueprintType) | Yes |
-| `FDataIndexerRowsHandle` | N rows (via index) | Yes (BlueprintType) | Yes |
+| Type | Addresses | Blueprint-friendly | Stores repository | Query time |
+|------|-----------|-------------------|-------------------|-----------|
+| `FDataIndexerPrimaryKey` | 1 row | Yes (BlueprintType) | No | n/a |
+| `FDataIndexerRowHandle` | 1 row | Yes (BlueprintType) | Yes | n/a |
+| `FDataIndexerRowsHandle` | N rows (via index) | Yes (BlueprintType) | Yes | pass query struct |

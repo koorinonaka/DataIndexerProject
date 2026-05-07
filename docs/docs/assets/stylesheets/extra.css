@@ -1,63 +1,105 @@
 /* ─────────────────────────────────────────────────────────────────────────────
-   DataIndexer Docs — Notion-inspired design overrides for MkDocs Material
-   Reference: DESIGN-notion.md (in docs root, not published)
+   DataIndexer Docs — design overrides for MkDocs Material
+   Source of truth: tokens.css (loaded before this file)
    ───────────────────────────────────────────────────────────────────────────── */
 
 /* ── Color system (light) ─────────────────────────────────────────────────── */
 [data-md-color-scheme="default"] {
-  /* Notion Blue as primary */
-  --md-primary-fg-color:              #0075de;
-  --md-primary-fg-color--light:       #62aef0;
-  --md-primary-fg-color--dark:        #005bab;
-  --md-accent-fg-color:               #0075de;
-  --md-accent-fg-color--transparent:  rgba(0, 117, 222, 0.08);
+  /* Primary — DataIndexer accent blue (tokens --accent) */
+  --md-primary-fg-color:              #2e6ee0;
+  --md-primary-fg-color--light:       #6098f5;
+  --md-primary-fg-color--dark:        #224fb0;
+  --md-accent-fg-color:               #2e6ee0;
+  --md-accent-fg-color--transparent:  rgba(46, 110, 224, 0.08);
 
-  /* Warm near-black text (not pure black) */
-  --md-default-fg-color:              rgba(0, 0, 0, 0.95);
-  --md-default-fg-color--light:       #615d59;
+  /* On-primary text — dark on white header/tabs */
+  --md-primary-bg-color:              rgba(10, 9, 8, 0.92);
+  --md-primary-bg-color--light:       rgba(10, 9, 8, 0.60);
+
+  /* Warm near-black text */
+  --md-default-fg-color:              rgba(10, 9, 8, 0.96);
+  --md-default-fg-color--light:       #6b6660;
   --md-default-fg-color--lighter:     #a39e98;
-  --md-default-fg-color--lightest:    rgba(0, 0, 0, 0.08);
+  --md-default-fg-color--lightest:    rgba(15, 14, 13, 0.10);
 
-  /* Warm white backgrounds */
+  /* Warm white backgrounds (tokens --bg / --bg-alt) */
   --md-default-bg-color:              #ffffff;
-  --md-default-bg-color--light:       #f6f5f4;
-  --md-default-bg-color--lighter:     #f6f5f4;
-  --md-default-bg-color--lightest:    #f6f5f4;
+  --md-default-bg-color--light:       #f7f6f3;
+  --md-default-bg-color--lighter:     #f7f6f3;
+  --md-default-bg-color--lightest:    #f7f6f3;
 
-  /* Code blocks — warm white, not cold gray */
-  --md-code-fg-color:                 rgba(0, 0, 0, 0.9);
-  --md-code-bg-color:                 #f6f5f4;
+  /* Code — warm light background (tokens --bg-code) */
+  --md-code-fg-color:                 rgba(10, 9, 8, 0.90);
+  --md-code-bg-color:                 #edeae4;
 
-  /* Whisper border */
-  --di-border:                        1px solid rgba(0, 0, 0, 0.1);
+  /* Syntax highlight line marker color */
+  --md-code-hl-color:                 rgba(46, 110, 224, 0.10);
+  --md-code-hl-color--light:          rgba(46, 110, 224, 0.06);
 
-  /* Card shadow (4-layer Notion stack) */
+  /* Whisper border (tokens --border) */
+  --di-border:                        1px solid rgba(15, 14, 13, 0.10);
+
+  /* Card shadow (tokens --sh-card) */
   --di-shadow-card:
     rgba(0, 0, 0, 0.04) 0px 4px 18px,
-    rgba(0, 0, 0, 0.027) 0px 2px 8px,
-    rgba(0, 0, 0, 0.02) 0px 0.8px 3px,
-    rgba(0, 0, 0, 0.01) 0px 0.175px 1px;
+    rgba(0, 0, 0, 0.027) 0px 2px 7.85px,
+    rgba(0, 0, 0, 0.02) 0px 0.8px 2.93px,
+    rgba(0, 0, 0, 0.01) 0px 0.175px 1.04px;
 }
 
 /* ── Color system (dark / slate) ──────────────────────────────────────────── */
 [data-md-color-scheme="slate"] {
-  --md-primary-fg-color:              #0075de;
-  --md-primary-fg-color--light:       #62aef0;
-  --md-primary-fg-color--dark:        #005bab;
-  --md-accent-fg-color:               #62aef0;
-  --md-accent-fg-color--transparent:  rgba(98, 174, 240, 0.1);
-  --md-default-bg-color--light:       #31302e;
-  --md-code-bg-color:                 #31302e;
+  /* Primary — dark accent, softened saturation (tokens dark --accent) */
+  --md-primary-fg-color:              #7aa8ef;
+  --md-primary-fg-color--light:       #96bbf5;
+  --md-primary-fg-color--dark:        #4d7dc7;
+  --md-accent-fg-color:               #7aa8ef;
+  --md-accent-fg-color--transparent:  rgba(122, 168, 239, 0.10);
 
-  /* Whisper border (dark) */
-  --di-border:                        1px solid rgba(255, 255, 255, 0.1);
+  /* On-primary text — warm light on dark header/tabs */
+  --md-primary-bg-color:              rgba(245, 240, 232, 0.92);
+  --md-primary-bg-color--light:       rgba(245, 240, 232, 0.60);
 
-  /* Card shadow (dark) */
+  /* Warm dark text (tokens dark text tiers) */
+  --md-default-fg-color:              rgba(245, 240, 232, 0.92);
+  --md-default-fg-color--light:       #9a948a;
+  --md-default-fg-color--lighter:     #6a655d;
+  --md-default-fg-color--lightest:    rgba(255, 248, 235, 0.10);
+
+  /* Warm dark backgrounds (tokens dark --bg / --bg-alt) */
+  --md-default-bg-color:              #1a1917;
+  --md-default-bg-color--light:       #1f1d1a;
+  --md-default-bg-color--lighter:     #1f1d1a;
+  --md-default-bg-color--lightest:    #232120;
+
+  /* Code — even darker fenced blocks in dark mode (tokens dark --bg-pre) */
+  --md-code-fg-color:                 #ebe5d8;
+  --md-code-bg-color:                 #0e0d0c;
+
+  /* Syntax highlighting — dark mode (tokens dark hl-* palette) */
+  --md-code-hl-keyword-color:         #c9b3ff;
+  --md-code-hl-string-color:          #d8c693;
+  --md-code-hl-number-color:          #eb9b80;
+  --md-code-hl-function-color:        #ffd089;
+  --md-code-hl-constant-color:        #84c9e4;
+  --md-code-hl-special-color:         #b4d49b;
+  --md-code-hl-comment-color:         #6e6a60;
+  --md-code-hl-variable-color:        #ebe5d8;
+  --md-code-hl-name-color:            #ebe5d8;
+  --md-code-hl-operator-color:        #6a655d;
+  --md-code-hl-punctuation-color:     #6a655d;
+  --md-code-hl-generic-color:         #6e6a60;
+  --md-code-hl-color:                 #7aa8ef;
+  --md-code-hl-color--light:          rgba(122, 168, 239, 0.12);
+
+  /* Whisper border (tokens dark --border) */
+  --di-border:                        1px solid rgba(255, 248, 235, 0.10);
+
+  /* Card shadow — dark (tokens dark --sh-card) */
   --di-shadow-card:
-    rgba(0, 0, 0, 0.2) 0px 4px 18px,
-    rgba(0, 0, 0, 0.14) 0px 2px 8px,
-    rgba(0, 0, 0, 0.1) 0px 0.8px 3px,
-    rgba(0, 0, 0, 0.06) 0px 0.175px 1px;
+    rgba(0, 0, 0, 0.30) 0px 4px 18px,
+    rgba(0, 0, 0, 0.20) 0px 2px 7.85px,
+    rgba(0, 0, 0, 0.12) 0px 0.8px 2.93px;
 }
 
 /* ── Header — whisper shadow, not heavy ───────────────────────────────────── */
@@ -67,25 +109,33 @@
 
 [data-md-color-scheme="default"] .md-header {
   background-color: #ffffff;
-  /* Material uses --md-primary-bg-color for header text; override for white bg */
-  --md-primary-bg-color:       rgba(0, 0, 0, 0.87);
-  --md-primary-bg-color--light: rgba(0, 0, 0, 0.54);
+  --md-primary-bg-color:        rgba(10, 9, 8, 0.92);
+  --md-primary-bg-color--light: rgba(10, 9, 8, 0.54);
 }
 
 [data-md-color-scheme="slate"] .md-header {
   background-color: var(--md-default-bg-color);
 }
 
-/* ── Sidebar — warm white tint ────────────────────────────────────────────── */
+/* ── Tabs — match header background so no blue band appears ──────────────── */
+[data-md-color-scheme="default"] .md-tabs {
+  background-color: #ffffff;
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: var(--md-default-bg-color);
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
 [data-md-color-scheme="default"] .md-sidebar {
-  background-color: #f6f5f4;
+  background-color: #f7f6f3;
 }
 
 [data-md-color-scheme="slate"] .md-sidebar {
   background-color: var(--md-default-bg-color);
 }
 
-/* ── Navigation typography — Inter 15px weight 500-600 ───────────────────── */
+/* ── Navigation typography ────────────────────────────────────────────────── */
 .md-nav__link {
   font-size: 0.875rem;
   font-weight: 500;
@@ -93,10 +143,14 @@
 
 .md-nav__link--active {
   font-weight: 600;
-  color: #0075de;
+  color: #2e6ee0;
 }
 
-/* ── Content headings — Notion letter-spacing compression ─────────────────── */
+[data-md-color-scheme="slate"] .md-nav__link--active {
+  color: #7aa8ef;
+}
+
+/* ── Content headings ─────────────────────────────────────────────────────── */
 .md-typeset h1 {
   letter-spacing: -1.0px;
   font-weight: 700;
@@ -120,18 +174,86 @@
   line-height: 1.65;
 }
 
-/* ── Code blocks — warm background, 8px radius ───────────────────────────── */
-.md-typeset .highlight {
-  border-radius: 8px;
-  border: var(--di-border);
-}
+/* ── Code blocks ──────────────────────────────────────────────────────────── */
 
-.md-typeset code {
+/* Inline code */
+.md-typeset :not(pre) > code {
   border-radius: 4px;
   background-color: var(--md-code-bg-color);
   color: var(--md-code-fg-color);
   font-size: 0.85em;
   padding: 0.1em 0.35em;
+}
+
+/* Dark mode inline code */
+[data-md-color-scheme="slate"] .md-typeset :not(pre) > code {
+  background-color: #232120;
+  color: #e6deca;
+  border: 1px solid rgba(255, 248, 235, 0.05);
+}
+
+/* Fenced block outer container */
+.md-typeset .highlight {
+  border-radius: 8px;
+  border: var(--di-border);
+  overflow: hidden;
+  margin: 1em 0;
+}
+
+/* Back-to-back code blocks get a little extra gap */
+.md-typeset .highlight + .highlight {
+  margin-top: 0.75em;
+}
+
+/* When filename is present: outer container cedes rounding to children */
+.md-typeset .highlight:has(.filename) {
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+/* Filename label — directly owns top rounded corners */
+.md-typeset .highlight .filename {
+  display: block;
+  background-color: #e3dfd8;
+  color: rgba(10, 9, 8, 0.72);
+  font-family: var(--md-code-font-family);
+  font-size: 0.75em;
+  font-weight: 500;
+  padding: 0.4em 1.2em;
+  letter-spacing: 0.01em;
+  border-radius: 8px 8px 0 0;
+  border: var(--di-border);
+  border-bottom: 1px solid rgba(15, 14, 13, 0.08);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .highlight .filename {
+  background-color: #191816;
+  color: rgba(245, 240, 232, 0.62);
+  border-bottom: 1px solid rgba(255, 248, 235, 0.06);
+}
+
+/* Code area — directly owns bottom rounded corners when filename present */
+.md-typeset .highlight:has(.filename) pre {
+  border: var(--di-border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Fenced block pre — carries background and padding */
+.md-typeset .highlight pre {
+  background: var(--md-code-bg-color);
+  padding: 1em 1.2em;
+  margin: 0;
+}
+
+/* Code inside fenced block — transparent, inherit color from highlight vars */
+.md-typeset pre > code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+  font-size: 0.85em;
 }
 
 /* ── Tables — whisper borders ─────────────────────────────────────────────── */
@@ -153,11 +275,12 @@
   border-color: var(--md-default-fg-color--lightest);
 }
 
-/* ── Admonitions — 8px radius, whisper border ────────────────────────────── */
+/* ── Admonitions — structure ──────────────────────────────────────────────── */
 .md-typeset .admonition {
   border-radius: 8px;
   border-width: 1px;
   box-shadow: none;
+  overflow: hidden;
 }
 
 .md-typeset .admonition-title {
@@ -167,7 +290,146 @@
   letter-spacing: 0.025em;
 }
 
-/* ── Cards grid — Notion card style ──────────────────────────────────────── */
+/* ── Admonitions — note (tokens --note: #5a4ea3) ──────────────────────────── */
+.md-typeset .admonition.note,
+.md-typeset details.note {
+  border-color: #5a4ea3;
+}
+.md-typeset .admonition.note:focus-within,
+.md-typeset details.note:focus-within {
+  box-shadow: 0 0 0 0.2rem rgba(90, 78, 163, 0.15);
+}
+.md-typeset .note > .admonition-title,
+.md-typeset .note > summary {
+  background-color: #f0eef9;
+}
+.md-typeset .note > .admonition-title::before,
+.md-typeset .note > summary::before {
+  background-color: #5a4ea3;
+}
+
+/* ── Admonitions — tip / success (tokens --tip: #1f7a52) ─────────────────── */
+.md-typeset .admonition.tip,
+.md-typeset details.tip,
+.md-typeset .admonition.success,
+.md-typeset details.success {
+  border-color: #1f7a52;
+}
+.md-typeset .admonition.tip:focus-within,
+.md-typeset details.tip:focus-within,
+.md-typeset .admonition.success:focus-within,
+.md-typeset details.success:focus-within {
+  box-shadow: 0 0 0 0.2rem rgba(31, 122, 82, 0.15);
+}
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary,
+.md-typeset .success > .admonition-title,
+.md-typeset .success > summary {
+  background-color: #ecf6f0;
+}
+.md-typeset .tip > .admonition-title::before,
+.md-typeset .tip > summary::before,
+.md-typeset .success > .admonition-title::before,
+.md-typeset .success > summary::before {
+  background-color: #1f7a52;
+}
+
+/* ── Admonitions — warning (tokens --warn: #b6571a) ──────────────────────── */
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+  border-color: #b6571a;
+}
+.md-typeset .admonition.warning:focus-within,
+.md-typeset details.warning:focus-within {
+  box-shadow: 0 0 0 0.2rem rgba(182, 87, 26, 0.15);
+}
+.md-typeset .warning > .admonition-title,
+.md-typeset .warning > summary {
+  background-color: #fbf0e6;
+}
+.md-typeset .warning > .admonition-title::before,
+.md-typeset .warning > summary::before {
+  background-color: #b6571a;
+}
+
+/* ── Admonitions — info (accent blue) ────────────────────────────────────── */
+.md-typeset .admonition.info,
+.md-typeset details.info {
+  border-color: #2e6ee0;
+}
+.md-typeset .admonition.info:focus-within,
+.md-typeset details.info:focus-within {
+  box-shadow: 0 0 0 0.2rem rgba(46, 110, 224, 0.15);
+}
+.md-typeset .info > .admonition-title,
+.md-typeset .info > summary {
+  background-color: #ecf2ff;
+}
+.md-typeset .info > .admonition-title::before,
+.md-typeset .info > summary::before {
+  background-color: #2e6ee0;
+}
+
+/* ── Admonitions — dark mode overrides ───────────────────────────────────── */
+[data-md-color-scheme="slate"] .md-typeset .admonition.note,
+[data-md-color-scheme="slate"] .md-typeset details.note {
+  border-color: #b69ce0;
+}
+[data-md-color-scheme="slate"] .md-typeset .note > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .note > summary {
+  background-color: rgba(182, 156, 224, 0.10);
+}
+[data-md-color-scheme="slate"] .md-typeset .note > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .note > summary::before {
+  background-color: #b69ce0;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.tip,
+[data-md-color-scheme="slate"] .md-typeset details.tip,
+[data-md-color-scheme="slate"] .md-typeset .admonition.success,
+[data-md-color-scheme="slate"] .md-typeset details.success {
+  border-color: #6cc89a;
+}
+[data-md-color-scheme="slate"] .md-typeset .tip > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .tip > summary,
+[data-md-color-scheme="slate"] .md-typeset .success > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .success > summary {
+  background-color: rgba(108, 200, 154, 0.10);
+}
+[data-md-color-scheme="slate"] .md-typeset .tip > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .tip > summary::before,
+[data-md-color-scheme="slate"] .md-typeset .success > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .success > summary::before {
+  background-color: #6cc89a;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.warning,
+[data-md-color-scheme="slate"] .md-typeset details.warning {
+  border-color: #e89461;
+}
+[data-md-color-scheme="slate"] .md-typeset .warning > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .warning > summary {
+  background-color: rgba(232, 148, 97, 0.10);
+}
+[data-md-color-scheme="slate"] .md-typeset .warning > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .warning > summary::before {
+  background-color: #e89461;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.info,
+[data-md-color-scheme="slate"] .md-typeset details.info {
+  border-color: #7aa8ef;
+}
+[data-md-color-scheme="slate"] .md-typeset .info > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .info > summary {
+  background-color: rgba(122, 168, 239, 0.10);
+}
+[data-md-color-scheme="slate"] .md-typeset .info > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .info > summary::before {
+  background-color: #7aa8ef;
+}
+
+/* ── Cards grid ───────────────────────────────────────────────────────────── */
 .md-typeset .grid.cards > ul > li,
 .md-typeset .grid.cards > ol > li {
   border: var(--di-border);
@@ -184,14 +446,22 @@
     rgba(0, 0, 0, 0.02) 0px 1px 3px;
 }
 
-/* ── Links — Notion Blue ──────────────────────────────────────────────────── */
+/* ── Links ────────────────────────────────────────────────────────────────── */
 .md-typeset a {
-  color: #0075de;
+  color: #2e6ee0;
 }
 
 .md-typeset a:hover {
-  color: #005bab;
+  color: #224fb0;
   text-decoration: underline;
+}
+
+[data-md-color-scheme="slate"] .md-typeset a {
+  color: #7aa8ef;
+}
+
+[data-md-color-scheme="slate"] .md-typeset a:hover {
+  color: #96bbf5;
 }
 
 /* ── Tags / pill badges ───────────────────────────────────────────────────── */
@@ -200,12 +470,12 @@
   font-size: 0.72rem;
   font-weight: 600;
   letter-spacing: 0.08em;
-  background-color: #f2f9ff;
-  color: #097fe8;
+  background-color: #ecf2ff;
+  color: #1e4fb5;
   padding: 3px 8px;
 }
 
-/* ── TOC — warm muted text ────────────────────────────────────────────────── */
+/* ── TOC ──────────────────────────────────────────────────────────────────── */
 .md-nav--secondary .md-nav__link {
   color: var(--md-default-fg-color--light);
   font-size: 0.8rem;
@@ -213,21 +483,26 @@
 
 .md-nav--secondary .md-nav__link:hover,
 .md-nav--secondary .md-nav__link--active {
-  color: #0075de;
+  color: #2e6ee0;
 }
 
-/* ── Footer — whisper separator ──────────────────────────────────────────── */
+[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__link:hover,
+[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__link--active {
+  color: #7aa8ef;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
 .md-footer {
-  border-top: var(--di-border);
+  background-color: #26201a;
+  --md-footer-fg-color:          rgba(245, 240, 232, 0.75);
+  --md-footer-fg-color--light:   rgba(245, 240, 232, 0.55);
+  --md-footer-fg-color--lighter: rgba(245, 240, 232, 0.35);
 }
-
-[data-md-color-scheme="default"] .md-footer {
-  background-color: #f6f5f4;
+.md-footer-meta {
+  background-color: #1e1812;
 }
-
-[data-md-color-scheme="slate"] .md-footer {
-  background-color: var(--md-default-bg-color);
-}
+[data-md-color-scheme="slate"] .md-footer { background-color: #141210; }
+[data-md-color-scheme="slate"] .md-footer-meta { background-color: #0f0e0c; }
 
 /* ── Search ───────────────────────────────────────────────────────────────── */
 .md-search__form {
@@ -237,6 +512,10 @@
 }
 
 .md-search__form:focus-within {
-  border-color: #0075de;
+  border-color: #2e6ee0;
   background-color: var(--md-default-bg-color);
+}
+
+[data-md-color-scheme="slate"] .md-search__form:focus-within {
+  border-color: #7aa8ef;
 }
