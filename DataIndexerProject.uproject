@@ -1,6 +1,6 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "5.7",
+	"EngineAssociation": "{CD731A8F-4DD3-8DEB-01ED-04B2E203DBE2}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
@@ -13,10 +13,6 @@
 	"Plugins": [
 		{
 			"Name": "DataIndexer",
-			"Enabled": true
-		},
-		{
-			"Name": "StructUtils",
 			"Enabled": true
 		}
 	]
