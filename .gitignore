@@ -5,7 +5,7 @@
 .claude
 .github
 .idea
-*.sln
+*.sln*
 *.suo
 *.opensdf
 *.sdf
