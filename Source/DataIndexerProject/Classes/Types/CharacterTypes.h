@@ -29,10 +29,11 @@ struct DATAINDEXERPROJECT_API FCharacterRow
 	UPROPERTY( EditAnywhere, BlueprintReadOnly )
 	int32 MaxHP = 100;
 
-	// Relation to ItemRepository — must point to a Weapon-type item.
-	// Enables reverse lookup: "which characters use this weapon?" via ByDefaultWeaponIndex.
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
-	FDataIndexerRowHandle DefaultWeapon;
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( SourceRepository = "ItemRepository" ) )
+	FDataIndexerPrimaryKey DefaultWeapon;
+
+	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( Schema = "/Script/DataIndexerProject.ItemSchema" ) )
+	FDataIndexerRowHandle DefaultWeapon2;
 };
 
 using FCharacterInterface = DataIndexer::TNativeSchemaInterface<FCharacterRow>;

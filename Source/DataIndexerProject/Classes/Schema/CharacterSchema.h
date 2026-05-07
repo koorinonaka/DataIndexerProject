@@ -19,18 +19,26 @@ class DATAINDEXERPROJECT_API UCharacterSchema : public UDataIndexerSchema
 	GENERATED_BODY()
 
 public:
+	UCharacterSchema();
+
 	DI_DEFINE_INDEX( ByClassIndex );
 	DI_DEFINE_INDEX( ByDefaultWeaponIndex );
 
 protected:
-	virtual void PostInitProperties() override;
+#if WITH_EDITOR
+	virtual void InitializeExpandedStructEntries() override;
+#endif
 
 	virtual FText GetRowDisplayName_Implementation(
 		const FDataIndexerPrimaryKey& PrimaryKey, const FInstancedStruct& RowEntity ) const override;
 
 	UFUNCTION()
-	static FDataIndexerIndexValue BuildClassIndex( const FInstancedStruct& RowEntity, FText& OutDisplayName );
+	static FGuid BuildClassIndex( const FInstancedStruct& RowEntity );
 
 	UFUNCTION()
-	static FDataIndexerIndexValue BuildDefaultWeaponIndex( const FInstancedStruct& RowEntity, FText& OutDisplayName );
+	static FGuid BuildDefaultWeaponIndex( const FInstancedStruct& RowEntity );
+
+protected:
+	UPROPERTY( EditDefaultsOnly, Category = DataIndexer, meta = ( Schema = "/Script/DataIndexerProject.ItemSchema" ) )
+	TObjectPtr<UDataIndexerRepository> ItemRepository;
 };

@@ -11,7 +11,6 @@ public class DataIndexerProject : ModuleRules
 			"CoreUObject",
 			"Engine",
 			"DataIndexer",
-			"StructUtils"
 		]);
 	}
 }

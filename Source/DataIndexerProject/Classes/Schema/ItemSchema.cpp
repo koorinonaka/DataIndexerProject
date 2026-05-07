@@ -2,19 +2,30 @@
 
 #include "Types/ItemTypes.h"
 
-void UItemSchema::PostInitProperties()
+UItemSchema::UItemSchema()
 {
-	Super::PostInitProperties();
+	RowStruct = FItemRow::StaticStruct();
 
-	if ( HasAnyFlags( RF_ClassDefaultObject ) )
+	RegisterFunction_BuildIndex( ByTypeIndex(), GET_FUNCTION_NAME_CHECKED( ThisClass, BuildTypeIndex ) );
+	RegisterFunction_BuildIndex( ByRarityIndex(), GET_FUNCTION_NAME_CHECKED( ThisClass, BuildRarityIndex ) );
+	RegisterFunction_BuildIndex( ByTypeAndRarityIndex(), GET_FUNCTION_NAME_CHECKED( ThisClass, BuildTypeAndRarityIndex ) );
+}
+
+#if WITH_EDITOR
+
+void UItemSchema::InitializeExpandedStructEntries()
+{
+	Super::InitializeExpandedStructEntries();
+
+	if ( FDataIndexerExpandedStructEntry* RowStructEntry = ExpandedStructEntries.Find( RowStruct ) )
 	{
-		RowStruct = FItemRow::StaticStruct();
-
-		RegisterFunction_BuildIndexKey( ByTypeIndex(), GET_FUNCTION_NAME_CHECKED( ThisClass, BuildTypeIndex ) );
-		RegisterFunction_BuildIndexKey( ByRarityIndex(), GET_FUNCTION_NAME_CHECKED( ThisClass, BuildRarityIndex ) );
-		RegisterFunction_BuildIndexKey( ByTypeAndRarityIndex(), GET_FUNCTION_NAME_CHECKED( ThisClass, BuildTypeAndRarityIndex ) );
+		*RowStructEntry -= {
+			GET_MEMBER_NAME_CHECKED( FItemRow, DisplayName ),
+		};
 	}
 }
+
+#endif
 
 FText UItemSchema::GetRowDisplayName_Implementation(
 	const FDataIndexerPrimaryKey& PrimaryKey, const FInstancedStruct& RowEntity ) const
@@ -27,35 +38,31 @@ FText UItemSchema::GetRowDisplayName_Implementation(
 	return Super::GetRowDisplayName_Implementation( PrimaryKey, RowEntity );
 }
 
-FDataIndexerIndexValue UItemSchema::BuildTypeIndex( const FInstancedStruct& RowEntity, FText& OutDisplayName )
+FGuid UItemSchema::BuildTypeIndex( const FInstancedStruct& RowEntity )
 {
 	if ( const FItemRow* Row = RowEntity.GetPtr<const FItemRow>() )
 	{
-		OutDisplayName = UEnum::GetDisplayValueAsText( Row->Type );
-		return FDataIndexerIndexValue( FGuid( static_cast<uint32>( Row->Type ), 0, 0, 0 ) );
+		return FGuid( static_cast<uint32>( Row->Type ), 0, 0, 0 );
 	}
 
 	return {};
 }
 
-FDataIndexerIndexValue UItemSchema::BuildRarityIndex( const FInstancedStruct& RowEntity, FText& OutDisplayName )
+FGuid UItemSchema::BuildRarityIndex( const FInstancedStruct& RowEntity )
 {
 	if ( const FItemRow* Row = RowEntity.GetPtr<const FItemRow>() )
 	{
-		OutDisplayName = UEnum::GetDisplayValueAsText( Row->Rarity );
-		return FDataIndexerIndexValue( FGuid( static_cast<uint32>( Row->Rarity ), 0, 0, 0 ) );
+		return FGuid( static_cast<uint32>( Row->Rarity ), 0, 0, 0 );
 	}
 
 	return {};
 }
 
-FDataIndexerIndexValue UItemSchema::BuildTypeAndRarityIndex( const FInstancedStruct& RowEntity, FText& OutDisplayName )
+FGuid UItemSchema::BuildTypeAndRarityIndex( const FInstancedStruct& RowEntity )
 {
 	if ( const FItemRow* Row = RowEntity.GetPtr<const FItemRow>() )
 	{
-		OutDisplayName = FText::Format(
-			INVTEXT( "{0} / {1}" ), UEnum::GetDisplayValueAsText( Row->Type ), UEnum::GetDisplayValueAsText( Row->Rarity ) );
-		return FDataIndexerIndexValue( FGuid( static_cast<uint32>( Row->Type ), static_cast<uint32>( Row->Rarity ), 0, 0 ) );
+		return FGuid( static_cast<uint32>( Row->Type ), static_cast<uint32>( Row->Rarity ), 0, 0 );
 	}
 
 	return {};
