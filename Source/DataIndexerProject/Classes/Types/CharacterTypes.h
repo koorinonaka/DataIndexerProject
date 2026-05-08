@@ -20,20 +20,17 @@ struct DATAINDEXERPROJECT_API FCharacterRow
 {
 	GENERATED_BODY()
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FText DisplayName;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	ECharacterClass Class = ECharacterClass::Warrior;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 MaxHP = 100;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( SourceRepository = "ItemRepository" ) )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, meta = ( SourceRepository = "ItemRepository" ) )
 	FDataIndexerPrimaryKey DefaultWeapon;
-
-	UPROPERTY( EditAnywhere, BlueprintReadOnly, meta = ( Schema = "/Script/DataIndexerProject.ItemSchema" ) )
-	FDataIndexerRowHandle DefaultWeapon2;
 };
 
 using FCharacterInterface = DataIndexer::TNativeSchemaInterface<FCharacterRow>;

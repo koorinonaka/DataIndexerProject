@@ -6,10 +6,11 @@
 class UDataIndexerRepository;
 
 /**
- * Reference sample for all TNativeSchemaInterface<FItemRow> methods.
- * Methods follow the declaration order of TNativeSchemaInterface.
+ * Mock for all TNativeSchemaInterface<FItemRow> methods.
+ * Used as test fixture to verify FItemInterface behaviour end-to-end.
+ * Mirrors the method order of TNativeSchemaInterface.
  */
-struct FItemInterfaceSample
+struct FItemInterfaceMock
 {
 	// ── GetDisplayName ─────────────────────────────────────────────────────────
 

@@ -1,0 +1,52 @@
+[
+  {
+    "PrimaryKey": "00000001-0000-0000-0000-000000000001",
+    "RowEntity": {
+      "DisplayName": "Iron Sword",
+      "Type": 0,
+      "Rarity": 0,
+      "BaseValue": 100
+    },
+    "EditorFlags": 0
+  },
+  {
+    "PrimaryKey": "00000001-0000-0000-0000-000000000002",
+    "RowEntity": {
+      "DisplayName": "Steel Sword",
+      "Type": 0,
+      "Rarity": 0,
+      "BaseValue": 150
+    },
+    "EditorFlags": 0
+  },
+  {
+    "PrimaryKey": "00000001-0000-0000-0000-000000000003",
+    "RowEntity": {
+      "DisplayName": "Iron Shield",
+      "Type": 1,
+      "Rarity": 1,
+      "BaseValue": 200
+    },
+    "EditorFlags": 0
+  },
+  {
+    "PrimaryKey": "00000001-0000-0000-0000-000000000004",
+    "RowEntity": {
+      "DisplayName": "Silver Ring",
+      "Type": 2,
+      "Rarity": 2,
+      "BaseValue": 300
+    },
+    "EditorFlags": 0
+  },
+  {
+    "PrimaryKey": "00000001-0000-0000-0000-000000000005",
+    "RowEntity": {
+      "DisplayName": "Battle Axe",
+      "Type": 0,
+      "Rarity": 3,
+      "BaseValue": 500
+    },
+    "EditorFlags": 0
+  }
+]

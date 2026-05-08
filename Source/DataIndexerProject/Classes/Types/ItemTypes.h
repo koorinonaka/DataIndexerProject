@@ -28,16 +28,16 @@ struct DATAINDEXERPROJECT_API FItemRow
 {
 	GENERATED_BODY()
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FText DisplayName;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	EItemType Type = EItemType::Weapon;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	EItemRarity Rarity = EItemRarity::Common;
 
-	UPROPERTY( EditAnywhere, BlueprintReadOnly )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 BaseValue = 0;
 };
 

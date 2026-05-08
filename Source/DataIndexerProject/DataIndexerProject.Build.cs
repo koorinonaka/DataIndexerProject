@@ -12,5 +12,13 @@ public class DataIndexerProject : ModuleRules
 			"Engine",
 			"DataIndexer",
 		]);
+
+		if (Target.bBuildEditor)
+		{
+			PrivateDependencyModuleNames.AddRange([
+				"Json",
+				"JsonUtilities",
+			]);
+		}
 	}
 }
