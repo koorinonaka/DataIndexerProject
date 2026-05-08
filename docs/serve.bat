@@ -7,5 +7,5 @@ if not exist "%MKDOCS_EXE%" (
 	pause
 	exit /b 1
 )
-"%MKDOCS_EXE%" serve --livereload --watch docs
+"%MKDOCS_EXE%" serve --livereload --watch docs --watch overrides
 pause

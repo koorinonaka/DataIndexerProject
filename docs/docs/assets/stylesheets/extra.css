@@ -59,6 +59,24 @@
     rgba(0, 0, 0, 0.027) 0px 2px 7.85px,
     rgba(0, 0, 0, 0.02) 0px 0.8px 2.93px,
     rgba(0, 0, 0, 0.01) 0px 0.175px 1.04px;
+
+  /* Design tokens — mirrors tokens.css :root under MkDocs scheme selector so
+     home.html overrides can use --accent, --text-* etc. without [data-theme]. */
+  --bg:               #ffffff;
+  --bg-alt:           #f7f6f3;
+  --bg-sunken:        #f1efeb;
+  --text:             rgba(15, 14, 13, 0.92);
+  --text-strong:      rgba(10, 9, 8, 0.96);
+  --text-muted:       #6b6660;
+  --text-faint:       #a39e98;
+  --border:           rgba(15, 14, 13, 0.10);
+  --border-strong:    rgba(15, 14, 13, 0.16);
+  --border-faint:     rgba(15, 14, 13, 0.06);
+  --accent:           #2e6ee0;
+  --accent-hover:     #224fb0;
+  --accent-soft:      #ecf2ff;
+  --accent-soft-text: #1e4fb5;
+  --r-1: 3px;  --r-2: 5px;  --r-3: 8px;  --r-4: 12px;  --r-pill: 9999px;
 }
 
 /* ── Color system (dark / slate) ──────────────────────────────────────────── */
@@ -114,6 +132,22 @@
     rgba(0, 0, 0, 0.30) 0px 4px 18px,
     rgba(0, 0, 0, 0.20) 0px 2px 7.85px,
     rgba(0, 0, 0, 0.12) 0px 0.8px 2.93px;
+
+  /* Design tokens dark — mirrors tokens.css [data-theme="dark"] */
+  --bg:               #1a1917;
+  --bg-alt:           #1f1d1a;
+  --bg-sunken:        #161513;
+  --text:             rgba(245, 240, 232, 0.92);
+  --text-strong:      rgba(245, 240, 232, 0.96);
+  --text-muted:       #9a948a;
+  --text-faint:       #6a655d;
+  --border:           rgba(255, 248, 235, 0.10);
+  --border-strong:    rgba(255, 248, 235, 0.18);
+  --border-faint:     rgba(255, 248, 235, 0.05);
+  --accent:           #7aa8ef;
+  --accent-hover:     #96bbf5;
+  --accent-soft:      rgba(122, 168, 239, 0.14);
+  --accent-soft-text: #b0ccf8;
 }
 
 /* ── Header — whisper shadow, not heavy ───────────────────────────────────── */
@@ -555,4 +589,139 @@
   font-size: 12px; line-height: 1.5;
   color: var(--md-default-fg-color--light);
   margin: 8px 0 0; text-align: center;
+}
+
+/* ── Home page — shared card component ───────────────────────────────────── */
+.ov-card {
+  display: block;
+  border: 1px solid var(--border, rgba(15,14,13,0.12));
+  border-radius: 8px; padding: 20px 24px;
+  text-decoration: none !important; color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ov-card:hover {
+  background: rgba(15,14,13,0.03);
+  border-color: rgba(15,14,13,0.22);
+}
+[data-md-color-scheme="slate"] .ov-card:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.20);
+}
+.ov-card--getstarted { padding: 24px 28px; }
+.ov-card-header {
+  display: flex; align-items: baseline;
+  justify-content: space-between; gap: 8px;
+  margin-bottom: 8px;
+}
+.ov-card strong {
+  display: block; font-size: 15px; font-weight: 700;
+  color: var(--text-strong, rgba(10,9,8,0.96)); margin-bottom: 6px;
+}
+.ov-card-header strong { margin-bottom: 0; }
+.ov-card p {
+  font-size: 13px; line-height: 1.6;
+  color: var(--text-muted, #6b6660); margin: 0 0 10px;
+}
+.ov-card-type {
+  font-size: 11px; color: var(--text-faint, #a39e98);
+  font-family: var(--md-code-font, ui-monospace, monospace);
+  background: transparent !important; border: none !important;
+  padding: 0 !important; white-space: nowrap; flex-shrink: 0;
+}
+.ov-card-link {
+  font-size: 12px; font-weight: 600; color: var(--accent, #2e6ee0);
+  display: inline-flex; align-items: center; gap: 4px;
+}
+
+/* ── Home page — section kicker (shared label above headings) ─────────────── */
+.ov-section-heading {
+  font-size: 11px; font-weight: 700;
+  color: var(--text-muted, #6b6660);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+/* ── Home page — feature screenshot placeholder ───────────────────────────── */
+.ov-feature-placeholder {
+  width: 100%; aspect-ratio: 16/9; border-radius: 10px;
+  border: 1px dashed var(--border-strong, rgba(15,14,13,0.16));
+  background: #f7f6f3;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-faint, #a39e98);
+  font-size: 11px; font-family: var(--md-code-font, ui-monospace, monospace);
+}
+[data-md-color-scheme="slate"] .ov-feature-placeholder {
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DataIndexer Docs — Installation / Quick Start 用追加スタイル
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── md-button: ヒーロー直下の CTA ボタンを少し強調 ───────────────────────── */
+.md-typeset .md-button {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  border-radius: 7px;
+  border-width: 1px;
+}
+
+.md-typeset .md-button + .md-button {
+  margin-left: 8px;
+}
+
+/* ── ステップ概要表 — 1列目を中央寄せ・モノスペース風 ─────────────────────── */
+.md-typeset table:not([class]) td:first-child {
+  font-feature-settings: "tnum";
+}
+
+/* ── タブヘッダのフォント補正 ────────────────────────────────────────────── */
+.md-typeset .tabbed-labels > label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: -0.005em;
+}
+
+/* ── タイトル付きコードブロックの見栄え調整 ──────────────────────────────── */
+.md-typeset .highlight > .filename,
+.md-typeset .highlighttable .filename {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background: var(--md-default-bg-color--light);
+  border-bottom: var(--di-border);
+  padding: 6px 14px;
+  color: var(--md-default-fg-color--light);
+}
+
+/* ── タスクリスト（動作確認チェックリスト） — チェック済みの色を統一 ─────── */
+.md-typeset .task-list-item input[type="checkbox"]:checked + .task-list-indicator::before {
+  background-color: #0075de;
+}
+
+/* ── details (トラブルシューティング) のサマリ書体 ───────────────────────── */
+.md-typeset details > summary {
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
+/* ── grid cards 内のアイコンサイズ ────────────────────────────────────────── */
+.md-typeset .grid.cards .lg.middle {
+  font-size: 1.4rem;
+  vertical-align: middle;
+}
+
+/* ── 区切り線 — Notion 風の薄いライン ────────────────────────────────────── */
+.md-typeset hr {
+  border: 0;
+  border-top: var(--di-border);
+  margin: 2.4em 0;
+}
+
+/* ── 見出し直後の admonition 上部余白を詰める ────────────────────────────── */
+.md-typeset h2 + .admonition,
+.md-typeset h2 + details {
+  margin-top: 0.8em;
 }

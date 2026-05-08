@@ -5,6 +5,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
 <style>
 /* ── Full-width content area ──────────────────────────────────────────────── */
+.md-main { padding-top: 0 !important; }
 .md-main__inner { margin: 0 !important; max-width: 100% !important; }
 .md-content     { max-width: 100% !important; }
 .md-content__inner { padding: 0 !important; margin: 0 !important; max-width: 100% !important; }
@@ -45,6 +46,42 @@
   font-size: 18px; line-height: 1.55;
   color: var(--text, rgba(15,14,13,0.92));
   max-width: 560px;
+  margin: 0 0 32px !important;
+}
+.ov-hero-actions {
+  display: flex; gap: 10px; align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+.ov-btn-primary {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 13px 24px;
+  background: var(--accent, #2e6ee0);
+  color: #fff !important;
+  font-size: 15px; font-weight: 600; border-radius: 7px;
+  text-decoration: none !important; border-bottom: none !important;
+  transition: opacity 0.15s;
+}
+.ov-btn-primary:hover { opacity: 0.88; }
+.ov-btn-secondary {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 12px 22px;
+  border: 1px solid var(--border-strong, rgba(15,14,13,0.16)) !important;
+  color: var(--text-strong, rgba(10,9,8,0.96)) !important;
+  font-size: 15px; font-weight: 600; border-radius: 7px;
+  text-decoration: none !important;
+  background: transparent;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ov-btn-secondary:hover { background: rgba(15,14,13,0.04); }
+[data-md-color-scheme="slate"] .ov-btn-secondary {
+  border-color: rgba(255,255,255,0.18);
+  color: var(--text-strong, rgba(245,240,232,0.96)) !important;
+}
+[data-md-color-scheme="slate"] .ov-btn-secondary:hover { background: rgba(255,255,255,0.06); }
+.ov-hero-meta {
+  font-size: 12px;
+  color: var(--text-faint, #a39e98);
   margin: 0 0 40px !important;
 }
 .ov-screenshot-wrap {
@@ -65,23 +102,61 @@
 }
 
 /* ── Features ─────────────────────────────────────────────────────────────── */
-.ov-features { padding: 140px 88px 80px; }
-.ov-features-inner {
-  max-width: 1100px; margin: 0 auto;
-  display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: start;
+.ov-features { padding: 140px 88px 56px; }
+.ov-features-inner { max-width: 1100px; margin: 0 auto; }
+.ov-features-header { margin-bottom: 48px; max-width: 640px; }
+.ov-features-kicker {
+  font-size: 11px; font-weight: 700;
+  color: var(--accent, #2e6ee0);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin: 0 0 12px;
 }
+.ov-features-header h2 {
+  font-size: 36px; font-weight: 800; line-height: 1.15;
+  letter-spacing: -0.025em; margin: 0 !important;
+  color: var(--text-strong, rgba(10,9,8,0.96));
+  text-wrap: balance;
+  border-bottom: none !important;
+}
+
+/* ── Feature rows (alternating 2-col layout) ─────────────────────────────── */
+.ov-feature-row {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 48px;
+  align-items: center; padding: 40px 0;
+  border-bottom: 1px solid var(--border-faint, rgba(15,14,13,0.06));
+}
+.ov-feature-row:last-child { border-bottom: none; }
+.ov-feature-text { order: 1; }
+.ov-feature-visual { order: 2; }
+.ov-feature-row.is-reversed .ov-feature-text { order: 2; }
+.ov-feature-row.is-reversed .ov-feature-visual { order: 1; }
 .ov-feature-kicker {
   font-size: 11px; font-weight: 700;
   color: var(--accent, #2e6ee0);
-  letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 8px;
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 8px;
 }
-.ov-feature h3 {
+.ov-feature-row h3 {
   font-size: 26px; font-weight: 700;
-  letter-spacing: -0.02em; margin: 0 0 10px !important;
+  letter-spacing: -0.02em; margin: 0 0 12px !important;
   color: var(--text-strong, rgba(10,9,8,0.96)); line-height: 1.2;
   border-bottom: none !important;
 }
-.ov-feature p { font-size: 15px; line-height: 1.65; color: var(--text-muted, #6b6660); margin: 0; }
+.ov-feature-row > .ov-feature-text > p {
+  font-size: 15px; line-height: 1.65; color: var(--text-muted, #6b6660); margin: 0;
+}
+.ov-feature-bullets {
+  list-style: none; padding: 0; margin: 0;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.ov-feature-bullets li strong {
+  display: block; font-size: 14px; font-weight: 600;
+  color: var(--text-strong, rgba(10,9,8,0.96)); margin-bottom: 3px;
+}
+.ov-feature-bullets li p {
+  font-size: 14px; line-height: 1.6;
+  color: var(--text-muted, #6b6660); margin: 0;
+}
 
 /* ── Also Includes ───────────────────────────────────────────────────────── */
 .ov-also { padding: 0 88px 80px; }
@@ -90,7 +165,7 @@
   background: #ebe6df;
   border: 1px solid var(--border, rgba(15,14,13,0.12));
   border-radius: 10px; padding: 32px 40px;
-  display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px 48px;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 24px 48px;
 }
 [data-md-color-scheme="slate"] .ov-also-inner { background: rgba(255,248,235,0.04); }
 .ov-also-item { display: flex; gap: 12px; align-items: flex-start; }
@@ -129,57 +204,33 @@
 .ov-btn-cta svg { flex-shrink: 0; }
 
 /* ── Concepts & Get Started ───────────────────────────────────────────────── */
-.ov-bottom-sections { background: #ede9e3; padding: 60px 88px 80px; }
-[data-md-color-scheme="slate"] .ov-bottom-sections { background: rgba(255,248,235,0.03); }
+.ov-bottom-sections { background: transparent; padding: 60px 88px 80px; }
 .ov-bottom-inner { max-width: 1100px; margin: 0 auto; }
-.ov-section-heading {
-  font-size: 11px; font-weight: 700;
-  color: var(--text-muted, #6b6660);
-  letter-spacing: 0.12em; text-transform: uppercase;
-  margin: 0 0 16px;
+.ov-subsection-h2 {
+  font-size: 28px; font-weight: 700; letter-spacing: -0.02em;
+  margin: 4px 0 28px !important;
+  color: var(--text-strong, rgba(10,9,8,0.96)); line-height: 1.2;
+  border-bottom: none !important; text-wrap: balance;
 }
+.ov-subsection-h2--center { text-align: center; }
+.ov-section-divider { height: 1px; background: var(--border, rgba(15,14,13,0.10)); margin: 48px 0; }
 .ov-concepts-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
-  margin-bottom: 40px;
+  margin-bottom: 0;
 }
 .ov-getstarted-grid {
   display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
 }
-.ov-concept-card, .ov-getstarted-card {
-  display: block;
-  border: 1px solid var(--border, rgba(15,14,13,0.12));
-  border-radius: 8px; padding: 20px 24px;
-  text-decoration: none !important; color: inherit;
-  transition: border-color 0.15s, background 0.15s;
+.ov-getstarted-icon {
+  width: 40px; height: 40px; border-radius: 9px;
+  background: var(--accent-soft, #ecf2ff);
+  color: var(--accent-soft-text, #1e4fb5);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 14px; flex-shrink: 0;
 }
-.ov-concept-card:hover, .ov-getstarted-card:hover {
-  background: rgba(15,14,13,0.03);
-  border-color: rgba(15,14,13,0.22);
-}
-[data-md-color-scheme="slate"] .ov-concept-card:hover,
-[data-md-color-scheme="slate"] .ov-getstarted-card:hover {
-  background: rgba(255,255,255,0.04);
-  border-color: rgba(255,255,255,0.20);
-}
-.ov-concept-card strong, .ov-getstarted-card strong {
-  display: block; font-size: 15px; font-weight: 700;
-  color: var(--text-strong, rgba(10,9,8,0.96)); margin-bottom: 6px;
-}
-.ov-concept-card p, .ov-getstarted-card p {
-  font-size: 13px; line-height: 1.6;
-  color: var(--text-muted, #6b6660); margin: 0 0 10px;
-}
-.ov-card-link { font-size: 12px; font-weight: 600; color: var(--accent, #2e6ee0); }
-.ov-getstarted-card p { margin: 0; }
-
-/* ── Dark mode token overrides ────────────────────────────────────────────── */
-[data-md-color-scheme="slate"] {
-  --text-strong: rgba(245, 240, 232, 0.96);
-  --text:        rgba(245, 240, 232, 0.82);
-  --text-muted:  #9a948a;
-  --text-faint:  #6a655d;
-  --accent:      #7aa8ef;
-  --border:      rgba(255, 248, 235, 0.10);
+[data-md-color-scheme="slate"] .ov-getstarted-icon {
+  background: rgba(122,168,239,0.14);
+  color: #b0ccf8;
 }
 
 /* ── Code Samples ─────────────────────────────────────────────────────────── */
@@ -293,7 +344,7 @@
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 76.1875em) {
   .ov-hero-inner, .ov-screenshot-wrap { padding: 0 40px; }
-  .ov-features { padding: 140px 40px 80px; }
+  .ov-features { padding: 140px 40px 56px; }
   .ov-samples { padding: 0 40px 80px; }
   .ov-also { padding: 0 40px 80px; }
   .ov-cta { padding: 60px 40px; }
@@ -304,7 +355,12 @@
   .ov-hero h1 { font-size: 40px; }
   .ov-hero-lead { font-size: 16px; }
   .ov-features { padding: 120px 24px 60px; }
-  .ov-features-inner { grid-template-columns: 1fr; gap: 40px; }
+  .ov-features-header h2 { font-size: 28px; }
+  .ov-feature-row {
+    grid-template-columns: 1fr; gap: 32px; padding: 40px 0;
+  }
+  .ov-feature-row.is-reversed .ov-feature-text { order: 1; }
+  .ov-feature-row.is-reversed .ov-feature-visual { order: 2; }
   .ov-samples { padding: 0 24px 60px; }
   .ov-samples-grid { grid-template-columns: 1fr; }
   .ov-also { padding: 0 24px 60px; }
@@ -331,12 +387,27 @@
     {% if is_ja %}
     <h1>DataTable の、<br>メンテナブルな後継。</h1>
     <p class="ov-hero-lead">DataIndexer は DataTable の課題に応えた UE5 プラグイン。<br>GUID ベースのキー管理でリネームに強く、使用箇所の特定・コンポジション・セカンダリインデックスをデフォルトでサポート。</p>
+    <div class="ov-hero-actions">
+      <a href="#features" class="ov-btn-secondary">機能を見る</a>
+      <a href="quick-start/" class="ov-btn-primary">
+        クイックスタート
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
+      </a>
+    </div>
     {% else %}
     <h1>DataTable's<br>maintainable successor.</h1>
     <p class="ov-hero-lead">DataIndexer is a UE5 plugin built around DataTable's pain points.<br>GUID-based key management for rename safety, with usage tracking, composition, and secondary indexes built in.</p>
+    <div class="ov-hero-actions">
+      <a href="#features" class="ov-btn-secondary">See features</a>
+      <a href="quick-start/" class="ov-btn-primary">
+        Get started
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
+      </a>
+    </div>
     {% endif %}
   </div>
   <div class="ov-screenshot-wrap">
+    <!-- TODO: エディタ 3ペイン全体（Items Repository 開いた状態）のスクリーンショット -->
     <img src="{{ base_url }}/assets/images/editor-overview.png"
          alt="DataIndexer editor overview"
          class="ov-screenshot">
@@ -344,50 +415,232 @@
 </section>
 
 <!-- Features -->
-<section class="ov-features">
+<section class="ov-features" id="features">
   <div class="ov-features-inner">
+    <div class="ov-features-header">
+      {% if is_ja %}
+      <p class="ov-features-kicker">DataIndexer の特徴</p>
+      <h2>DataTable の機能を引き継ぎ、課題に応える。</h2>
+      {% else %}
+      <p class="ov-features-kicker">What DataIndexer Adds</p>
+      <h2>Built on DataTable's foundation, with the gaps filled.</h2>
+      {% endif %}
+    </div>
+
     {% if is_ja %}
-    <div class="ov-feature">
-      <div class="ov-feature-kicker">01 / 参照安全性</div>
-      <h3>リネームしても壊れない。</h3>
-      <p>列名・Row 名を自由にリネームしても参照は一切壊れません。GUID で識別するため一意性は保証済み、命名規則を設ける必要もなくなります。</p>
+
+    <!-- 01 / DataTable の代替 -->
+    <div class="ov-feature-row">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">01 / DataTable の代替</div>
+        <h3>DataTable から、段階的に移行できる。</h3>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>DataTable のワークフローをそのまま使える</strong>
+            <p>DataTable で行っていた操作の多くは DataIndexer でも同様に行えます。既存のワークフローを大きく変えることなく、必要な機能から段階的に導入できます。</p>
+          </li>
+          <li>
+            <strong>JSON インポート / エクスポート</strong>
+            <p>差分・コードレビュー・マージに対応した人間可読 JSON サイドカーで、チーム開発をサポートします。</p>
+          </li>
+        </ul>
+      </div>
+      <div class="ov-feature-visual">
+        <!-- TODO: エディタ 3ペイン全体（Items Repository 開いた状態）のスクリーンショット -->
+        <div class="ov-feature-placeholder">Screenshot</div>
+      </div>
     </div>
-    <div class="ov-feature">
-      <div class="ov-feature-kicker">02 / 可視性</div>
-      <h3>Key の使用箇所を特定できる。</h3>
-      <p>FDataIndexerRowHandle は通常のアセット参照として機能し、誰がそのデータを参照しているか追跡できます。</p>
+
+    <!-- 02 / メンテナンス性 (reversed) -->
+    <div class="ov-feature-row is-reversed">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">02 / メンテナンス性</div>
+        <h3>リネームしても、参照は壊れない。</h3>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>Key 参照の追跡</strong>
+            <p>どのアセット・コードから参照されているかをエディタ上で確認できます。</p>
+          </li>
+          <li>
+            <strong>GUID ベースの PrimaryKey</strong>
+            <p>キー名を変更しても参照はそのまま維持。Blueprint やコードの参照が壊れません。</p>
+          </li>
+        </ul>
+      </div>
+      <div class="ov-feature-visual">
+        <!-- TODO: Key 参照の追跡 UI（使用箇所一覧パネル）のスクリーンショット -->
+        <div class="ov-feature-placeholder">Screenshot</div>
+      </div>
     </div>
-    <div class="ov-feature">
-      <div class="ov-feature-kicker">03 / コンポジション</div>
-      <h3>継承で重ねる。</h3>
-      <p>ベースリポジトリを継承し、変えたい行だけ上書きする。ベースの変更は継承先に自動的に伝播するため、キャラクター・アイテムごとのバリアントを行複製なしで管理できる。</p>
+
+    <!-- 03 / コンポジション -->
+    <div class="ov-feature-row">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">03 / コンポジション</div>
+        <h3>継承と統合で、データを重ねる。</h3>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>Repository の継承と統合</strong>
+            <p>親 Repository のデータを継承する機能と、複数の Repository を統合する機能を標準サポート。</p>
+          </li>
+          <li>
+            <strong>継承時の上書き</strong>
+            <p>子 Repository 内で特定の Row だけを上書き。変更箇所が明確に追えます。</p>
+          </li>
+        </ul>
+      </div>
+      <div class="ov-feature-visual">
+        <!-- TODO: Repository 継承ツリーのエディタ表示のスクリーンショット -->
+        <div class="ov-feature-placeholder">Screenshot</div>
+      </div>
     </div>
-    <div class="ov-feature">
-      <div class="ov-feature-kicker">04 / インデックス</div>
-      <h3>任意の属性で逆引きできる。</h3>
-      <p>スキーマに定義したセカンダリインデックスで、カテゴリ・レア度・タグなど任意の属性から Row セットを O(1) で取得。</p>
+
+    <!-- 04 / インデックス (reversed) -->
+    <div class="ov-feature-row is-reversed">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">04 / インデックス</div>
+        <h3>属性による、高速な逆引き。</h3>
+        <p>スキーマにインデックスを定義すると、カテゴリ・レアリティ・ファクションなど任意の属性から Row を高速検索。O(1) に近い効率で動作します。</p>
+      </div>
+      <div class="ov-feature-visual">
+        <!-- TODO: Blueprint での Index 逆引き検索ノード（GetRowsByIndex 等）のスクリーンショット -->
+        <div class="ov-feature-placeholder">Screenshot</div>
+      </div>
     </div>
+
+    <!-- 05 / 専用エディタ -->
+    <div class="ov-feature-row">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">05 / 専用エディタ</div>
+        <h3>編集のための、統合された体験。</h3>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>専用データビュー</strong>
+            <p>DataIndexer 専用の表形式エディタ。スキーマに応じた列の定義と表示。</p>
+          </li>
+          <li>
+            <strong>インライン編集</strong>
+            <p>セルをクリックしてそのまま編集。ダイアログ不要で素早く。</p>
+          </li>
+          <li>
+            <strong>データ検証</strong>
+            <p>スキーマのバリデーションルールで整合性チェック。保存時・Cook 時の自動検証も対応。</p>
+          </li>
+        </ul>
+      </div>
+      <div class="ov-feature-visual">
+        <!-- TODO: データビューエディタ（インライン編集中、カスタムセル表示）のスクリーンショット -->
+        <div class="ov-feature-placeholder">Screenshot</div>
+      </div>
+    </div>
+
     {% else %}
-    <div class="ov-feature">
-      <div class="ov-feature-kicker">01 / Reference Safety</div>
-      <h3>Renames don't break references.</h3>
-      <p>Rename any column or row freely — references never break. GUID-based identity guarantees uniqueness, so naming conventions become unnecessary.</p>
+
+    <!-- 01 / DataTable Drop-in -->
+    <div class="ov-feature-row">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">01 / DataTable Drop-in</div>
+        <h3>Migrate from DataTable gradually.</h3>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>DataTable workflows carry over</strong>
+            <p>Most DataTable operations work the same in DataIndexer. Adopt the features you need without disrupting existing conventions.</p>
+          </li>
+          <li>
+            <strong>JSON import / export</strong>
+            <p>Human-readable JSON sidecars support diffs, code review, and merge workflows for team development.</p>
+          </li>
+        </ul>
+      </div>
+      <div class="ov-feature-visual">
+        <!-- TODO: Full 3-pane editor screenshot (Items Repository open) -->
+        <div class="ov-feature-placeholder">Screenshot</div>
+      </div>
     </div>
-    <div class="ov-feature">
-      <div class="ov-feature-kicker">02 / Visibility</div>
-      <h3>Find every usage of a key.</h3>
-      <p>FDataIndexerRowHandle works as a standard asset reference, so you can track exactly which assets use a given row.</p>
+
+    <!-- 02 / Maintainability (reversed) -->
+    <div class="ov-feature-row is-reversed">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">02 / Maintainability</div>
+        <h3>Renames don't break references.</h3>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>Key usage tracking</strong>
+            <p>See which assets and code reference a given row, directly in the editor.</p>
+          </li>
+          <li>
+            <strong>GUID-based PrimaryKey</strong>
+            <p>Change a key's name freely — Blueprint and code references stay intact.</p>
+          </li>
+        </ul>
+      </div>
+      <div class="ov-feature-visual">
+        <!-- TODO: Key usage tracking UI (reference list panel) screenshot -->
+        <div class="ov-feature-placeholder">Screenshot</div>
+      </div>
     </div>
-    <div class="ov-feature">
-      <div class="ov-feature-kicker">03 / Composition</div>
-      <h3>Layer with inheritance.</h3>
-      <p>Inherit from a base repository and override only the rows you need. Changes to the base propagate automatically — manage character and item variants without duplicating rows.</p>
+
+    <!-- 03 / Composition -->
+    <div class="ov-feature-row">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">03 / Composition</div>
+        <h3>Layer data with inheritance.</h3>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>Repository inheritance and merging</strong>
+            <p>Built-in support for inheriting a parent repository and merging multiple repositories.</p>
+          </li>
+          <li>
+            <strong>Per-row overrides</strong>
+            <p>Override only specific rows in a child repository. Changes stay traceable and clear.</p>
+          </li>
+        </ul>
+      </div>
+      <div class="ov-feature-visual">
+        <!-- TODO: Repository inheritance tree editor view screenshot -->
+        <div class="ov-feature-placeholder">Screenshot</div>
+      </div>
     </div>
-    <div class="ov-feature">
-      <div class="ov-feature-kicker">04 / Indexes</div>
-      <h3>Look up by any attribute.</h3>
-      <p>Define secondary indexes on a schema and query rows by category, rarity, tags, or any domain attribute in O(1) — regardless of row count.</p>
+
+    <!-- 04 / Indexes (reversed) -->
+    <div class="ov-feature-row is-reversed">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">04 / Indexes</div>
+        <h3>Fast lookup by any attribute.</h3>
+        <p>Define secondary indexes on a schema and query rows by category, rarity, or any domain attribute — at O(1) efficiency regardless of row count.</p>
+      </div>
+      <div class="ov-feature-visual">
+        <!-- TODO: Blueprint index lookup nodes (GetRowsByIndex etc.) screenshot -->
+        <div class="ov-feature-placeholder">Screenshot</div>
+      </div>
     </div>
+
+    <!-- 05 / Dedicated Editor -->
+    <div class="ov-feature-row">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">05 / Dedicated Editor</div>
+        <h3>An editing experience built for data.</h3>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>Dedicated data view</strong>
+            <p>A tabular editor purpose-built for DataIndexer. Columns match the schema definition.</p>
+          </li>
+          <li>
+            <strong>Inline editing</strong>
+            <p>Click a cell and edit in place. No dialogs needed.</p>
+          </li>
+          <li>
+            <strong>Data validation</strong>
+            <p>Consistency checks defined on the schema, run automatically on save and cook.</p>
+          </li>
+        </ul>
+      </div>
+      <div class="ov-feature-visual">
+        <!-- TODO: Data view editor (inline editing active, custom cell display) screenshot -->
+        <div class="ov-feature-placeholder">Screenshot</div>
+      </div>
+    </div>
+
     {% endif %}
   </div>
 </section>
@@ -505,57 +758,6 @@ function ovCloseLightbox() {
 }
 </script>
 
-<!-- Also Includes -->
-<section class="ov-also">
-  <div class="ov-also-inner">
-    {% if is_ja %}
-    <div class="ov-also-item">
-      <span class="ov-also-check">✓</span>
-      <div>
-        <strong>専用エディタ</strong>
-        <p>インライン編集・表示列のカスタマイズ・UserWidget による独自表示拡張</p>
-      </div>
-    </div>
-    <div class="ov-also-item">
-      <span class="ov-also-check">✓</span>
-      <div>
-        <strong>データ検証</strong>
-        <p>スキーマに定義したルールで保存時に整合性チェック</p>
-      </div>
-    </div>
-    <div class="ov-also-item">
-      <span class="ov-also-check">✓</span>
-      <div>
-        <strong>JSON インポート / エクスポート</strong>
-        <p>差分・コードレビュー・マージに対応した人間可読 JSON サイドカー</p>
-      </div>
-    </div>
-    {% else %}
-    <div class="ov-also-item">
-      <span class="ov-also-check">✓</span>
-      <div>
-        <strong>Dedicated editor</strong>
-        <p>Inline editing, customizable columns, and UserWidget display extensions</p>
-      </div>
-    </div>
-    <div class="ov-also-item">
-      <span class="ov-also-check">✓</span>
-      <div>
-        <strong>Data validation</strong>
-        <p>Schema-defined rules checked at save time</p>
-      </div>
-    </div>
-    <div class="ov-also-item">
-      <span class="ov-also-check">✓</span>
-      <div>
-        <strong>JSON import / export</strong>
-        <p>Human-readable JSON sidecar for diffs, code review, and merge operations</p>
-      </div>
-    </div>
-    {% endif %}
-  </div>
-</section>
-
 <!-- CTA Strip -->
 <section class="ov-cta">
   <div class="ov-cta-inner">
@@ -591,76 +793,124 @@ function ovCloseLightbox() {
     {% if is_ja %}
 
     <p class="ov-section-heading">コアコンセプト</p>
+    <h2 class="ov-subsection-h2">4つの構成要素を理解すれば、すべてが繋がります。</h2>
     <div class="ov-concepts-grid">
-      <a class="ov-concept-card" href="concepts/repository/">
-        <strong>Repository</strong>
+      <a class="ov-card" href="concepts/repository/">
+        <div class="ov-card-header">
+          <strong>Repository</strong>
+          <code class="ov-card-type">FDataIndexerPrimaryKey</code>
+        </div>
         <p>データを格納するアセット。各 Row は <code>FDataIndexerPrimaryKey</code>（GUID）で識別され、スキーマが定義した型の構造体を保持します。親リポジトリを参照することで階層的なコンポジションが行えます。</p>
-        <span class="ov-card-link">→ リポジトリ</span>
+        <span class="ov-card-link">詳しく見る →</span>
       </a>
-      <a class="ov-concept-card" href="concepts/schema/">
-        <strong>Schema</strong>
+      <a class="ov-card" href="concepts/schema/">
+        <div class="ov-card-header">
+          <strong>Schema</strong>
+          <code class="ov-card-type">UDataIndexerSchema</code>
+        </div>
         <p>Row の構造体とエディタ挙動を定義します。表示名、プロパティのレンダリング、カスタムウィジェット、インデックスキーのビルダーを制御します。</p>
-        <span class="ov-card-link">→ スキーマ</span>
+        <span class="ov-card-link">詳しく見る →</span>
       </a>
-      <a class="ov-concept-card" href="concepts/keys-and-handles/">
-        <strong>Keys &amp; Handles</strong>
+      <a class="ov-card" href="concepts/keys-and-handles/">
+        <div class="ov-card-header">
+          <strong>Keys &amp; Handles</strong>
+          <code class="ov-card-type">FDataIndexerRowHandle</code>
+        </div>
         <p><code>FDataIndexerPrimaryKey</code> は単一の Row を一意に識別します。<code>FDataIndexerRowHandle</code> はリポジトリとキーをペアにして Blueprint で扱いやすくしたものです。</p>
-        <span class="ov-card-link">→ キーとハンドル</span>
+        <span class="ov-card-link">詳しく見る →</span>
       </a>
-      <a class="ov-concept-card" href="concepts/indexes/">
-        <strong>Indexes</strong>
+      <a class="ov-card" href="concepts/indexes/">
+        <div class="ov-card-header">
+          <strong>Indexes</strong>
+          <code class="ov-card-type">FDataIndexerIndexKey</code>
+        </div>
         <p>スキーマに定義するセカンダリ検索軸。各インデックスは Row を <code>FDataIndexerIndexKey</code> にマッピングし、任意の属性による高速検索を実現します。</p>
-        <span class="ov-card-link">→ インデックス</span>
+        <span class="ov-card-link">詳しく見る →</span>
       </a>
     </div>
 
+    <div class="ov-section-divider"></div>
+
     <p class="ov-section-heading">はじめる</p>
+    <h2 class="ov-subsection-h2 ov-subsection-h2--center">10分で、最初のクエリまで。</h2>
     <div class="ov-getstarted-grid">
-      <a class="ov-getstarted-card" href="installation/">
+      <a class="ov-card ov-card--getstarted" href="installation/">
+        <div class="ov-getstarted-icon">
+          <svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v9m0 0 4-4M9 11l-4-4M3 13v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1"/></svg>
+        </div>
         <strong>インストール</strong>
         <p>プロジェクトにプラグインを追加してモジュールをビルドします。</p>
+        <span class="ov-card-link">ガイドを開く →</span>
       </a>
-      <a class="ov-getstarted-card" href="quick-start/">
+      <a class="ov-card ov-card--getstarted" href="quick-start/">
+        <div class="ov-getstarted-icon">
+          <svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M14 2c-3 0-5 1-7 3l-2 2-3 1 1 3 3 1 1 3 3-1 2-2c2-2 3-4 3-7l-1-3Z"/><circle cx="11" cy="7" r="1.3"/></svg>
+        </div>
         <strong>クイックスタート</strong>
         <p>スキーマの作成、リポジトリの設定、Row のオーサリングを C++ と Blueprint から 10 分で実行します。</p>
+        <span class="ov-card-link">ガイドを開く →</span>
       </a>
     </div>
 
     {% else %}
 
     <p class="ov-section-heading">Core Concepts</p>
+    <h2 class="ov-subsection-h2">Understand these four pieces and everything clicks.</h2>
     <div class="ov-concepts-grid">
-      <a class="ov-concept-card" href="concepts/repository/">
-        <strong>Repository</strong>
+      <a class="ov-card" href="concepts/repository/">
+        <div class="ov-card-header">
+          <strong>Repository</strong>
+          <code class="ov-card-type">FDataIndexerPrimaryKey</code>
+        </div>
         <p>The data asset that holds rows. Each row is identified by a <code>FDataIndexerPrimaryKey</code> (GUID) and stores a typed struct via <code>FInstancedStruct</code>. Repositories can reference parent repositories for hierarchical data composition.</p>
-        <span class="ov-card-link">→ Repository</span>
+        <span class="ov-card-link">Learn more →</span>
       </a>
-      <a class="ov-concept-card" href="concepts/schema/">
-        <strong>Schema</strong>
+      <a class="ov-card" href="concepts/schema/">
+        <div class="ov-card-header">
+          <strong>Schema</strong>
+          <code class="ov-card-type">UDataIndexerSchema</code>
+        </div>
         <p>Defines the row struct and editor behavior. A schema controls display names, property text rendering, custom widgets, and the index key builders that power secondary lookups.</p>
-        <span class="ov-card-link">→ Schema</span>
+        <span class="ov-card-link">Learn more →</span>
       </a>
-      <a class="ov-concept-card" href="concepts/keys-and-handles/">
-        <strong>Keys &amp; Handles</strong>
+      <a class="ov-card" href="concepts/keys-and-handles/">
+        <div class="ov-card-header">
+          <strong>Keys &amp; Handles</strong>
+          <code class="ov-card-type">FDataIndexerRowHandle</code>
+        </div>
         <p><code>FDataIndexerPrimaryKey</code> uniquely identifies a single row. <code>FDataIndexerRowHandle</code> pairs a repository with a key for Blueprint-friendly references.</p>
-        <span class="ov-card-link">→ Keys &amp; Handles</span>
+        <span class="ov-card-link">Learn more →</span>
       </a>
-      <a class="ov-concept-card" href="concepts/indexes/">
-        <strong>Indexes</strong>
+      <a class="ov-card" href="concepts/indexes/">
+        <div class="ov-card-header">
+          <strong>Indexes</strong>
+          <code class="ov-card-type">FDataIndexerIndexKey</code>
+        </div>
         <p>Secondary lookup dimensions defined on a schema. Each index maps rows to a <code>FDataIndexerIndexKey</code>, enabling fast lookup by any domain-specific attribute.</p>
-        <span class="ov-card-link">→ Indexes</span>
+        <span class="ov-card-link">Learn more →</span>
       </a>
     </div>
 
+    <div class="ov-section-divider"></div>
+
     <p class="ov-section-heading">Get Started</p>
+    <h2 class="ov-subsection-h2 ov-subsection-h2--center">First query in ten minutes.</h2>
     <div class="ov-getstarted-grid">
-      <a class="ov-getstarted-card" href="installation/">
+      <a class="ov-card ov-card--getstarted" href="installation/">
+        <div class="ov-getstarted-icon">
+          <svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v9m0 0 4-4M9 11l-4-4M3 13v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1"/></svg>
+        </div>
         <strong>Installation</strong>
         <p>Add the plugin to your project and get the modules building.</p>
+        <span class="ov-card-link">Open guide →</span>
       </a>
-      <a class="ov-getstarted-card" href="quick-start/">
+      <a class="ov-card ov-card--getstarted" href="quick-start/">
+        <div class="ov-getstarted-icon">
+          <svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M14 2c-3 0-5 1-7 3l-2 2-3 1 1 3 3 1 1 3 3-1 2-2c2-2 3-4 3-7l-1-3Z"/><circle cx="11" cy="7" r="1.3"/></svg>
+        </div>
         <strong>Quick Start</strong>
         <p>Create a schema, a repository, author rows, and query them from C++ and Blueprint in under ten minutes.</p>
+        <span class="ov-card-link">Open guide →</span>
       </a>
     </div>
 

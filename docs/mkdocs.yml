@@ -14,7 +14,7 @@ theme:
   custom_dir: overrides
   palette:
     - media: "(prefers-color-scheme: light)"
-      scheme: default
+      scheme: di-light
       primary: custom
       accent: custom
       toggle:
@@ -36,7 +36,7 @@ theme:
     - navigation.sections
     - navigation.indexes
     - navigation.top
-    - toc.integrate
+    - toc.follow
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -47,6 +47,7 @@ theme:
 extra_css:
   - assets/stylesheets/tokens.css
   - assets/stylesheets/extra.css
+  - assets/stylesheets/c-variant.css
 
 markdown_extensions:
   - admonition

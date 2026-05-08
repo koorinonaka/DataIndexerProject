@@ -1,3 +1,32 @@
+---
+title: リポジトリ
+quickref:
+  type: UDataIndexerRepository
+  inherits: UDataAsset
+  pills:
+    - ランタイム
+    - エディタ
+    - Blueprintable
+  module: DataIndexer
+  methods:
+    - name: FindRowEntity
+      desc: キーで1行を検索
+    - name: ForEachPrimaryKeys
+      desc: 可視行を走査
+    - name: GetSchema
+      desc: バインドされたスキーマ CDO
+    - name: GetDisplayName
+      desc: スキーマ経由の表示名
+  related:
+    - UDataIndexerSchema
+    - FDataIndexerPrimaryKey
+    - FDataIndexerRowHandle
+    - FDataIndexerRowsHandle
+    - FInstancedStruct
+  added: v0.1.0
+  verified: UE 5.5
+---
+
 # Repository
 
 `UDataIndexerRepository` は `UDataAsset` のサブクラスで、型付きの行コレクションを格納します。DataIndexer ワークフローの主要な成果物です。デザイナーはここで行をオーサリングし、ランタイムコードはここから行をクエリします。

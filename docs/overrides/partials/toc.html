@@ -1,0 +1,96 @@
+{# overrides/partials/toc.html
+   右 TOC を Quick Reference カード + 通常 TOC に置き換え。
+   ページ front-matter に quickref があれば描画。 #}
+
+{% set quickref = page.meta.quickref if page and page.meta else none %}
+{% set title = lang.t("toc") %}
+{% if config.mdx_configs.toc and config.mdx_configs.toc.title %}
+  {% set title = config.mdx_configs.toc.title %}
+{% endif %}
+
+<nav class="md-nav md-nav--secondary" aria-label="{{ title | e }}">
+
+  {# ── Quick Reference card ── #}
+  {% if quickref %}
+    <div class="di-qr">
+
+      {% if quickref.type %}
+        <div class="di-qr__label">Quick reference</div>
+        <div class="di-qr__card">
+          <div class="di-qr__type">{{ quickref.type }}</div>
+          {% if quickref.inherits %}
+            <div class="di-qr__inherits">Inherits from <code>{{ quickref.inherits }}</code></div>
+          {% endif %}
+          {% if quickref.pills %}
+            <div class="di-qr__pills">
+              {% for pill in quickref.pills %}
+                <span class="di-qr__pill {% if loop.index > 1 %}di-qr__pill--gray{% endif %}">{{ pill }}</span>
+              {% endfor %}
+            </div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if quickref.module %}
+        <div class="di-qr__label">Module dependency</div>
+        <pre><code>// .Build.cs
+PublicDependencyModuleNames.AddRange(new string[] {
+  "{{ quickref.module }}",
+});</code></pre>
+      {% endif %}
+
+      {% if quickref.methods %}
+        <div class="di-qr__label">Common methods</div>
+        {% for m in quickref.methods %}
+          <a class="di-qr__method" href="#{{ m.name | lower }}">
+            <div class="di-qr__method-name">{{ m.name }}</div>
+            <div class="di-qr__method-desc">{{ m.desc }}</div>
+          </a>
+        {% endfor %}
+      {% endif %}
+
+      {% if quickref.related %}
+        <div class="di-qr__label">Related types</div>
+        <div class="di-qr__chips">
+          {% for r in quickref.related %}
+            <span class="di-qr__chip">{{ r }}</span>
+          {% endfor %}
+        </div>
+      {% endif %}
+
+      {% if quickref.added or quickref.verified %}
+        <div class="di-qr__label">Page meta</div>
+        <div class="di-qr__meta">
+          {% if quickref.added %}
+            <div class="di-qr__meta-row"><span>Added</span><strong>{{ quickref.added }}</strong></div>
+          {% endif %}
+          {% if quickref.verified %}
+            <div class="di-qr__meta-row"><span>Verified</span><strong>{{ quickref.verified }}</strong></div>
+          {% endif %}
+        </div>
+      {% endif %}
+
+    </div>
+  {% endif %}
+
+  {# ── Default TOC ── #}
+  {% if page %}
+    {% set toc = page.toc %}
+    {% set first = toc | first %}
+    {% if first and first.level == 1 %}
+      {% set toc = first.children %}
+    {% endif %}
+    {% if toc %}
+      <label class="md-nav__title" for="__toc">
+        <span class="md-nav__icon md-icon"></span>
+        {{ title }}
+      </label>
+      <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+        {% for toc_item in toc %}
+          {% include "partials/toc-item.html" %}
+        {% endfor %}
+      </ul>
+    {% endif %}
+  {% endif %}
+
+</nav>

@@ -1,10 +1,19 @@
+---
+title: クイックスタート
+---
+
 # クイックスタート
 
 スキーマと Repository の作成から行のオーサリング、ランタイムでのクエリまでを一通り説明します。
 
+!!! tip "前提"
+    本ガイドは [インストール](installation.md) が完了していることを前提とします。プラグインの組み込みがまだの方は、先にそちらを実施してください。
+
+---
+
 ## ウォークスルー
 
-=== "エディタ & Blueprint"
+=== ":material-puzzle: エディタ & Blueprint"
 
     **1. Blueprint 構造体を作成**
 
@@ -71,7 +80,7 @@
 
     インデックスによるフィルタリングは [Blueprint API → 関数ライブラリ](blueprint-api/function-library.md) を参照してください。
 
-=== "C++"
+=== ":material-language-cpp: C++"
 
     **1. 行構造体の定義**
 
@@ -232,7 +241,7 @@
     };
     ```
 
-    ```ini title="Config/DefaultEngine.ini"
+    ```ini title="Config/DefaultEngine.ini" hl_lines="2"
     [/Script/Engine.Engine]
     GameSingletonClassName=/Script/YourGame.GameDataSettings
     ```
@@ -260,7 +269,7 @@
 
     `UEngineSubsystem`（またはシングルトンにアクセスできる任意のクラス）でリポジトリアクセスをラップします：
 
-    ```cpp
+    ```cpp title="GameDataSubsystem.cpp"
     // 順引き — 指定タイプのアイテムをすべて取得
     TArray<FDataIndexerPrimaryKey> UGameDataSubsystem::GetItemsByType(EItemType Type) const
     {
@@ -303,9 +312,42 @@
 
 ---
 
+## チェックリスト
+
+- [x] 行構造体（または Blueprint Structure）を定義した
+- [x] Schema を作成し、Row Struct を割り当てた
+- [x] Repository アセットを作成し、Schema Class を割り当てた
+- [x] 専用エディタで行をオーサリングした
+- [x] Blueprint または C++ からクエリを実行できた
+
+---
+
 ## 次のステップ
 
-- [コアコンセプト](concepts/index.md) — Repository・Schema・キー・インデックスの関係を理解する
-- [エディタガイド](editor-guide/index.md) — エディタワークフローの完全リファレンス
-- [Blueprint API](blueprint-api/index.md) — Blueprint ノードと関数ライブラリのリファレンス
-- [C++ API](cpp-api/index.md) — 型安全な C++ アクセスパターン
+<div class="grid cards" markdown>
+
+- :material-graph-outline:{ .lg .middle } &nbsp; **[コアコンセプト](concepts/index.md)**
+
+    ---
+
+    Repository / Schema / Keys / Indexes の関係を体系的に理解。
+
+- :material-puzzle-outline:{ .lg .middle } &nbsp; **[Blueprint API](blueprint-api/index.md)**
+
+    ---
+
+    Blueprint ノード・関数ライブラリ・Driven Collection の完全リファレンス。
+
+- :material-language-cpp:{ .lg .middle } &nbsp; **[C++ API](cpp-api/index.md)**
+
+    ---
+
+    型安全なクエリパターンと Native Schema Interface。
+
+- :material-table-edit:{ .lg .middle } &nbsp; **[エディタガイド](editor-guide/index.md)**
+
+    ---
+
+    データビュー・JSON インポート / エクスポート・カスタムウィジェット。
+
+</div>
