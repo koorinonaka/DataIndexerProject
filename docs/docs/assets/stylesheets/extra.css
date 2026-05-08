@@ -36,6 +36,20 @@
   --md-code-hl-color:                 rgba(46, 110, 224, 0.10);
   --md-code-hl-color--light:          rgba(46, 110, 224, 0.06);
 
+  /* Syntax highlight (light) */
+  --md-code-hl-keyword-color:         #1e4fb5;
+  --md-code-hl-string-color:          #516500;
+  --md-code-hl-number-color:          #b05010;
+  --md-code-hl-function-color:        #6030a0;
+  --md-code-hl-constant-color:        #0b6080;
+  --md-code-hl-special-color:         #3d6e30;
+  --md-code-hl-comment-color:         #8a8078;
+  --md-code-hl-variable-color:        rgba(10, 9, 8, 0.90);
+  --md-code-hl-name-color:            rgba(10, 9, 8, 0.90);
+  --md-code-hl-operator-color:        rgba(10, 9, 8, 0.45);
+  --md-code-hl-punctuation-color:     rgba(10, 9, 8, 0.45);
+  --md-code-hl-generic-color:         #8a8078;
+
   /* Whisper border (tokens --border) */
   --di-border:                        1px solid rgba(15, 14, 13, 0.10);
 
@@ -518,4 +532,27 @@
 
 [data-md-color-scheme="slate"] .md-search__form:focus-within {
   border-color: #7aa8ef;
+}
+
+/* ── Home page sample — Highlight.js theme ────────────────────────────────── */
+.ov-sample-pre .hljs                   { background: transparent; color: var(--md-code-fg-color); }
+.ov-sample-pre .hljs-keyword,
+.ov-sample-pre .hljs-built_in         { color: var(--md-code-hl-keyword-color); font-weight: 600; }
+.ov-sample-pre .hljs-type             { color: var(--md-code-hl-constant-color); }
+.ov-sample-pre .hljs-title            { color: var(--md-code-hl-function-color); }
+.ov-sample-pre .hljs-title.class_     { color: var(--md-code-hl-function-color); font-weight: 700; }
+.ov-sample-pre .hljs-string           { color: var(--md-code-hl-string-color); }
+.ov-sample-pre .hljs-number           { color: var(--md-code-hl-number-color); }
+.ov-sample-pre .hljs-comment          { color: var(--md-code-hl-comment-color); font-style: italic; }
+.ov-sample-pre .hljs-meta             { color: var(--md-code-hl-special-color); }
+.ov-sample-pre .hljs-meta .hljs-keyword { color: var(--md-code-hl-special-color); font-weight: 600; }
+.ov-sample-pre .hljs-operator,
+.ov-sample-pre .hljs-punctuation      { color: var(--md-code-hl-operator-color); }
+.ov-sample-pre .hljs-params           { color: var(--md-code-fg-color); }
+
+/* ── Home page sample — caption ──────────────────────────────────────────── */
+.ov-sample-caption {
+  font-size: 12px; line-height: 1.5;
+  color: var(--md-default-fg-color--light);
+  margin: 8px 0 0; text-align: center;
 }

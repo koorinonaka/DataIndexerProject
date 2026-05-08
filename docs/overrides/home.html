@@ -1,6 +1,8 @@
 {% extends "main.html" %}
 
 {% block extrahead %}{{ super() }}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/languages/cpp.min.js"></script>
 <style>
 /* ── Full-width content area ──────────────────────────────────────────────── */
 .md-main__inner { margin: 0 !important; max-width: 100% !important; }
@@ -180,10 +182,72 @@
   --border:      rgba(255, 248, 235, 0.10);
 }
 
+/* ── Code Samples ─────────────────────────────────────────────────────────── */
+.ov-samples { padding: 0 88px 80px; }
+.ov-samples-inner { max-width: 1100px; margin: 0 auto; }
+.ov-samples-kicker {
+  font-size: 11px; font-weight: 700;
+  color: var(--text-muted, #6b6660);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin: 0 0 20px;
+}
+.ov-samples-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.ov-sample-col { display: flex; flex-direction: column; }
+.ov-sample-label {
+  font-size: 11px; font-weight: 700;
+  color: var(--text-muted, #6b6660);
+  letter-spacing: 0.10em; text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ov-sample-wrap {
+  position: relative; border-radius: 8px; overflow: hidden;
+  border: var(--di-border, 1px solid rgba(15,14,13,0.12));
+  background: var(--md-code-bg-color);
+  max-height: 200px;
+  transition: max-height 0.4s ease-out;
+}
+.ov-sample-wrap.is-expanded { max-height: 2000px; }
+.ov-sample-fade {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 80px;
+  background: linear-gradient(to bottom, transparent, var(--md-code-bg-color));
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+.ov-sample-wrap.is-expanded .ov-sample-fade { opacity: 0; }
+.ov-sample-img { width: 100%; display: block; margin: 0; }
+.ov-sample-pre {
+  margin: 0 !important; padding: 1em 1.2em;
+  background: var(--md-code-bg-color) !important;
+  font-size: 0.85em; line-height: 1.65;
+  font-family: var(--md-code-font, ui-monospace, monospace);
+  white-space: pre; overflow-x: auto;
+  border-radius: 0 !important; box-shadow: none !important;
+}
+.ov-sample-pre code {
+  background: transparent !important;
+  color: var(--md-code-fg-color);
+  padding: 0; font-size: inherit;
+}
+.ov-samples-toggle-row { margin-top: 14px; display: flex; justify-content: center; }
+.ov-sample-toggle {
+  background: none;
+  border: 1px solid var(--border, rgba(15,14,13,0.15));
+  border-radius: 6px; padding: 8px 20px;
+  font-size: 12px; font-weight: 600;
+  color: var(--accent, #2e6ee0);
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 5px;
+  transition: background 0.15s, border-color 0.15s;
+}
+.ov-sample-toggle:hover { background: rgba(46,110,224,0.07); border-color: var(--accent, #2e6ee0); }
+.ov-sample-toggle svg { transition: transform 0.3s; flex-shrink: 0; }
+.ov-sample-toggle.is-expanded svg { transform: rotate(180deg); }
+
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 76.1875em) {
   .ov-hero-inner, .ov-screenshot-wrap { padding: 0 40px; }
   .ov-features { padding: 140px 40px 80px; }
+  .ov-samples { padding: 0 40px 80px; }
   .ov-also { padding: 0 40px 80px; }
   .ov-cta { padding: 60px 40px; }
   .ov-bottom-sections { padding: 60px 40px 80px; }
@@ -194,6 +258,8 @@
   .ov-hero-lead { font-size: 16px; }
   .ov-features { padding: 120px 24px 60px; }
   .ov-features-inner { grid-template-columns: 1fr; gap: 40px; }
+  .ov-samples { padding: 0 24px 60px; }
+  .ov-samples-grid { grid-template-columns: 1fr; }
   .ov-also { padding: 0 24px 60px; }
   .ov-also-inner { grid-template-columns: 1fr; gap: 20px; padding: 24px; }
   .ov-cta { padding: 48px 24px; }
@@ -237,7 +303,7 @@
     <div class="ov-feature">
       <div class="ov-feature-kicker">01 / 参照安全性</div>
       <h3>リネームしても壊れない。</h3>
-      <p>FName ではなく GUID で Row を識別。列名・Row 名を変更しても使用箇所の参照が維持され、参照の確認も容易です。</p>
+      <p>列名・Row 名を自由にリネームしても参照は一切壊れません。GUID で識別するため一意性は保証済み、命名規則を設ける必要もなくなります。</p>
     </div>
     <div class="ov-feature">
       <div class="ov-feature-kicker">02 / 可視性</div>
@@ -258,7 +324,7 @@
     <div class="ov-feature">
       <div class="ov-feature-kicker">01 / Reference Safety</div>
       <h3>Renames don't break references.</h3>
-      <p>Rows are identified by GUID, not FName. Rename a column or row and all references stay intact — and remain easy to trace.</p>
+      <p>Rename any column or row freely — references never break. GUID-based identity guarantees uniqueness, so naming conventions become unnecessary.</p>
     </div>
     <div class="ov-feature">
       <div class="ov-feature-kicker">02 / Visibility</div>
@@ -278,6 +344,93 @@
     {% endif %}
   </div>
 </section>
+
+<!-- Code Samples -->
+<section class="ov-samples">
+  <div class="ov-samples-inner">
+    <p class="ov-samples-kicker">{% if is_ja %}実装例{% else %}In Practice{% endif %}</p>
+    <div class="ov-samples-grid">
+
+      <!-- Blueprint -->
+      <div class="ov-sample-col">
+        <div class="ov-sample-label">Blueprint</div>
+        <div class="ov-sample-wrap" id="ov-samp-bp">
+          <img src="{{ base_url }}/assets/images/bp-struct-sample.png"
+               alt="Blueprint struct setup" class="ov-sample-img">
+          <div class="ov-sample-fade"></div>
+        </div>
+        <p class="ov-sample-caption">{% if is_ja %}Blueprint で構造体を定義{% else %}Define the data struct in Blueprint{% endif %}</p>
+      </div>
+
+      <!-- C++ -->
+      <div class="ov-sample-col">
+        <div class="ov-sample-label">C++</div>
+        <div class="ov-sample-wrap" id="ov-samp-cpp">
+<pre class="ov-sample-pre"><code class="language-cpp">USTRUCT(BlueprintType)
+struct FItemRow
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    FText DisplayName;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    EItemType Type = EItemType::Weapon;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    EItemRarity Rarity = EItemRarity::Common;
+
+    UPROPERTY(EditAnywhere, BlueprintReadOnly)
+    int32 BaseValue = 0;
+};
+
+// Secondary-index lookup — O(1) regardless of row count
+FItemRow Query;
+Query.Rarity = EItemRarity::Rare;
+
+TArray&lt;FDataIndexerPrimaryKey&gt; RareKeys =
+    FItemInterface::GetPrimaryKeys(
+        *ItemRepo, UItemSchema::ByRarityIndex(), Query
+    );
+
+for (const FDataIndexerPrimaryKey&amp; Key : RareKeys)
+{
+    const FItemRow* Row = FItemInterface::FindRow(*ItemRepo, Key);
+    if (Row) { /* ... */ }
+}</code></pre>
+          <div class="ov-sample-fade"></div>
+        </div>
+        <p class="ov-sample-caption">{% if is_ja %}C++ からインデックスで検索{% else %}Query by secondary index from C++{% endif %}</p>
+      </div>
+
+    </div>
+    <div class="ov-samples-toggle-row">
+      <button class="ov-sample-toggle" id="ov-btn-all"
+              onclick="ovToggleAll('{% if is_ja %}ja{% else %}en{% endif %}')">
+        <span class="ov-toggle-label">{% if is_ja %}もっと見る{% else %}Show more{% endif %}</span>
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('pre.ov-sample-pre code').forEach(function(el) {
+    hljs.highlightElement(el);
+  });
+});
+function ovToggleAll(lang) {
+  var btn   = document.getElementById('ov-btn-all');
+  var isExp = btn.classList.toggle('is-expanded');
+  ['ov-samp-bp', 'ov-samp-cpp'].forEach(function(id) {
+    document.getElementById(id).classList.toggle('is-expanded', isExp);
+  });
+  var label = btn.querySelector('.ov-toggle-label');
+  if (label) label.textContent = isExp
+    ? (lang === 'ja' ? '閉じる'    : 'Show less')
+    : (lang === 'ja' ? 'もっと見る' : 'Show more');
+}
+</script>
 
 <!-- Also Includes -->
 <section class="ov-also">
