@@ -108,7 +108,7 @@
   opacity: 1;
   color: var(--md-default-fg-color--light);
   margin: 0;
-  padding: 0 14px;
+  padding: 0 10px;
   height: 42px;
   display: inline-flex;
   align-items: center;
@@ -131,6 +131,11 @@
 .md-sidebar--primary {
   width: 230px;
 }
+/* 上部フェード除去 */
+.md-sidebar--primary .md-sidebar__scrollwrap {
+  -webkit-mask-image: none;
+          mask-image: none;
+}
 .md-nav--primary .md-nav__title {
   font-size: 11px;
   font-weight: 700;
@@ -141,6 +146,7 @@
   box-shadow: none;
   padding: 4px 10px;
 }
+
 .md-nav__item .md-nav__link {
   font-size: 13.5px;
   font-weight: 500;
@@ -153,10 +159,35 @@
   background: var(--di-bg-alt);
   color: var(--di-text-strong);
 }
-.md-nav__item .md-nav__link--active {
+/* active リンク — Material のデフォルト上書きを含め統一 */
+.md-sidebar--primary .md-nav__link--active,
+.md-sidebar--primary .md-nav__link--active:focus,
+.md-sidebar--primary .md-nav__link--active:hover {
   background: var(--di-accent-soft);
   color: var(--di-accent);
   font-weight: 600;
+}
+
+/* [fix1] セクション見出しコンテナ垂直ズレ修正 + box-shadow フェード除去 (navigation.indexes あり) */
+.md-nav__link.md-nav__container {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  box-shadow: none;
+}
+
+/* [fix2] lifted active label の box-shadow フェード除去 (navigation.indexes なしセクション用)
+   Material: .md-nav--lifted > ... > .md-nav__item--active > .md-nav__link { box-shadow: ...; } */
+@media screen and (min-width: 76.25em) {
+  .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link {
+    box-shadow: none;
+  }
+}
+
+/* [fix3] アンカー scroll-margin — sticky 合計 (94px) に合わせる。JS の active 判定と連動 */
+.md-typeset :is(h2, h3, h4, h5, h6) {
+  scroll-margin-top: 94px;
 }
 
 /* ── 中央読書カラム ─────────────────────────────────────────────────────── */
@@ -167,7 +198,7 @@
   max-width: none;
 }
 .md-content__inner {
-  max-width: 760px;
+  max-width: 820px;
   margin: 0 auto;
   padding: 28px 48px 64px;
 }
@@ -186,7 +217,7 @@
   color: var(--md-default-fg-color--light);
   font-weight: 400;
   letter-spacing: -0.005em;
-  margin-bottom: 24px;
+  margin-bottom: 28px;
 }
 
 /* ── コードブロック — warm near-black ────────────────────────────────────── */
@@ -209,33 +240,9 @@
   font-size: 0.86em;
 }
 
-/* ── 右 TOC + Quick Reference パネル ────────────────────────────────────── */
-.md-sidebar--secondary {
-  width: 280px;
-}
-.md-sidebar--secondary .md-sidebar__inner {
-  padding: 20px 18px 32px;
-}
-.md-nav--secondary .md-nav__title {
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--md-default-fg-color--lighter);
-}
-.md-nav--secondary .md-nav__link {
-  font-size: 13px;
-  border-left: 2px solid transparent;
-  padding: 4px 10px;
-  border-radius: 3px;
-}
-.md-nav--secondary .md-nav__link--active {
-  border-left-color: var(--di-accent);
-  background: var(--di-accent-soft);
-  color: var(--di-text-strong);
-}
+/* ── 右ペインを使わない（toc.integrate で左ナビ末尾に統合） ─────────────── */
 
-/* Quick Reference カード本体（toc.html partial が出力） */
+/* Quick Reference カード本体（.admonition.quickref 内で使用） */
 .di-qr {
   margin-bottom: 18px;
   font-size: 13px;
@@ -377,15 +384,225 @@
   gap: 4px;
 }
 
-/* ── アイコン埋め込み（タブの :before — Material Icons） ─────────────────── */
-/* シンプルな円形マークでセクションを示す。実装側で .md-tabs__link[href*="..."] を
-   ページごとに切り替えてください。例： */
-.md-tabs__link[href$="/concepts/"]::before { content: "◇"; }
-.md-tabs__link[href$="/editor-guide/"]::before { content: "◐"; }
-.md-tabs__link[href$="/blueprint-api/"]::before { content: "◈"; }
-.md-tabs__link[href$="/cpp-api/"]::before { content: "◇"; }
-.md-tabs__link[href$="/changelog/"]::before { content: "○"; }
-.md-tabs__link::before {
-  font-size: 11px;
+/* ── Quick Reference — 本文内 admonition として右に float ───────────────── */
+.md-typeset .admonition.quickref,
+.md-typeset details.quickref {
+  float: right;
+  width: 280px;
+  margin: 4px 0 16px 24px;
+  border: var(--di-border);
+  border-left: var(--di-border);
+  background: var(--di-bg-alt);
+  border-radius: 8px;
+  box-shadow: var(--di-shadow-card);
+  font-size: 13px;
+}
+.md-typeset .admonition.quickref > .admonition-title {
+  background: transparent;
+  border-bottom: var(--di-border);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+  padding: 8px 12px;
+}
+.md-typeset .admonition.quickref > .admonition-title::before { display: none; }
+@media (max-width: 960px) {
+  .md-typeset .admonition.quickref { float: none; width: auto; margin: 0 0 16px; }
+}
+
+/* ── タブアイコン（SVG mask — nth-child で active 時も確実に表示） ──────── */
+/* アクティブ時 href が "./" になるため href マッチではなく位置で特定 */
+.md-tabs__item:nth-child(1) .md-tabs__link { --tab-icon: url("../icons/icon-book.svg"); }     /* Overview */
+.md-tabs__item:nth-child(2) .md-tabs__link { --tab-icon: url("../icons/icon-arrow.svg"); }    /* Getting Started */
+.md-tabs__item:nth-child(3) .md-tabs__link { --tab-icon: url("../icons/icon-cube.svg"); }     /* Core Concepts */
+.md-tabs__item:nth-child(4) .md-tabs__link { --tab-icon: url("../icons/icon-edit.svg"); }     /* Editor Guide */
+.md-tabs__item:nth-child(5) .md-tabs__link { --tab-icon: url("../icons/icon-search.svg"); }   /* API Reference */
+.md-tabs__item:nth-child(6) .md-tabs__link { --tab-icon: url("../icons/icon-log.svg"); }      /* Changelog */
+.md-tabs__item:nth-child(1) .md-tabs__link::before,
+.md-tabs__item:nth-child(2) .md-tabs__link::before,
+.md-tabs__item:nth-child(3) .md-tabs__link::before,
+.md-tabs__item:nth-child(4) .md-tabs__link::before,
+.md-tabs__item:nth-child(5) .md-tabs__link::before,
+.md-tabs__item:nth-child(6) .md-tabs__link::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  -webkit-mask: var(--tab-icon) center / contain no-repeat;
+          mask: var(--tab-icon) center / contain no-repeat;
   opacity: 0.6;
+}
+.md-tabs__link--active::before { opacity: 1; }
+
+/* ── H1 margin ───────────────────────────────────────────────────────────── */
+.md-typeset h1 {
+  margin: 0 0 12px;
+}
+
+/* ── H2 — 22px / 1.25 / -0.015em / 36px before / 10px after ─────────────── */
+.md-typeset h2 {
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 36px 0 10px;
+}
+
+/* ── 本文 — 15px / 1.65 / mb 14px ───────────────────────────────────────── */
+.md-typeset p {
+  font-size: 15px;
+  margin: 0 0 14px;
+}
+
+/* ── コードブロック外側マージン — 14px 上 / 18px 下 ─────────────────────── */
+.md-typeset .highlight {
+  margin: 14px 0 18px;
+}
+
+/* ── パンくず（navigation.path） ─────────────────────────────────────────── */
+nav.md-path {
+  margin-bottom: 14px;
+}
+nav.md-path ol {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.md-path__item {
+  display: inline-flex;
+  align-items: center;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--md-default-fg-color--light);
+}
+.md-path__item + .md-path__item::before {
+  content: "/";
+  color: var(--md-default-fg-color--lighter);
+  padding: 0 6px;
+}
+.md-path__link {
+  color: var(--md-default-fg-color--light);
+  text-decoration: none;
+  border-bottom: 1px dotted transparent;
+  transition: color 120ms, border-color 120ms;
+}
+.md-path__link:hover {
+  color: var(--di-text-strong);
+  border-bottom-color: var(--md-default-fg-color--lighter);
+  text-decoration: none;
+}
+.md-path__item--active,
+.md-path__item:last-child {
+  color: var(--di-text-strong);
+  font-weight: 600;
+}
+
+/* ── admonition 上マージン ────────────────────────────────────────────────── */
+.md-typeset .admonition,
+.md-typeset details {
+  margin-top: 18px;
+}
+.md-typeset details[open] > summary {
+  margin-bottom: 14px;
+}
+.md-typeset .admonition-title,
+.md-typeset summary.admonition-title {
+  margin-bottom: 8px;
+}
+
+/* ── hl_lines ハイライト行 — dark code bg 上で視認可能に ────────────────── */
+.md-typeset .highlight .hll {
+  background: rgba(255, 255, 255, 0.11);
+  display: block;
+  margin: 0 -16px;
+  padding: 0 16px;
+}
+
+/* ── コンテンツタブ — テキストのみのタブが狭く見えるのを防ぐ ─────────────── */
+.md-typeset .tabbed-set .tabbed-content .tabbed-block {
+  padding: 14px 0 2px;
+}
+
+/* ── 日本語ページはトラッキング無効 ──────────────────────────────────────── */
+:lang(ja) .md-typeset,
+:lang(ja) .md-nav,
+:lang(ja) .md-header {
+  letter-spacing: 0;
+}
+
+/* ── Mermaid FOUC 防止: JS がレンダリングするまで生ソースを非表示 ──────── */
+pre.mermaid {
+  visibility: hidden;
+}
+
+/* ── 検索バグ修正 ─────────────────────────────────────────────────────────── */
+/* [fix4] アイコン縦ズレ — height:32px 固定時に Material の絶対配置 top がずれるため上書き */
+.md-search__icon[for="__search"],
+.md-search__options {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.md-search__options .md-search__icon.md-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* [fix5] サジェスト文字ズレ — __input の font-size 変更を __suggest にも適用 */
+.md-search__suggest {
+  font-size: 13px;
+  line-height: 32px;
+}
+
+/* [fix6] ヘッダタイトル — サイト名を非表示にしてページタイトルのみ常時表示 */
+.md-header__topic:first-child {
+  display: none;
+}
+.md-header__topic:last-child {
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto;
+}
+
+/* ── Grid card アイコンサイズ調整 — .lg (1.5em) からやや縮小 ────────────── */
+.md-typeset .grid.cards .twemoji.lg {
+  font-size: 1.2em;
+}
+
+/* ── H3 — 16px / 1.35 / 600 ──────────────────────────────────────────────── */
+.md-typeset h3 {
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+/* ── 左ナビ 多段インデントリセット ─────────────────────────────────────────── */
+/* Material は .md-nav__item 入れ子ごとに padding-left を加算する。全段フラットに統一 */
+.md-sidebar--primary .md-nav__item .md-nav__item {
+  padding-left: 0;
+}
+
+/* ── サイドバー subsection labels（Blueprint API / C++ API 等）────────────── */
+/* .md-nav__item--section の直下 .md-nav__link は計測HTMLの .label と同一スタイルに */
+.md-sidebar--primary .md-nav__item--section > .md-nav__link {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+  padding: 4px 10px;
+  margin: 14px 4px 0;
+  border-radius: 0;
+  background: transparent !important;
+  cursor: default;
+  pointer-events: none;
+}
+.md-sidebar--primary .md-nav__item--section > .md-nav__link .md-nav__icon {
+  display: none;
 }
