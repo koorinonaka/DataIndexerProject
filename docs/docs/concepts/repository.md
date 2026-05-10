@@ -1,30 +1,5 @@
 ---
 title: Repository
-quickref:
-  type: UDataIndexerRepository
-  inherits: UDataAsset
-  pills:
-    - Runtime
-    - Editor
-    - Blueprintable
-  module: DataIndexer
-  methods:
-    - name: FindRowEntity
-      desc: Find a single row by key
-    - name: ForEachPrimaryKeys
-      desc: Iterate over all visible rows
-    - name: GetSchema
-      desc: Get the bound schema CDO
-    - name: GetDisplayName
-      desc: Display name via schema
-  related:
-    - UDataIndexerSchema
-    - FDataIndexerPrimaryKey
-    - FDataIndexerRowHandle
-    - FDataIndexerRowsHandle
-    - FInstancedStruct
-  added: v0.1.0
-  verified: UE 5.5
 ---
 
 # Repository

@@ -1,4 +1,3 @@
-{#- nav.html override — appends "Got stuck?" card below the nav tree -#}
 {% import "partials/nav-item.html" as item with context %}
 {% set class = "md-nav md-nav--primary" %}
 {% if "navigation.tabs" in features %}
@@ -25,5 +24,4 @@
       {{ item.render(nav_item, path, 1) }}
     {% endfor %}
   </ul>
-  {% include "partials/_stuck_card.html" %}
 </nav>

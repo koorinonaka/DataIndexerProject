@@ -1,5 +1,5 @@
 ---
-template: home.html
+template: overview.html
 title: DataIndexer
 lang: ja
 hide:

@@ -35,8 +35,9 @@ theme:
     - navigation.tabs.sticky
     - navigation.sections
     - navigation.indexes
+    - navigation.path
     - navigation.top
-    - toc.follow
+    - toc.integrate
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -48,6 +49,9 @@ extra_css:
   - assets/stylesheets/tokens.css
   - assets/stylesheets/extra.css
   - assets/stylesheets/c-variant.css
+
+extra_javascript:
+  - assets/javascripts/toc-fix.js
 
 markdown_extensions:
   - admonition
@@ -98,7 +102,8 @@ plugins:
           name: 日本語
           build: true
           nav_translations:
-            Home: ホーム
+            Overview: 概要
+            Getting Started: はじめに
             Installation: インストール
             Quick Start: クイックスタート
             Core Concepts: コアコンセプト
@@ -106,14 +111,15 @@ plugins:
             Schema: スキーマ
             Keys & Handles: キーとハンドル
             Indexes: インデックス
-            Blueprint API: Blueprint API
-            Function Library: 関数ライブラリ
-            Custom K2 Nodes: カスタム K2 ノード
-            Driven Collection: ドリブンコレクション
             Editor Guide: エディタガイド
             Asset Creation: アセット作成
             Data View: データビュー
             JSON Import & Export: JSON インポート / エクスポート
+            Driven Collection: ドリブンコレクション
+            API Reference: API リファレンス
+            Blueprint API: Blueprint API
+            Function Library: 関数ライブラリ
+            Custom K2 Nodes: カスタム K2 ノード
             C++ API: C++ API
             Repository API: リポジトリ API
             Schema API: スキーマ API
@@ -123,9 +129,10 @@ plugins:
       minify_html: true
 
 nav:
-  - Home: index.md
-  - Installation: installation.md
-  - Quick Start: quick-start.md
+  - Overview: index.md
+  - Getting Started:
+    - Installation: installation.md
+    - Quick Start: quick-start.md
   - Core Concepts:
     - concepts/index.md
     - Repository: concepts/repository.md
@@ -138,15 +145,15 @@ nav:
     - Data View: editor-guide/data-view.md
     - JSON Import & Export: editor-guide/json-import-export.md
     - Driven Collection: editor-guide/driven-collection.md
-  - Blueprint API:
-    - blueprint-api/index.md
-    - Function Library: blueprint-api/function-library.md
-    - Custom K2 Nodes: blueprint-api/k2-nodes.md
-  - C++ API:
-    - cpp-api/index.md
-    - Repository API: cpp-api/repository-api.md
-    - Schema API: cpp-api/schema-api.md
-    - Native Schema Interface: cpp-api/native-schema-interface.md
+  - API Reference:
+    - api-reference/index.md
+    - Blueprint API:
+      - Function Library: api-reference/function-library.md
+      - Custom K2 Nodes: api-reference/k2-nodes.md
+    - C++ API:
+      - Repository API: api-reference/repository-api.md
+      - Schema API: api-reference/schema-api.md
+      - Native Schema Interface: api-reference/native-schema-interface.md
   - Changelog: changelog.md
 
 extra:
