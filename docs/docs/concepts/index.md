@@ -35,7 +35,7 @@ flowchart LR
 
     ---
 
-    Address types for locating rows. `FDataIndexerPrimaryKey` is a stable GUID. `FDataIndexerRowHandle` pairs a repository with a key. `FDataIndexerRowsHandle` resolves a matching row set at query time via an index.
+    Address types for locating rows. `FDataIndexerPrimaryKey` is a stable GUID. `FDataIndexerRowHandle` pairs a repository with a key. `FDataIndexerKeysHandle` resolves a matching key set at query time via an index.
 
 - :material-table-search:{ .lg .middle } &nbsp; **[Indexes](indexes.md)**
 

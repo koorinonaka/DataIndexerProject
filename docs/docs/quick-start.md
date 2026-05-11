@@ -7,7 +7,7 @@ title: Quick Start
 A complete walkthrough — from creating a schema and repository to authoring rows and querying them at runtime.
 
 !!! tip "Prerequisites"
-    - Unreal Engine 5.3 or later
+    - Unreal Engine 5.7 or later
     - DataIndexer plugin enabled — see [Working with Plugins in Unreal Engine](https://dev.epicgames.com/documentation/unreal-engine/working-with-plugins-in-unreal-engine) for setup instructions.
 
 ---
@@ -39,6 +39,9 @@ A complete walkthrough — from creating a schema and repository to authoring ro
     Optionally implement **Get Row Display Name** to show a readable label per row in the Data View:
 
     ![GetRowDisplayName implementation](assets/images/schema-get-row-display-name.png)
+
+    !!! note
+        This logic handles the per-row display equivalent of DataTable's RowName. Rows are automatically renamed by referencing this function, keeping labels always in sync.
 
 === ":material-language-cpp: C++"
 
@@ -86,11 +89,10 @@ A complete walkthrough — from creating a schema and repository to authoring ro
 
     **Implement a C++ Schema**{ .step-label }
 
-    Declare indexes with `DI_DEFINE_INDEX` and register build functions in the constructor:
+    Set `RowStruct` and implement `GetRowDisplayName`:
 
     ```cpp title="ItemSchema.h"
     #pragma once
-    #include "DataIndexerKeyHelpers.h"
     #include "DataIndexerSchema.h"
     #include "ItemSchema.generated.h"
 
@@ -102,22 +104,9 @@ A complete walkthrough — from creating a schema and repository to authoring ro
     public:
         UItemSchema();
 
-        DI_DEFINE_INDEX(ByTypeIndex);
-        DI_DEFINE_INDEX(ByRarityIndex);
-        DI_DEFINE_INDEX(ByTypeAndRarityIndex);
-
     protected:
         virtual FText GetRowDisplayName_Implementation(
             const FDataIndexerPrimaryKey& PrimaryKey, const FInstancedStruct& RowEntity) const override;
-
-        UFUNCTION()
-        static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity);
-
-        UFUNCTION()
-        static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity);
-
-        UFUNCTION()
-        static FGuid BuildTypeAndRarityIndex(const FInstancedStruct& RowEntity);
     };
     ```
 
@@ -128,10 +117,6 @@ A complete walkthrough — from creating a schema and repository to authoring ro
     UItemSchema::UItemSchema()
     {
         RowStruct = FItemRow::StaticStruct();
-
-        RegisterFunction_BuildIndex(ByTypeIndex(),          GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeIndex));
-        RegisterFunction_BuildIndex(ByRarityIndex(),        GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
-        RegisterFunction_BuildIndex(ByTypeAndRarityIndex(), GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeAndRarityIndex));
     }
 
     FText UItemSchema::GetRowDisplayName_Implementation(
@@ -144,15 +129,6 @@ A complete walkthrough — from creating a schema and repository to authoring ro
 
         return Super::GetRowDisplayName_Implementation(PrimaryKey, RowEntity);
     }
-
-    FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
-    {
-        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-        {
-            return FGuid(static_cast<uint32>(Row->Type), 0, 0, 0);
-        }
-        return {};
-    }
     ```
 
 ---
@@ -161,14 +137,14 @@ A complete walkthrough — from creating a schema and repository to authoring ro
 
 **Create a Repository**{ .step-label }
 
-1. Right-click → **Miscellaneous → Data Asset**, select `DataIndexerRepository`
-2. Name it (e.g., `DI_Items`) and open it
-3. In the **Details** panel, set **Schema Class** to your schema (e.g., `BP_ItemSchema` or `ItemSchema`)
+1. Right-click → **Miscellaneous → DataIndexer** and select the Repository asset type
+2. In the Pick Class Dialog, select your schema (e.g., `BP_ItemSchema` or `UItemSchema`)
+3. Name it (e.g., `DI_Items`) and open it
 
 ![Repository with schema bound in the Details panel](assets/images/repository-schema-binding.png)
 
-!!! warning "Schema binding is permanent"
-    Set **Schema Class** before adding any rows. The binding cannot be changed later. Migrate data to a new DI via JSON Export / Import.
+!!! note "Changing the schema"
+    The bound schema **can be changed** as long as the Row Struct matches. If the Row Struct differs, migrate via JSON Export / Import.
 
 **Author Rows**{ .step-label }
 
@@ -190,50 +166,49 @@ For a full breakdown of the editor, see the [Editor Guide](editor-guide/index.md
 
     **Reference a specific row**{ .step-label }
 
-    Declare a `FDataIndexerRowHandle` variable on an Actor or component. In the Details panel, set it to a specific row from the repository.
-
-    In a Blueprint event graph, use the **Get Row** node:
+    Spawn a **Get Row** node directly in the graph:
 
     1. Right-click in the graph → search for **Get Row** and add it
-    2. Set **Schema Class** on the pin — the `Row` output pin resolves to your struct type
-    3. Drop a repository row directly onto the **Row Handle** input pin — no variable required
-    4. Wire the `Row` output pin into your logic
+    2. Set **Handle Repository** to the repository you created
+    3. Select a row via the **Handle Primary Key** ComboBox
+    4. Wire the **Out Row** output pin into your logic
+
+    ![Get Row node example](assets/images/get-row-node.png)
+
+    !!! note
+        Workflows using a Handle variable are covered in a separate document.
 
     **Iterate all rows**{ .step-label }
 
-    Use **Get All Primary Keys** (DataIndexer function library) with a repository reference to get every primary key, then call **Get Row** for each key.
+    Pass a repository to **Get All Primary Keys** to retrieve all primary keys, then loop with **For Each Loop** and call **Get Row** for each key.
+
+    ![Node graph for iterating all rows](assets/images/iterate-all-rows.png)
 
     For index-based filtering, see [Blueprint API → Function Library](api-reference/function-library.md).
 
 === ":material-language-cpp: C++"
 
-    Call `FItemInterface` (alias for `TNativeSchemaInterface<FItemRow>`) directly:
+    Use `FItemInterface` (alias for `TNativeSchemaInterface<FItemRow>`).
 
-    ```cpp title="ItemInterfaceMock.cpp"
-    // Direct row lookup
-    const FItemRow* FItemInterfaceMock::FindItemRow(
-        const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& PrimaryKey)
+    **Reference a specific row**{ .step-label }
+
+    ```cpp title="Example"
+    if (const FItemRow* Row = FItemInterface::FindRow(Repository, PrimaryKey))
     {
-        return FItemInterface::FindRow(Repository, PrimaryKey);
+        FText Name = Row->DisplayName;
+        // ...
     }
+    ```
 
-    // Forward index lookup — all items of a given type
-    TArray<FDataIndexerPrimaryKey> FItemInterfaceMock::GetItemsByType(
-        const UDataIndexerRepository& Repository, EItemType Type)
-    {
-        FItemRow Query;
-        Query.Type = Type;
-        return FItemInterface::GetPrimaryKeys(Repository, UItemSchema::ByTypeIndex(), Query);
-    }
+    **Iterate all rows**{ .step-label }
 
-    // Compound index — type + rarity simultaneously
-    TArray<FDataIndexerPrimaryKey> FItemInterfaceMock::GetItemsByTypeAndRarity(
-        const UDataIndexerRepository& Repository, EItemType Type, EItemRarity Rarity)
+    ```cpp title="Example"
+    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetAllPrimaryKeys(Repository))
     {
-        FItemRow Query;
-        Query.Type   = Type;
-        Query.Rarity = Rarity;
-        return FItemInterface::GetPrimaryKeys(Repository, UItemSchema::ByTypeAndRarityIndex(), Query);
+        if (const FItemRow* Row = FItemInterface::FindRow(Repository, Key))
+        {
+            // ...
+        }
     }
     ```
 

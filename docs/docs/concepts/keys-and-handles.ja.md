@@ -16,11 +16,11 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
 - エディタで行を作成したときに 1 度だけ生成され、以後変更されない。
 - アセットの移動・リネーム・リポジトリのリファクタリングを経ても維持される。
 - リポジトリの `LocalEntries` のキーとして使用される。
-- シリアライズ時に設定された `TWeakObjectPtr` で所有リポジトリを追跡する（UPROPERTY には保存されない）。
+- メタデータから所有リポジトリを特定・保存し、追跡できるようになる。
 
 **使うべき場面：** 低レベル C++ での走査（`ForEachPrimaryKeys`）、ゲームシステムでのマップキー、インデックス検索テーブルの構築。
 
-**使うべきでない場面：** アクターやデータアセットの UPROPERTY にベアなプライマリキーを保存しないでください。リポジトリコンテキストを持つ `FDataIndexerRowHandle` を使用してください。
+**UPROPERTY に保存する場合：** アクターやデータアセットの UPROPERTY にベアなプライマリキーを保存することもできます。その場合は `meta = (Repository = "PropertyPath")` を指定してリポジトリを特定できるようにすると便利です。
 
 ## FDataIndexerRowHandle
 
@@ -48,13 +48,13 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 
 **使うべき場面：** 特定の行を指したいアクター・データアセット・セーブゲーム構造体の UPROPERTY。行参照用の Blueprint 変数。
 
-## FDataIndexerRowsHandle
+## FDataIndexerKeysHandle
 
-`FDataIndexerRowsHandle` はセカンダリインデックスを使って行のセットをアドレスします。リポジトリとインデックス識別子を格納し、マッチする行のセットはクエリ時に部分的に埋めた行構造体を渡して決定します。
+`FDataIndexerKeysHandle` はセカンダリインデックスを使って行のセットをアドレスします。リポジトリとインデックス識別子を格納し、マッチする行のセットはクエリ時に部分的に埋めた行構造体を渡して決定します。
 
 ```cpp
 USTRUCT(BlueprintType)
-struct DATAINDEXER_API FDataIndexerRowsHandle
+struct DATAINDEXER_API FDataIndexerKeysHandle
 {
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TObjectPtr<UDataIndexerRepository> Repository;
@@ -79,4 +79,4 @@ struct DATAINDEXER_API FDataIndexerRowsHandle
 |----|------------|---------------|----------------|----------------|
 | `FDataIndexerPrimaryKey` | 1行 | Yes (BlueprintType) | No | n/a |
 | `FDataIndexerRowHandle` | 1行 | Yes (BlueprintType) | Yes | n/a |
-| `FDataIndexerRowsHandle` | N行（インデックス経由） | Yes (BlueprintType) | Yes | クエリ構造体を呼び出し時に渡す |
+| `FDataIndexerKeysHandle` | N行（インデックス経由） | Yes (BlueprintType) | Yes | クエリ構造体を呼び出し時に渡す |

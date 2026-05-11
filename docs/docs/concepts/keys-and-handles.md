@@ -16,11 +16,11 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
 - Generated once when a row is created in the editor; never changes.
 - Survives asset moves, renames, and repository refactors.
 - Used as the key of `LocalEntries` in the repository.
-- Tracks the owning repository via a `TWeakObjectPtr` (set during serialization, not stored in the UPROPERTY).
+- Identifies and stores the owning repository from metadata, enabling tracking.
 
 **When to use:** Low-level C++ iteration (`ForEachPrimaryKeys`), as map keys in game systems, or when building index lookup tables.
 
-**When NOT to use:** Don't store a bare primary key as a UPROPERTY on an actor or data asset — use `FDataIndexerRowHandle` instead, which carries repository context.
+**When storing as a UPROPERTY:** Bare primary keys can be stored as a UPROPERTY on actors or data assets. When doing so, specify `meta = (Repository = "PropertyPath")` to make the owning repository identifiable.
 
 ## FDataIndexerRowHandle
 
@@ -48,13 +48,13 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 
 **When to use:** UPROPERTY on actors, data assets, or save game structs when you want to point to a specific row. Blueprint variables for row references.
 
-## FDataIndexerRowsHandle
+## FDataIndexerKeysHandle
 
-`FDataIndexerRowsHandle` addresses a set of rows via a secondary index. It stores a repository and an index identifier. The matching row set is determined at query time by passing a partially-filled row struct.
+`FDataIndexerKeysHandle` addresses a set of rows via a secondary index. It stores a repository and an index identifier. The matching row set is determined at query time by passing a partially-filled row struct.
 
 ```cpp
 USTRUCT(BlueprintType)
-struct DATAINDEXER_API FDataIndexerRowsHandle
+struct DATAINDEXER_API FDataIndexerKeysHandle
 {
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
     TObjectPtr<UDataIndexerRepository> Repository;
@@ -79,4 +79,4 @@ struct DATAINDEXER_API FDataIndexerRowsHandle
 |------|-----------|-------------------|-------------------|-----------|
 | `FDataIndexerPrimaryKey` | 1 row | Yes (BlueprintType) | No | n/a |
 | `FDataIndexerRowHandle` | 1 row | Yes (BlueprintType) | Yes | n/a |
-| `FDataIndexerRowsHandle` | N rows (via index) | Yes (BlueprintType) | Yes | pass query struct |
+| `FDataIndexerKeysHandle` | N rows (via index) | Yes (BlueprintType) | Yes | pass query struct |

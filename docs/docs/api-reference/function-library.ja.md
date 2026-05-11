@@ -97,7 +97,7 @@ GetRowsHandleKeys(Handle, Query) → TArray<FDataIndexerPrimaryKey>  [CustomThun
 Rows Handle のリポジトリと、ワイルドカードの `Query` 構造体にマッチするすべてのプライマリキーを返します。`Query` ピンにはスキーマに登録された具体的なインデックスクエリ構造体型を接続する必要があります。
 
 !!! note
-    このノードは `BlueprintInternalUseOnly` としてマークされています。`FDataIndexerRowsHandle` を解決するときに K2 ノードが内部で使用します。
+    このノードは `BlueprintInternalUseOnly` としてマークされています。`FDataIndexerKeysHandle` を解決するときに K2 ノードが内部で使用します。
 
 ---
 

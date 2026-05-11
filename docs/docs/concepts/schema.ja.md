@@ -27,10 +27,17 @@ class UItemSchema : public UDataIndexerSchema
     GENERATED_BODY()
 
 public:
-    DI_DEFINE_INDEX(ByTypeIndex);
+    static const FDataIndexerIndex& ByTypeIndex()
+    {
+        static const FDataIndexerIndex Index(FGuid(1, 0, 0, 0), INVTEXT("ByType"));
+        return Index;
+    }
 
 protected:
     virtual void PostInitProperties() override;
+
+    UFUNCTION()
+    static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity);
 
 public:
     virtual FText GetRowDisplayName_Implementation(

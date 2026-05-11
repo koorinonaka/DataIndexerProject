@@ -24,49 +24,58 @@ At runtime, `Repository.ForEachPrimaryKeys(Index, Query, Callback)` calls the bu
 
 ### In C++
 
-Use `DI_DEFINE_INDEX` to declare each index on the schema class. The macro generates a static accessor function that returns a stable `FDataIndexerIndex` with a deterministic GUID derived from the class path and the name:
+Use `DI_DEFINE_INDEX` to declare each index on the schema class. The macro generates a static accessor function that returns a stable `FDataIndexerIndex` with a deterministic GUID derived from the class path and the name.
 
-```cpp
-// ItemSchema.h
+!!! note "Define this macro in your project"
+    `DI_DEFINE_INDEX` is not provided by the DataIndexer plugin. Add it to a project header (e.g., `DataIndexerKeyHelpers.h`):
+
+```cpp title="DataIndexerKeyHelpers.h"
+#define DI_DEFINE_INDEX( VarName ) \
+    static const FDataIndexerIndex& VarName() \
+    { \
+        static const FDataIndexerIndex Key \
+        { \
+            FGuid::NewDeterministicGuid( StaticClass()->GetPathName() + TEXT( "." #VarName ) ), \
+            INVTEXT( #VarName ) \
+        }; \
+        return Key; \
+    }
+```
+
+```cpp title="ItemSchema.h"
 UCLASS()
 class UItemSchema : public UDataIndexerSchema
 {
     GENERATED_BODY()
 public:
+    UItemSchema();
+
     DI_DEFINE_INDEX(ByTypeIndex);
     DI_DEFINE_INDEX(ByRarityIndex);
 
 protected:
-    virtual void PostInitProperties() override;
+    UFUNCTION()
+    static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity);
 
     UFUNCTION()
-    static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName);
-
-    UFUNCTION()
-    static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName);
+    static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity);
 };
 ```
 
-Register the builders in `PostInitProperties`. Call `Super::PostInitProperties()` **after** the CDO block:
+Register the builders in the constructor:
 
-```cpp
-// ItemSchema.cpp
-void UItemSchema::PostInitProperties()
+```cpp title="ItemSchema.cpp"
+UItemSchema::UItemSchema()
 {
-    if (HasAnyFlags(RF_ClassDefaultObject))
-    {
-        RowStruct = FItemRow::StaticStruct();
-        RegisterFunction_BuildIndex(ByTypeIndex(),   GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeIndex));
-        RegisterFunction_BuildIndex(ByRarityIndex(), GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
-    }
-    Super::PostInitProperties();
+    RowStruct = FItemRow::StaticStruct();
+    RegisterFunction_BuildIndex(ByTypeIndex(),   GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeIndex));
+    RegisterFunction_BuildIndex(ByRarityIndex(), GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
 }
 
-FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName)
+FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
 {
     if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
     {
-        OutDisplayName = UEnum::GetDisplayValueAsText(Row->Type);
         return FGuid(static_cast<uint32>(Row->Type), 0, 0, 0);
     }
     return {};
@@ -79,6 +88,12 @@ FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity, FText& OutD
 2. In **Build Index Functions**, add an entry:
    - **Key**: An `FDataIndexerIndex` variable (set a fixed GUID in the variable defaults)
    - **Value**: A function reference matching the `Prototype_BuildIndex` signature (`RowEntity → FGuid`)
+
+Implementation example (index by class):
+
+![BuildIndexByClass implementation example](../assets/images/build-index-by-class.png)
+
+`Get Instanced Struct Value` unpacks the row; `Enum to String` → `Parse String to Guid` derives a deterministic GUID from the class enum value.
 
 ## Querying by index
 
@@ -105,7 +120,7 @@ TArray<FDataIndexerPrimaryKey> Characters =
 
 **Blueprint:**
 
-Use a `FDataIndexerRowsHandle` UPROPERTY and the **Get Rows Handle Keys** function library node. The node takes the handle and a **Query** wildcard struct pin — fill in the fields that drive the index (e.g., set `Type = Weapon` for a `ByType` index).
+Use a `FDataIndexerKeysHandle` UPROPERTY and the **Get Rows Handle Keys** function library node. The node takes the handle and a **Query** wildcard struct pin — fill in the fields that drive the index (e.g., set `Type = Weapon` for a `ByType` index).
 
 ## Index key stability
 
@@ -113,5 +128,5 @@ The GUID returned by a builder function must be stable across editor sessions. U
 
 `DI_DEFINE_INDEX` uses `FGuid::NewDeterministicGuid(StaticClass()->GetPathName() + "." + IndexName)` for the index identifier, so renaming the index or the schema class (which changes `GetPathName()`) would change its GUID. Treat those names as stable API.
 
-!!! warning "Rebuild on schema change"
-    If you change which index key a builder returns for existing rows, re-save the repository to rebuild the `ReverseLookups` table.
+!!! note "When ReverseLookups is rebuilt"
+    In the editor, the table is rebuilt automatically when accessed. For packaged builds, it is rebuilt at cook time. No manual re-save is required.

@@ -27,13 +27,17 @@ class UMyItemSchema : public UDataIndexerSchema
     GENERATED_BODY()
 
 public:
-    DI_DEFINE_INDEX(ByCategoryIndex);
+    static const FDataIndexerIndex& ByCategoryIndex()
+    {
+        static const FDataIndexerIndex Index(FGuid(1, 0, 0, 0), INVTEXT("ByCategory"));
+        return Index;
+    }
 
 protected:
     virtual void PostInitProperties() override;
 
     UFUNCTION()
-    static FGuid BuildCategoryIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName);
+    static FGuid BuildCategoryIndex(const FInstancedStruct& RowEntity);
 
 public:
     virtual FText GetRowDisplayName_Implementation(

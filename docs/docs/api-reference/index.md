@@ -17,7 +17,7 @@ DataIndexer exposes a Blueprint-friendly surface through three mechanisms:
 |-----------|-------------|
 | `UDataIndexerFunctionLibrary` | Pure and callable utility nodes for key/handle operations |
 | Custom K2 Nodes | Typed row retrieval and primary key dispatch |
-| Struct types | `FDataIndexerRowHandle` and `FDataIndexerRowsHandle` as UPROPERTY variable types |
+| Struct types | `FDataIndexerRowHandle` and `FDataIndexerKeysHandle` as UPROPERTY variable types |
 
 Most Blueprint nodes are runtime-safe and available in packaged builds. A small number of nodes (those wrapping editor subsystem calls) are editor-only and will not appear in runtime Blueprints.
 
@@ -57,7 +57,7 @@ PublicDependencyModuleNames.AddRange(new string[]
 
 | Header | Include path | Contents |
 |--------|-------------|----------|
-| `DataIndexerTypes.h` | `#include "DataIndexerTypes.h"` | `FDataIndexerPrimaryKey`, `FDataIndexerRowHandle`, `FDataIndexerRowsHandle`, `FDataIndexerIndex`, `FDataIndexerIndexKey`, `FDataIndexerImmutableKey` |
+| `DataIndexerTypes.h` | `#include "DataIndexerTypes.h"` | `FDataIndexerPrimaryKey`, `FDataIndexerRowHandle`, `FDataIndexerKeysHandle`, `FDataIndexerIndex`, `FDataIndexerIndexKey`, `FDataIndexerImmutableKey` |
 | `DataIndexerRepository.h` | `#include "DataIndexerRepository.h"` | `UDataIndexerRepository` |
 | `DataIndexerSchema.h` | `#include "DataIndexerSchema.h"` | `UDataIndexerSchema`, `FDataIndexerExpandedStructEntry` |
 | `DataIndexerSchemaInterface.h` | `#include "DataIndexerSchemaInterface.h"` | `DataIndexer::TNativeSchemaInterface<T>` |

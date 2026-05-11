@@ -26,47 +26,56 @@ ReverseLookups[FDataIndexerIndex] → { TMap<FGuid, TArray<FDataIndexerPrimaryKe
 
 スキーマクラスに `DI_DEFINE_INDEX` マクロでインデックスを宣言します。マクロはクラスパスと名前から決定論的 GUID を生成する静的アクセサ関数を展開します。
 
+!!! note "プロジェクト側で定義が必要"
+    `DI_DEFINE_INDEX` は DataIndexer プラグインには含まれていません。プロジェクトのヘッダ（例：`DataIndexerKeyHelpers.h`）に以下のように定義してください。
+
+```cpp title="DataIndexerKeyHelpers.h"
+#define DI_DEFINE_INDEX( VarName ) \
+    static const FDataIndexerIndex& VarName() \
+    { \
+        static const FDataIndexerIndex Key \
+        { \
+            FGuid::NewDeterministicGuid( StaticClass()->GetPathName() + TEXT( "." #VarName ) ), \
+            INVTEXT( #VarName ) \
+        }; \
+        return Key; \
+    }
+```
+
 ```cpp title="ItemSchema.h"
 UCLASS()
 class UItemSchema : public UDataIndexerSchema
 {
     GENERATED_BODY()
 public:
+    UItemSchema();
+
     DI_DEFINE_INDEX(ByTypeIndex);
     DI_DEFINE_INDEX(ByRarityIndex);
 
 protected:
-    virtual void PostInitProperties() override;
+    UFUNCTION()
+    static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity);
 
     UFUNCTION()
-    static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName);
-
-    UFUNCTION()
-    static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName);
+    static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity);
 };
 ```
 
-`PostInitProperties` でビルダーを登録します。
+コンストラクタでビルダーを登録します。
 
 ```cpp title="ItemSchema.cpp"
-void UItemSchema::PostInitProperties()
+UItemSchema::UItemSchema()
 {
-    if (HasAnyFlags(RF_ClassDefaultObject))
-    {
-        RowStruct = FItemRow::StaticStruct();
-        RegisterFunction_BuildIndex(ByTypeIndex(),
-            GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeIndex));
-        RegisterFunction_BuildIndex(ByRarityIndex(),
-            GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
-    }
-    Super::PostInitProperties();
+    RowStruct = FItemRow::StaticStruct();
+    RegisterFunction_BuildIndex(ByTypeIndex(),   GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeIndex));
+    RegisterFunction_BuildIndex(ByRarityIndex(), GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
 }
 
-FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity, FText& OutDisplayName)
+FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
 {
     if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
     {
-        OutDisplayName = UEnum::GetDisplayValueAsText(Row->Type);
         return FGuid(static_cast<uint32>(Row->Type), 0, 0, 0);
     }
     return {};
@@ -79,6 +88,12 @@ FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity, FText& OutD
 2. **Build Index Functions** にエントリを追加：
    - **Key**：`FDataIndexerIndex` 変数（固定 GUID を変数デフォルト値に設定）
    - **Value**：`Prototype_BuildIndex` シグネチャに合った関数参照（`RowEntity → FGuid`）
+
+実装例（クラス別インデックス）：
+
+![BuildIndexByClass の実装例](../assets/images/build-index-by-class.png)
+
+`Get Instanced Struct Value` で行データを取り出し、`Enum to String` → `Parse String to Guid` でクラス Enum から決定論的 GUID を生成して返します。
 
 ## インデックスによるクエリ
 
@@ -106,7 +121,7 @@ TArray<FDataIndexerPrimaryKey> Characters =
 
 **Blueprint:**
 
-`FDataIndexerRowsHandle` UPROPERTY と **Get Rows Handle Keys** 関数ライブラリノードを使います。ノードはハンドルと **Query** ワイルドカード構造体ピンを受け取ります。インデックスを駆動するフィールドを埋めてください（例：`ByType` インデックスなら `Type = Weapon` を設定）。
+`FDataIndexerKeysHandle` UPROPERTY と **Get Rows Handle Keys** 関数ライブラリノードを使います。ノードはハンドルと **Query** ワイルドカード構造体ピンを受け取ります。インデックスを駆動するフィールドを埋めてください（例：`ByType` インデックスなら `Type = Weapon` を設定）。
 
 ## インデックスキーの安定性
 
@@ -114,5 +129,5 @@ TArray<FDataIndexerPrimaryKey> Characters =
 
 `DI_DEFINE_INDEX` は `FGuid::NewDeterministicGuid(StaticClass()->GetPathName() + "." + インデックス名)` を使用するため、インデックス名やスキーマクラス名（`GetPathName()` が変わる）のリネームは GUID 変更を引き起こします。これらの名前は安定した API として扱ってください。
 
-!!! warning "スキーマ変更後は再保存が必要"
-    既存の行に対してビルダーが返すキーを変更した場合、リポジトリを再保存して `ReverseLookups` テーブルを再構築してください。
+!!! note "ReverseLookups の再構築タイミング"
+    エディタでは参照時に自動構築されます。パッケージビルドではクック時に構築されるため、手動での再保存は不要です。

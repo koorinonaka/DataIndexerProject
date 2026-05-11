@@ -18,7 +18,7 @@ flowchart LR
 
     ---
 
-    行を保持するデータアセット。プライマリキーからインスタンス化された行構造体への `TMap`、およびセカンダリインデックス用の逆引きテーブルを格納します。親 Repository を参照して行を複製せずに継承できます。
+    行を保持するデータアセット。プライマリキーからインスタンス化された行構造体への `TMap`、およびセカンダリインデックス用の逆引きテーブルを格納します。
 
 - :material-file-document-outline:{ .lg .middle } &nbsp; **[Schema](schema.md)**
 
@@ -30,7 +30,7 @@ flowchart LR
 
     ---
 
-    行を特定するアドレス型。`FDataIndexerPrimaryKey` は単一行を識別する GUID。`FDataIndexerRowHandle` はリポジトリ参照とキーをペアにし、`FDataIndexerRowsHandle` はインデックスクエリ用のセットを解決します。
+    行を特定するアドレス型。`FDataIndexerPrimaryKey` は単一行を識別する GUID。`FDataIndexerRowHandle` はリポジトリ参照とキーをペアにし、`FDataIndexerKeysHandle` はインデックスクエリ用のキーセットを解決します。
 
 - :material-table-search:{ .lg .middle } &nbsp; **[Indexes](indexes.md)**
 

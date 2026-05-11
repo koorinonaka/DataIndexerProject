@@ -97,7 +97,7 @@ GetRowsHandleKeys(Handle, Query) → TArray<FDataIndexerPrimaryKey>  [CustomThun
 Returns all primary keys matching the rows handle's repository and the wildcard `Query` struct. The `Query` pin must be wired to the concrete index query struct type registered for the schema.
 
 !!! note
-    This node is marked `BlueprintInternalUseOnly`. Used internally by K2 nodes when resolving `FDataIndexerRowsHandle`.
+    This node is marked `BlueprintInternalUseOnly`. Used internally by K2 nodes when resolving `FDataIndexerKeysHandle`.
 
 ---
 
