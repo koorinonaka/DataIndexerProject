@@ -86,27 +86,18 @@ Extracts the typed row struct from a handle into `OutValue`. The `OutValue` wild
 
 ---
 
-## Index nodes
-
-### Make Index Key
-
-```
-MakeIndexKey(Repository, Index, Value) → FDataIndexerIndexKey  [CustomThunk, BlueprintInternalUseOnly]
-```
-
-Calls the schema's registered builder function for `Index` with the wildcard `Value` struct. Returns the computed `FDataIndexerIndexKey`. Used internally by `UK2Node_DataIndexerGetRow` when resolving `FDataIndexerRowsHandle`.
-
----
-
 ## Rows Handle nodes
 
 ### Get Rows Handle Keys
 
 ```
-GetRowsHandleKeys(RowsHandle) → TArray<FDataIndexerPrimaryKey>
+GetRowsHandleKeys(Handle, Query) → TArray<FDataIndexerPrimaryKey>  [CustomThunk, BlueprintInternalUseOnly]
 ```
 
-Returns all primary keys matching the rows handle's repository + index + index key combination. Calls `Repository->ForEachPrimaryKeys(Index, IndexKey, ...)` internally.
+Returns all primary keys matching the rows handle's repository and the wildcard `Query` struct. The `Query` pin must be wired to the concrete index query struct type registered for the schema.
+
+!!! note
+    This node is marked `BlueprintInternalUseOnly`. Used internally by K2 nodes when resolving `FDataIndexerRowsHandle`.
 
 ---
 

@@ -125,7 +125,8 @@
 }
 .ov-feature-row:last-child { border-bottom: none; }
 .ov-feature-text { order: 1; }
-.ov-feature-visual { order: 2; }
+.ov-feature-visual { order: 2; border-radius: 4px; overflow: hidden; }
+.ov-feature-visual img { display: block; width: 100%; }
 .ov-feature-row.is-reversed .ov-feature-text { order: 2; }
 .ov-feature-row.is-reversed .ov-feature-visual { order: 1; }
 .ov-feature-kicker {

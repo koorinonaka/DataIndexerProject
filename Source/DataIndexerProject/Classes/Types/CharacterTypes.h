@@ -29,7 +29,7 @@ struct DATAINDEXERPROJECT_API FCharacterRow
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 MaxHP = 100;
 
-	UPROPERTY( EditAnywhere, BlueprintReadWrite, meta = ( SourceRepository = "ItemRepository" ) )
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, meta = ( Repository = "ItemRepository" ) )
 	FDataIndexerPrimaryKey DefaultWeapon;
 };
 

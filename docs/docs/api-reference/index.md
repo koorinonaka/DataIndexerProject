@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # API Reference
 
 DataIndexer exposes its runtime surface through two APIs — Blueprint nodes for designer-facing workflows and a typed C++ API for code-side integration.

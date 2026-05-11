@@ -220,15 +220,21 @@
   margin-bottom: 28px;
 }
 
-/* ── コードブロック — warm near-black ────────────────────────────────────── */
+/* ── コードブロック ─────────────────────────────────────────────────────────── */
+/* レイアウトのみ共通。背景色はスキーム別 */
 .md-typeset pre > code,
 .md-typeset .highlight pre {
-  background: #1a1917;
-  color: #e6e1d8;
   border-radius: 8px;
   padding: 14px 16px;
   font-size: 13px;
   line-height: 1.6;
+}
+
+/* ダークモード: warm near-black を強制 */
+[data-md-color-scheme="slate"] .md-typeset pre > code,
+[data-md-color-scheme="slate"] .md-typeset .highlight pre {
+  background: #1a1917;
+  color: #e6e1d8;
 }
 
 /* インラインコード */
@@ -241,6 +247,11 @@
 }
 
 /* ── 右ペインを使わない（toc.integrate で左ナビ末尾に統合） ─────────────── */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--secondary {
+    display: none;
+  }
+}
 
 /* Quick Reference カード本体（.admonition.quickref 内で使用） */
 .di-qr {
@@ -450,8 +461,10 @@
   margin: 36px 0 10px;
 }
 
-/* ── 本文 — 15px / 1.65 / mb 14px ───────────────────────────────────────── */
-.md-typeset p {
+/* ── 本文 / リスト — 15px / 1.65 / mb 14px ──────────────────────────────── */
+.md-typeset p,
+.md-typeset ol,
+.md-typeset ul {
   font-size: 15px;
   margin: 0 0 14px;
 }
@@ -606,3 +619,17 @@ pre.mermaid {
 .md-sidebar--primary .md-nav__item--section > .md-nav__link .md-nav__icon {
   display: none;
 }
+
+/* ── ステップラベル — 見出しセマンティクスなし、H3 相当のビジュアル ──────── */
+.md-typeset strong.step-label {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--di-text-strong);
+}
+
+.md-typeset p:has(> strong.step-label) {
+  margin-top: 20px;
+  margin-bottom: 6px;
+}
+

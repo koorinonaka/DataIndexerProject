@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # Core Concepts
 
 DataIndexer is built around four interconnected concepts. Understanding how they relate makes everything else click.

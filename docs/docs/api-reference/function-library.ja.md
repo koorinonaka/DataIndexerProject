@@ -86,27 +86,18 @@ GetRowHandleValue(Handle, OutValue) → bool  [CustomThunk, BlueprintInternalUse
 
 ---
 
-## Index ノード
-
-### Make Index Key
-
-```
-MakeIndexKey(Repository, Index, Value) → FDataIndexerIndexKey  [CustomThunk, BlueprintInternalUseOnly]
-```
-
-ワイルドカードの `Value` 構造体に対してスキーマに登録された `Index` のビルダー関数を呼び出します。計算された `FDataIndexerIndexKey` を返します。`FDataIndexerRowsHandle` を解決するときに `UK2Node_DataIndexerGetRow` が内部で使用します。
-
----
-
 ## Rows Handle ノード
 
 ### Get Rows Handle Keys
 
 ```
-GetRowsHandleKeys(RowsHandle) → TArray<FDataIndexerPrimaryKey>
+GetRowsHandleKeys(Handle, Query) → TArray<FDataIndexerPrimaryKey>  [CustomThunk, BlueprintInternalUseOnly]
 ```
 
-Rows Handle のリポジトリ・インデックス・インデックスキーの組み合わせにマッチするすべてのプライマリキーを返します。内部で `Repository->ForEachPrimaryKeys(Index, IndexKey, ...)` を呼び出します。
+Rows Handle のリポジトリと、ワイルドカードの `Query` 構造体にマッチするすべてのプライマリキーを返します。`Query` ピンにはスキーマに登録された具体的なインデックスクエリ構造体型を接続する必要があります。
+
+!!! note
+    このノードは `BlueprintInternalUseOnly` としてマークされています。`FDataIndexerRowsHandle` を解決するときに K2 ノードが内部で使用します。
 
 ---
 

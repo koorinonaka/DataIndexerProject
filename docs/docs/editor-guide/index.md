@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # Editor Guide
 
 The `DataIndexerEd` module adds a custom editing workflow on top of the runtime asset types. Use the editor to define schemas, create repositories, and author row data — no code required.
