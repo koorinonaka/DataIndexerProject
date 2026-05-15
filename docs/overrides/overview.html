@@ -20,7 +20,7 @@
     <h1>DataTable の、<br>メンテナブルな後継。</h1>
     <p class="ov-hero-lead">DataIndexer は DataTable の課題に応えた UE5 プラグイン。<br>GUID ベースのキー管理でリネームに強く、使用箇所の特定・コンポジション・セカンダリインデックスをデフォルトでサポート。</p>
     <div class="ov-hero-actions">
-      <a href="#features" class="ov-btn-secondary">機能を見る</a>
+      <a href="concepts/" class="ov-btn-secondary">コンセプトを学ぶ</a>
       <a href="quick-start/" class="ov-btn-primary">
         クイックスタート
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
@@ -30,7 +30,7 @@
     <h1>DataTable's<br>maintainable successor.</h1>
     <p class="ov-hero-lead">DataIndexer is a UE5 plugin built around DataTable's pain points.<br>GUID-based key management for rename safety, with usage tracking, composition, and secondary indexes built in.</p>
     <div class="ov-hero-actions">
-      <a href="#features" class="ov-btn-secondary">See features</a>
+      <a href="concepts/" class="ov-btn-secondary">Learn the concepts</a>
       <a href="quick-start/" class="ov-btn-primary">
         Get started
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
@@ -129,7 +129,16 @@
       <div class="ov-feature-text">
         <div class="ov-feature-kicker">04 / インデックス</div>
         <h3>属性による、高速な逆引き。</h3>
-        <p>スキーマにインデックスを定義すると、カテゴリ・レアリティ・ファクションなど任意の属性から Row を高速検索。O(1) に近い効率で動作します。</p>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>インデックス定義</strong>
+            <p>スキーマに任意の属性をインデックスとして宣言し、カテゴリ・レアリティ・ファクションなど、ドメイン特有のキーで Row をグループ化できます。</p>
+          </li>
+          <li>
+            <strong>セカンダリクエリ</strong>
+            <p>Blueprint・C++ どちらからも、定義したインデックス経由で O(1) に近い効率で Row を検索。行数が増えても性能が劣化しません。</p>
+          </li>
+        </ul>
       </div>
       <div class="ov-feature-visual">
         <img src="{{ base_url }}/assets/images/feature-04.png" alt="Index lookup nodes">
@@ -231,7 +240,16 @@
       <div class="ov-feature-text">
         <div class="ov-feature-kicker">04 / Indexes</div>
         <h3>Fast lookup by any attribute.</h3>
-        <p>Define secondary indexes on a schema and query rows by category, rarity, or any domain attribute — at O(1) efficiency regardless of row count.</p>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>Index definition</strong>
+            <p>Declare any row attribute as an index on the schema — category, rarity, faction. Domain-specific keys group rows naturally.</p>
+          </li>
+          <li>
+            <strong>Secondary queries</strong>
+            <p>Look up rows by an index from Blueprint or C++ at near-O(1) efficiency. Row count growth no longer degrades query performance.</p>
+          </li>
+        </ul>
       </div>
       <div class="ov-feature-visual">
         <img src="{{ base_url }}/assets/images/feature-04.png" alt="Index lookup nodes">
@@ -300,50 +318,20 @@
       <div class="ov-sample-col">
         <div class="ov-sample-label">C++</div>
         <div class="ov-sample-wrap" id="ov-samp-cpp">
-<pre class="ov-sample-pre"><code class="language-cpp">USTRUCT(BlueprintType)
-struct FItemRow
-{
-    GENERATED_BODY()
+<pre class="ov-sample-pre"><code class="language-cpp">// セカンダリインデックスで逆引き — O(1)
+FItemRow Filter;
+Filter.Rarity = EItemRarity::Rare;
 
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    FText DisplayName;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    EItemType Type = EItemType::Weapon;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    EItemRarity Rarity = EItemRarity::Common;
-
-    UPROPERTY(EditAnywhere, BlueprintReadOnly)
-    int32 BaseValue = 0;
-};
-
-// Secondary-index lookup — O(1) regardless of row count
-FItemRow Query;
-Query.Rarity = EItemRarity::Rare;
-
-TArray&lt;FDataIndexerPrimaryKey&gt; RareKeys =
-    FItemInterface::GetPrimaryKeys(
-        *ItemRepo, UItemSchema::ByRarityIndex(), Query
-    );
-
-for (const FDataIndexerPrimaryKey&amp; Key : RareKeys)
+for (const FDataIndexerPrimaryKey&amp; Key :
+     FItemInterface::GetPrimaryKeys(
+         *ItemRepo, UItemSchema::ByRarityIndex(), Filter))
 {
     const FItemRow* Row = FItemInterface::FindRow(*ItemRepo, Key);
-    if (Row) { /* ... */ }
+    if (Row) ProcessItem(*Row);
 }</code></pre>
-          <div class="ov-sample-fade"></div>
         </div>
-        <p class="ov-sample-caption">{% if is_ja %}C++ からインデックスで検索{% else %}Query by secondary index from C++{% endif %}</p>
       </div>
 
-    </div>
-    <div class="ov-samples-toggle-row">
-      <button class="ov-sample-toggle" id="ov-btn-all"
-              onclick="ovToggleAll('{% if is_ja %}ja{% else %}en{% endif %}')">
-        <span class="ov-toggle-label">{% if is_ja %}もっと見る{% else %}Show more{% endif %}</span>
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="M4 6l4 4 4-4"/></svg>
-      </button>
     </div>
   </div>
 </section>
@@ -356,16 +344,6 @@ document.addEventListener('DOMContentLoaded', function() {
     if (e.key === 'Escape') ovCloseLightbox();
   });
 });
-function ovToggleAll(lang) {
-  var btn   = document.getElementById('ov-btn-all');
-  var isExp = btn.classList.toggle('is-expanded');
-  var el = document.getElementById('ov-samp-cpp');
-  if (el) el.classList.toggle('is-expanded', isExp);
-  var label = btn.querySelector('.ov-toggle-label');
-  if (label) label.textContent = isExp
-    ? (lang === 'ja' ? '閉じる'    : 'Show less')
-    : (lang === 'ja' ? 'もっと見る' : 'Show more');
-}
 function ovOpenLightbox(src) {
   var lb = document.getElementById('ov-lightbox');
   lb.querySelector('.ov-lightbox-img').src = src;
@@ -456,7 +434,7 @@ function ovCloseLightbox() {
     <p class="ov-section-heading">はじめる</p>
     <h2 class="ov-subsection-h2">10分で、最初のクエリまで。</h2>
     <div class="ov-getstarted-grid">
-      <a class="ov-card ov-card--getstarted" href="installation/">
+      <a class="ov-card ov-card--getstarted" href="quick-start/">
         <div class="ov-getstarted-icon">
           <svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v9m0 0 4-4M9 11l-4-4M3 13v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1"/></svg>
         </div>
@@ -518,7 +496,7 @@ function ovCloseLightbox() {
     <p class="ov-section-heading">Get Started</p>
     <h2 class="ov-subsection-h2">First query in ten minutes.</h2>
     <div class="ov-getstarted-grid">
-      <a class="ov-card ov-card--getstarted" href="installation/">
+      <a class="ov-card ov-card--getstarted" href="quick-start/">
         <div class="ov-getstarted-icon">
           <svg width="20" height="20" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M9 2v9m0 0 4-4M9 11l-4-4M3 13v1a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-1"/></svg>
         </div>

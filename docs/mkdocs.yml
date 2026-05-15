@@ -53,6 +53,7 @@ extra_css:
 
 extra_javascript:
   - assets/javascripts/toc-fix.js
+  - assets/javascripts/quick-start-progress.js
 
 markdown_extensions:
   - admonition

@@ -6,13 +6,51 @@ title: Quick Start
 
 A complete walkthrough — from creating a schema and repository to authoring rows and querying them at runtime.
 
-!!! tip "Prerequisites"
-    - Unreal Engine 5.7 or later
-    - DataIndexer plugin enabled — see [Working with Plugins in Unreal Engine](https://dev.epicgames.com/documentation/unreal-engine/working-with-plugins-in-unreal-engine) for setup instructions.
+<div class="qs-prereq">
+  <p class="qs-prereq-title">Prerequisites</p>
+  <div class="qs-prereq-grid">
+    <div class="qs-prereq-row">
+      <span class="qs-prereq-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Unreal Engine</strong><span class="qs-prereq-meta">5.7+</span></span>
+    </div>
+    <div class="qs-prereq-row">
+      <span class="qs-prereq-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Plugin enabled</strong><span class="qs-prereq-meta">→ <a href="https://dev.epicgames.com/documentation/unreal-engine/working-with-plugins-in-unreal-engine">(Official docs)</a></span></span>
+    </div>
+    <div class="qs-prereq-row">
+      <span class="qs-prereq-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Blueprint or C++</strong><span class="qs-prereq-meta">Either works</span></span>
+    </div>
+    <div class="qs-prereq-row">
+      <span class="qs-prereq-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Time needed</strong><span class="qs-prereq-meta">~10 min</span></span>
+    </div>
+  </div>
+</div>
 
----
+<div class="qs-progress" role="navigation" aria-label="Progress">
+  <div class="qs-progress-rail">
+    <div class="qs-progress-bar-line"></div>
+    <div class="qs-progress-step" data-step="1">
+      <div class="qs-progress-dot">1</div>
+      <div class="qs-progress-label">Schema</div>
+    </div>
+    <div class="qs-progress-step" data-step="2">
+      <div class="qs-progress-dot">2</div>
+      <div class="qs-progress-label">Repository</div>
+    </div>
+    <div class="qs-progress-step" data-step="3">
+      <div class="qs-progress-dot">3</div>
+      <div class="qs-progress-label">Query</div>
+    </div>
+    <div class="qs-progress-step" data-step="finish">
+      <div class="qs-progress-dot">✓</div>
+      <div class="qs-progress-label">Done</div>
+    </div>
+  </div>
+</div>
 
-## 1. Create a Struct and Schema
+## Create a Struct and Schema { #step-1 .step }
 
 === ":material-puzzle: Editor & Blueprint"
 
@@ -131,9 +169,30 @@ A complete walkthrough — from creating a schema and repository to authoring ro
     }
     ```
 
+<div class="qs-complete">
+  <p class="qs-complete-title">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="8"/><path d="m5 9 3 3 5-6"/></svg>
+    What you have now
+  </p>
+  <ul class="qs-complete-list">
+    <li>
+      <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Row type defined</strong> — <code>S_ItemRow</code> struct is in the Content Browser</span>
+    </li>
+    <li>
+      <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Schema Blueprint</strong> — <code>BP_ItemSchema</code> is pointed at the struct</span>
+    </li>
+    <li>
+      <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Display name logic</strong> — <code>GetRowDisplayName</code> is implemented (optional)</span>
+    </li>
+  </ul>
+</div>
+
 ---
 
-## 2. Create a Repository and Author Rows
+## Create a Repository and Author Rows { #step-2 .step }
 
 **Create a Repository**{ .step-label }
 
@@ -158,9 +217,26 @@ Double-click the repository asset to open the Data View.
 
 For a full breakdown of the editor, see the [Editor Guide](editor-guide/index.md).
 
+<div class="qs-complete">
+  <p class="qs-complete-title">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="8"/><path d="m5 9 3 3 5-6"/></svg>
+    What you have now
+  </p>
+  <ul class="qs-complete-list">
+    <li>
+      <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Repository asset</strong> — created and bound to the schema</span>
+    </li>
+    <li>
+      <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Row data</strong> — at least one row saved in the Data View</span>
+    </li>
+  </ul>
+</div>
+
 ---
 
-## 3. Query Examples
+## Query Examples { #step-3 .step }
 
 === ":material-puzzle: Editor & Blueprint"
 
@@ -174,9 +250,6 @@ For a full breakdown of the editor, see the [Editor Guide](editor-guide/index.md
     4. Wire the **Out Row** output pin into your logic
 
     ![Get Row node example](assets/images/get-row-node.png)
-
-    !!! note
-        Workflows using a Handle variable are covered in a separate document.
 
     **Iterate all rows**{ .step-label }
 
@@ -211,6 +284,23 @@ For a full breakdown of the editor, see the [Editor Guide](editor-guide/index.md
         }
     }
     ```
+
+<div class="qs-complete">
+  <p class="qs-complete-title">
+    <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="8"/><path d="m5 9 3 3 5-6"/></svg>
+    What you have now
+  </p>
+  <ul class="qs-complete-list">
+    <li>
+      <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Basic query</strong> — retrieving a row from Blueprint or C++</span>
+    </li>
+    <li>
+      <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
+      <span><strong>Full iteration</strong> — looping over all rows and processing them</span>
+    </li>
+  </ul>
+</div>
 
 ---
 
