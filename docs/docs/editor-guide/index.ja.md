@@ -33,7 +33,7 @@ Repository アセットをダブルクリックすると 3 パネル構成のエ
 
     3 パネル構成のカスタムエディタ。行の追加・編集・削除、表示カラムの設定、親・子 Repository 間のナビゲーション。
 
-- :material-code-json:{ .lg .middle } &nbsp; **[JSON Import & Export](json-import-export.md)**
+- :material-code-json:{ .lg .middle } &nbsp; **[JSON サポート](json-support.md)**
 
     ---
 

@@ -3,3 +3,17 @@
 {{ super() }}
 <style>pre.mermaid { visibility: hidden !important; }</style>
 {% endblock %}
+
+{#- パンくずを md-content__inner の中へ移動して横方向の位置を揃える -#}
+{% block container %}
+  <div class="md-content" data-md-component="content">
+    <article class="md-content__inner md-typeset">
+      {% if "navigation.path" in features %}
+        {% include "partials/path.html" %}
+      {% endif %}
+      {% block content %}
+        {% include "partials/content.html" %}
+      {% endblock %}
+    </article>
+  </div>
+{% endblock %}

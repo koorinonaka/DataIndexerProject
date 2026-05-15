@@ -324,10 +324,10 @@ Filter.Rarity = EItemRarity::Rare;
 
 for (const FDataIndexerPrimaryKey&amp; Key :
      FItemInterface::GetPrimaryKeys(
-         *ItemRepo, UItemSchema::ByRarityIndex(), Filter))
+         *ItemRepository, UItemSchema::ByRarityIndex(), Filter))
 {
-    const FItemRow* Row = FItemInterface::FindRow(*ItemRepo, Key);
-    if (Row) ProcessItem(*Row);
+    const FItemRow&amp; Row = *FItemInterface::FindRow(*ItemRepository, Key);
+    ProcessItem(Row);
 }</code></pre>
         </div>
       </div>

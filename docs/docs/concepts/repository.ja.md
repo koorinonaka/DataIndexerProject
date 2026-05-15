@@ -74,4 +74,4 @@ FText GetDisplayName(const FDataIndexerPrimaryKey& PrimaryKey) const;
 
 バイナリアセット形式はカスタムの `Serialize` オーバーライドで `LocalEntries`・`EntryOwners`・`ReverseLookups` をシリアライズします。`ReverseLookups` は保存時にスキーマの `BuildIndexFunctions` から再構築されます。
 
-JSON エクスポートは人間可読で差分に適したサイドカーを生成します。[JSON Import & Export](../editor-guide/json-import-export.md) を参照してください。
+JSON エクスポートはリポジトリの内容を人間可読かつ差分確認に適した形式で出力します。[JSON サポート](../editor-guide/json-support.md) を参照してください。

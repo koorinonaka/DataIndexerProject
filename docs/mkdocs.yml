@@ -36,6 +36,7 @@ theme:
     - navigation.sections
     - navigation.indexes
     - navigation.path
+    - navigation.expand
     - navigation.top
     - toc.integrate
     - search.suggest
@@ -115,7 +116,7 @@ plugins:
             Editor Guide: エディタガイド
             Asset Creation: アセット作成
             Data View: データビュー
-            JSON Import & Export: JSON インポート / エクスポート
+            JSON Support: JSON サポート
             Driven Collection: ドリブンコレクション
             API Reference: API リファレンス
             Blueprint API: Blueprint API
@@ -142,7 +143,7 @@ nav:
     - editor-guide/index.md
     - Asset Creation: editor-guide/asset-creation.md
     - Data View: editor-guide/data-view.md
-    - JSON Import & Export: editor-guide/json-import-export.md
+    - JSON Support: editor-guide/json-support.md
     - Driven Collection: editor-guide/driven-collection.md
   - API Reference:
     - api-reference/index.md

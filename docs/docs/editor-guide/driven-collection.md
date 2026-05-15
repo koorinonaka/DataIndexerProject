@@ -2,15 +2,17 @@
 
 `UDataIndexerDrivenCollection` is an abstract `UDataAsset` base class for editor assets that manage per-key sub-assets — such as icons, ability class references, or other `UObject` pointers — keyed by `FDataIndexerPrimaryKey`. Entries are automatically synchronized with a source repository.
 
+!!! note "C++ required"
+    Using this feature requires C++ subclassing. Blueprint subclassing is not supported — the entry builder pattern requires C++ template instantiation.
+
 ## Concept
 
 A driven collection is a companion asset to a `UDataIndexerRepository`. It maintains a `TMap` keyed by the same `FDataIndexerPrimaryKey` set as the repository, where each value is an asset or struct that cannot or should not live inside the row data itself. When rows are added or removed from the source repository in the editor, the collection rebuilds its entries automatically.
 
 **Typical use cases:**
 
-- Per-row asset references that don't belong in row data (e.g., icons, meshes, ability classes)
-- Per-row editor configuration (e.g., curve assets, spawn data overrides)
-- Derived lookup tables that need a different value type than the repository's row struct
+- Per-row asset references that don't belong in row data (e.g., icons, meshes, ability classes). Separating asset references lets you manage hard-reference loading independently from row data.
+- Data settings for a row list including parent rows.
 
 ## SourceRepository
 
@@ -82,7 +84,3 @@ UMyDrivenCollection::UMyDrivenCollection()
 4. Stable-sorts entries to match the repository's row order
 
 Existing entries whose keys are still present are left untouched — their values survive the rebuild.
-
-## Subclassing in Blueprint
-
-Blueprint subclassing of `UDataIndexerDrivenCollection` is not supported. The entry builder pattern requires C++ template instantiation.

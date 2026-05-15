@@ -478,10 +478,13 @@
 }
 
 /* ── パンくず（navigation.path） ─────────────────────────────────────────── */
+/* md-content__inner 内に配置済み。水平位置は親の padding: 0 48px から継承 */
 nav.md-path {
-  margin-bottom: 14px;
+  margin: 0 0 14px;
 }
-nav.md-path ol {
+[dir="ltr"] .md-typeset .md-path__list,
+[dir="rtl"] .md-typeset .md-path__list,
+.md-path__list {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -489,9 +492,13 @@ nav.md-path ol {
   margin: 0;
   padding: 0;
 }
+[dir="ltr"] .md-typeset .md-path__item,
+[dir="rtl"] .md-typeset .md-path__item,
 .md-path__item {
   display: inline-flex;
   align-items: center;
+  margin: 0;
+  padding: 0;
   font-family: "JetBrains Mono", ui-monospace, monospace;
   font-size: 12px;
   font-weight: 500;
@@ -606,7 +613,7 @@ pre.mermaid {
 
 /* ── サイドバー subsection labels（Blueprint API / C++ API 等）────────────── */
 /* .md-nav__item--section の直下 .md-nav__link は計測HTMLの .label と同一スタイルに */
-.md-sidebar--primary .md-nav__item--section > .md-nav__link {
+.md-sidebar--primary .md-nav__item--section > .md-nav__link:not(.md-nav__container) {
   font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -931,5 +938,89 @@ pre.mermaid {
 
 .ov-samples-footer-link a:hover {
   text-decoration: underline;
+}
+
+/* ── Issue 4: Changelog — release blocks ──────────────────────────────────── */
+.md-typeset h2.release {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(15, 14, 13, 0.10);
+}
+
+[data-md-color-scheme="slate"] .md-typeset h2.release {
+  border-top-color: rgba(255, 248, 235, 0.10);
+}
+
+.md-typeset h2.release::after {
+  content: attr(data-date);
+  display: inline-block;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--md-default-fg-color--lighter);
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+.md-typeset h2.release.release--current::after {
+  content: attr(data-date) " · " attr(data-tag);
+  color: var(--di-accent);
+}
+
+.md-typeset h3.release-group {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.md-typeset h3.release-group::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+:root,
+[data-md-color-scheme="di-light"] {
+  --di-tip:  #1f7a52;
+  --di-note: #2e6ee0;
+  --di-warn: #b45309;
+}
+
+[data-md-color-scheme="slate"] {
+  --di-tip:  #4caf82;
+  --di-note: #6098f5;
+  --di-warn: #f59e0b;
+}
+
+.md-typeset h3.release-group--add    { color: var(--di-tip);  }
+.md-typeset h3.release-group--change { color: var(--di-accent); }
+.md-typeset h3.release-group--fix    { color: var(--di-note); }
+.md-typeset h3.release-group--break  { color: var(--di-warn); }
+
+/* ── Issue 3: 右サイドバー Quick Reference nav ────────────────────────────── */
+.di-qr-nav .md-nav__title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+  padding: 8px 12px 4px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.di-qr-nav .di-qr {
+  padding: 0 12px 16px;
 }
 

@@ -74,4 +74,4 @@ Delegates to the schema's `GetRowDisplayName`. Used by the editor and Blueprint 
 
 The binary asset format serializes `LocalEntries`, `EntryOwners`, and `ReverseLookups` via a custom `Serialize` override. `ReverseLookups` are rebuilt at save time from `BuildIndexFunctions` on the schema.
 
-JSON export produces a sidecar that is human-readable and diff-friendly. See [JSON Import & Export](../editor-guide/json-import-export.md).
+JSON export produces a human-readable, diff-friendly representation of the repository. See [JSON Support](../editor-guide/json-support.md).

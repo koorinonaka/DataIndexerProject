@@ -38,7 +38,7 @@ Setting up a new data table follows this sequence:
 
     The three-panel custom editor. Insert, edit, and delete rows; configure which columns appear; navigate between parent and child repositories.
 
-- :material-code-json:{ .lg .middle } &nbsp; **[JSON Import & Export](json-import-export.md)**
+- :material-code-json:{ .lg .middle } &nbsp; **[JSON Support](json-support.md)**
 
     ---
 
