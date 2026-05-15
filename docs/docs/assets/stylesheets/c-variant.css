@@ -8,10 +8,11 @@
 [data-md-color-scheme="di-light"] {
   /* Warm neutrals */
   --md-default-bg-color: #ffffff;
-  --md-default-fg-color: rgba(15, 14, 13, 0.92);
-  --md-default-fg-color--light: #6b6660;
+  --md-default-fg-color: rgba(10, 9, 8, 0.98);
+  --md-default-fg-color--light: #4a4644;
   --md-default-fg-color--lighter: #a39e98;
-  --md-typeset-color: rgba(15, 14, 13, 0.92);
+  --md-typeset-color: rgba(10, 9, 8, 0.98);
+  --text-muted: #4a4644;
   --md-typeset-a-color: #2e6ee0;
 
   /* Code */
@@ -42,6 +43,7 @@
 [data-md-color-scheme="slate"] {
   --md-default-bg-color: #1a1917;
   --md-default-fg-color: rgba(245, 240, 232, 0.92);
+  --md-default-fg-color--light: rgba(245, 240, 232, 0.60);
   --md-typeset-a-color: #6098f5;
   --md-code-bg-color: #232120;
   --di-bg-alt: #1f1d1a;
@@ -49,6 +51,7 @@
   --di-text-strong: rgba(252, 248, 240, 0.98);
   --di-accent: #6098f5;
   --di-accent-soft: rgba(96, 152, 245, 0.14);
+  --text-muted: #9a948a;
 }
 
 /* ── 全体 — Inter + 日本語フォールバック ─────────────────────────────────── */
