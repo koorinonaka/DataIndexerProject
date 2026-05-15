@@ -636,3 +636,300 @@ pre.mermaid {
   margin-bottom: 6px;
 }
 
+/* ── Issue 2 / 3: Quick Start brushup + Overview additions ───────────────── */
+
+:root,
+[data-md-color-scheme="di-light"] {
+  --di-success: #1f7a52;
+  --di-success-soft: rgba(31, 122, 82, 0.10);
+  --di-success-border: rgba(31, 122, 82, 0.20);
+}
+
+[data-md-color-scheme="slate"] {
+  --di-success: #4caf82;
+  --di-success-soft: rgba(76, 175, 130, 0.12);
+  --di-success-border: rgba(76, 175, 130, 0.25);
+}
+
+/* ── Quick Start: sticky progress bar ───────────────────────────────────── */
+.qs-progress {
+  position: sticky;
+  top: 94px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(15, 14, 13, 0.10);
+  padding: 12px 48px;
+  margin: 0 -48px 20px;
+  z-index: 4;
+}
+
+[data-md-color-scheme="slate"] .qs-progress {
+  background: rgba(26, 25, 23, 0.92);
+  border-bottom: 1px solid rgba(255, 248, 235, 0.10);
+}
+
+.qs-progress-rail {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+.qs-progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.qs-progress-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--md-default-bg-color);
+  border: 2px solid rgba(15, 14, 13, 0.16);
+  display: grid;
+  place-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--md-default-fg-color--light);
+}
+
+[data-md-color-scheme="slate"] .qs-progress-dot {
+  border-color: rgba(255, 248, 235, 0.18);
+}
+
+.qs-progress-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--md-default-fg-color--light);
+  text-align: center;
+}
+
+.qs-progress-step.current .qs-progress-dot {
+  background: var(--di-accent);
+  border-color: var(--di-accent);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(46, 110, 224, 0.15);
+}
+
+.qs-progress-step.current .qs-progress-label {
+  color: var(--di-accent);
+  font-weight: 700;
+}
+
+.qs-progress-step.done .qs-progress-dot {
+  background: var(--di-success);
+  border-color: var(--di-success);
+  color: #fff;
+}
+
+.qs-progress-step.done .qs-progress-label {
+  color: var(--di-text-strong);
+}
+
+.qs-progress-bar-line {
+  position: absolute;
+  top: 14px;
+  left: 14%;
+  right: 14%;
+  height: 2px;
+  background: rgba(15, 14, 13, 0.16);
+  z-index: 0;
+}
+
+[data-md-color-scheme="slate"] .qs-progress-bar-line {
+  background: rgba(255, 248, 235, 0.12);
+}
+
+.qs-progress-bar-line::after {
+  content: "";
+  display: block;
+  height: 100%;
+  background: var(--di-success);
+  width: var(--qs-progress-fill, 0%);
+  transition: width 300ms ease;
+}
+
+.qs-progress-eta {
+  margin-top: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  color: var(--md-default-fg-color--lighter);
+  text-align: right;
+}
+
+/* ── Quick Start: h2 step badge ─────────────────────────────────────────── */
+.md-content__inner { counter-reset: qs-step; }
+
+.md-typeset h2.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.md-typeset h2.step::before {
+  counter-increment: qs-step;
+  content: counter(qs-step);
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--di-accent);
+  color: #fff;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── Quick Start: prereq card ───────────────────────────────────────────── */
+.qs-prereq {
+  background: var(--di-bg-alt);
+  border: var(--di-border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 0 0 24px;
+}
+
+.qs-prereq-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--light);
+  margin: 0 0 12px;
+}
+
+.qs-prereq-title::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--md-default-fg-color--lighter);
+}
+
+.qs-prereq-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+
+.qs-prereq-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--md-typeset-color);
+}
+
+.qs-prereq-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--di-success);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.qs-prereq-meta {
+  font-size: 12px;
+  color: var(--md-default-fg-color--light);
+  margin-left: 4px;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.qs-prereq-meta a {
+  color: var(--di-accent);
+}
+
+/* ── Quick Start: completion checklist ──────────────────────────────────── */
+.qs-complete {
+  background: var(--di-success-soft);
+  border: 1px solid var(--di-success-border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin: 28px 0 0;
+}
+
+.qs-complete-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--di-success);
+  margin: 0 0 12px;
+  letter-spacing: 0.01em;
+}
+
+.md-typeset .qs-complete-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.qs-complete-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--md-typeset-color);
+  margin-bottom: 8px;
+}
+
+.qs-complete-list li:last-child { margin-bottom: 0; }
+
+.qs-complete-check {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--di-success);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+/* ── Overview: samples grid — prevent code column from stretching ────────── */
+.ov-sample-col { min-width: 0; }
+/* caption + footer removed: code block fills column height */
+.ov-sample-col .ov-sample-wrap {
+  overflow-x: auto;
+  flex: 1;
+}
+
+/* ── Overview: samples footer link ──────────────────────────────────────── */
+.ov-samples-footer-link {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.ov-samples-footer-link a {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--di-accent);
+  text-decoration: none;
+}
+
+.ov-samples-footer-link a:hover {
+  text-decoration: underline;
+}
+
