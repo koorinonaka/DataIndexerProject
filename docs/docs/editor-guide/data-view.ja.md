@@ -2,30 +2,16 @@
 
 Data View はリポジトリエディタの中央パネルです。行をグリッド形式で表示し、各カラムが行構造体のプロパティに対応します。
 
-![Data View の全体レイアウト](../assets/images/data-view-layout.png)
-
-## エディタレイアウト
-
-リポジトリエディタは 3 つのパネルで構成されています。
-
-| パネル | 位置 | 役割 |
-|-------|------|------|
-| Asset Details | 左（デフォルト固定） | リポジトリレベルのプロパティ（Schema Class・Parent Repositories） |
-| Data View | 中央 | 行グリッド — 行の追加・削除・インライン編集 |
-| Selection Details | 右 | 現在選択中の行のフルプロパティエディタ |
-
-**Asset Details** タブはデフォルトでエディタ左サイドバーにドッキングされています。タブをドラッグして位置を変えることも可能ですが、レイアウトをリセットすると左に戻ります。
-
 ## 行の追加
 
-ツールバーの **Insert** をクリックするか、Data View にフォーカスした状態で `Ctrl+N` を押します。以下の状態で新しい行が作成されます。
+![Insert キーで新規行を追加する Data View](../assets/images/data-view-add-row.png)
+
+ツールバーの **Insert** をクリックするか、`Ctrl+N` を押します。以下の状態で新しい行が作成されます。
 
 - 新たに生成された `FDataIndexerPrimaryKey`（GUID）
 - 行構造体のすべてのプロパティがデフォルト構築された値
 
 新しい行は Data View の末尾に表示されます。
-
-![Insert キーで新規行を追加する Data View](../assets/images/data-view-add-row.png)
 
 ## 行の削除
 
@@ -35,7 +21,7 @@ Data View で 1 つ以上の行を選択してから：
 - 右クリック → **Delete**
 
 !!! warning "削除は恒久的"
-    行を削除するとそのプライマリキーが削除されます。プロジェクト内で参照していた `FDataIndexerRowHandle` や `FDataIndexerPrimaryKey` はすべて無効になります。保存後はアンドゥできません。
+    行を削除するとそのプライマリキーが削除されます。参照されている行を削除しようとすると確認ダイアログが表示されます。参照ビューアボタンがアクティブな行は、削除前に参照先を確認してください。
 
 ## 行の編集
 
@@ -44,8 +30,12 @@ Data View で 1 つ以上の行を選択してから：
 **インライン編集（Data View）**
 : グリッドのセルを直接クリックします。単純なスカラープロパティ・enum・短い文字列はインライン編集に対応しています。
 
+![インライン編集](../assets/images/feature-05.gif)
+
 **Selection Details（フルエディタ）**
-: 行をクリックして選択します。右の **Selection Details** パネルに、ネスト構造体サポート・アセットピッカー・スキーマが登録したカスタムウィジェット付きのフルプロパティエディタが表示されます。
+: 行をクリックして選択します。右の **Selection Details** パネルにフルプロパティエディタが表示されます。
+
+![Selection Details パネル](../assets/images/data-view-selection-details.png)
 
 ## コンテキストメニュー
 
@@ -67,6 +57,18 @@ Data View で 1 つ以上の行を選択してから：
 | **Override** | `Shift+O` | 親リポジトリの行をこのリポジトリでオーバーライド |
 | **Toggle** | `Shift+T` | DevOnlyRow フラグを切り替え |
 
+行左端の **ドラッグハンドル**（`⠿` アイコン）をドラッグしても並び替えができます。
+
+![ドラッグで行を並び替える](../assets/images/data-view-move-row.gif)
+
+## Row Name
+
+各行の先頭カラムに表示されるラベルです。DataTable の RowName とは異なり、このカラムは直接編集できません。
+
+表示される値はスキーマで実装した `DisplayName` によって決まります。フォーマットは実装側で自由に定義できます（例: ID のゼロ埋め、複数プロパティの連結など）。
+
+Row Name の重複は可能ですが、視認性が下がるため推奨しません。
+
 ## カラムレイアウト
 
 どのプロパティをカラムとして表示するかはスキーマの **Expanded Struct Entries** 設定で制御されます。
@@ -74,8 +76,6 @@ Data View で 1 つ以上の行を選択してから：
 - `RowStruct` の中で `ExpandedStructEntries` に列挙されているプロパティが個別カラムとして表示されます。
 - ネスト構造体のプロパティは、その構造体型を `ExpandedStructEntries` に追加することで独立したカラムに展開できます。
 - 展開セットに含まれないプロパティはグリッドで結合テキストセルとして表示されますが、Selection Details パネルでは完全に編集できます。
-
-**MaxSimpleTextStructMembers** エディタ設定（**Project Settings → Plugins → DataIndexer (Editor)**）は、ネスト構造体をインラインレンダリングするかコラプスするかの閾値を制御します。
 
 ## フィルター
 
@@ -87,7 +87,7 @@ Data View で 1 つ以上の行を選択してから：
 
 | オプション | 説明 |
 |-----------|------|
-| **Show Inherited Rows** | 親リポジトリから継承された行を表示します。デフォルトは非表示。 |
+| **Show Inherited Rows** | 親から継承しこのリポジトリで上書きした行について、上書き元の行を表示します。 |
 | **Show Only Unreferred Rows** | どこからも参照されていない行のみ表示します。未使用データの整理に役立ちます。 |
 | **Show Hidden Rows** | 親リポジトリで `Hidden in Children` に設定され非表示になった行を表示します。 |
 
@@ -101,7 +101,7 @@ Data View で 1 つ以上の行を選択してから：
 
 ## 継承行
 
-親リポジトリからの行は Data View で異なる背景色で表示されます。子リポジトリでは編集できません — ダブルクリックで親アセットに移動します。
+継承行は子リポジトリでは編集できません — ダブルクリックで親アセットに移動します。
 
 **Override**（`Shift+O`）を実行すると、親行の値をコピーした状態でこのリポジトリに行が追加され、独立して編集できるようになります。
 
@@ -115,7 +115,7 @@ Data View で 1 つ以上の行を選択してから：
 - アイコンが**非アクティブ**な行 — どこからも参照されていません
 
 !!! tip "データ整理に最適"
-    **Filters → Show Only Unreferred Rows** と組み合わせることで、未使用の行を一覧できます。不要なデータを安全に削除するための整理作業が格段に効率化します。
+    **Filters → Show Only Unreferred Rows** と同様に、未使用の行を一覧して不要なデータを安全に削除するための整理作業に役立ちます。
 
 ## Editor Flags
 
@@ -130,26 +130,6 @@ Selection Details パネルの **Development** カテゴリに **Editor Flags** 
 | **Hidden in Children** | 子リポジトリの Data View にこの行を表示しません。子が誤って参照・編集するのを防ぎます。 |
 
 複数フラグの同時設定が可能です。フラグなしの状態は **No Flags Set** と表示されます。
-
-## キーボードショートカット
-
-Data View にフォーカスした状態で使用できるショートカットです。
-
-| コマンド | ショートカット | 説明 |
-|---------|--------------|------|
-| Insert | `Ctrl+N` | 新しい行を追加 |
-| Copy | `Ctrl+C` | 選択中の行をコピー |
-| Paste | `Ctrl+V` | 選択中の行にペースト |
-| Duplicate | `Ctrl+D` | 選択中の行を複製 |
-| Delete | `Delete` | 選択中の行を削除 |
-| MoveUp | `Ctrl+K` | 選択中の行を 1 つ上へ移動 |
-| MoveDown | `Ctrl+J` | 選択中の行を 1 つ下へ移動 |
-| Override | `Shift+O` | 選択中の行をオーバーライド |
-| Toggle DevOnlyRow | `Shift+T` | DevOnlyRow フラグを切り替え |
-
-行左端の **ドラッグハンドル**（`⠿` アイコン）をドラッグしても並び替えができます。
-
-![ドラッグで行を並び替える](../assets/images/data-view-move-row.gif)
 
 ## カラム幅と並び順
 

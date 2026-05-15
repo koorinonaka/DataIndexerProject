@@ -26,18 +26,8 @@ class UMyItemSchema : public UDataIndexerSchema
 {
     GENERATED_BODY()
 
-public:
-    static const FDataIndexerIndex& ByCategoryIndex()
-    {
-        static const FDataIndexerIndex Index(FGuid(1, 0, 0, 0), INVTEXT("ByCategory"));
-        return Index;
-    }
-
 protected:
     virtual void PostInitProperties() override;
-
-    UFUNCTION()
-    static FGuid BuildCategoryIndex(const FInstancedStruct& RowEntity);
 
 public:
     virtual FText GetRowDisplayName_Implementation(
@@ -52,9 +42,6 @@ void UMyItemSchema::PostInitProperties()
     if (HasAnyFlags(RF_ClassDefaultObject))
     {
         RowStruct = FMyItemRow::StaticStruct();
-        RegisterFunction_BuildIndex(
-            ByCategoryIndex(),
-            GET_FUNCTION_NAME_CHECKED(ThisClass, BuildCategoryIndex));
     }
     Super::PostInitProperties();
 }

@@ -5,17 +5,17 @@
 !!! note "エディタ専用"
     このセクションのすべての機能は Unreal Editor が必要です。`DataIndexerEd` モジュールは `UncookedOnly` で宣言されており、パッケージビルドでは使用できません。
 
-## ワークフロー概要
+## エディタレイアウト
 
-新しいデータテーブルのセットアップは次の手順で行います：
+Repository アセットをダブルクリックすると 3 パネル構成のエディタが開きます。
 
-1. **Blueprint 構造体を作成** — 行の形状を定義
-2. **Schema Blueprint を作成** — `DataIndexerSchema` のサブクラス、ステップ 1 の構造体を指定
-3. **Repository アセットを作成** — `DataIndexerRepository`
-4. **Repository に Schema Class を設定**
-5. **Repository をダブルクリック** — Data View を開く
-6. **Insert キーで行を追加** — インライン編集または Selection Details パネルで編集
-7. **保存** — 逆引きテーブルが自動再構築
+![エディタ全体レイアウト](../assets/images/editor-overview.png)
+
+| パネル | 位置 | 役割 |
+|-------|------|------|
+| Asset Details | 左（デフォルト非表示、左サイドにドック済み） | Schema Class・Parent Repositories などリポジトリレベルのプロパティ |
+| Data View | 中央 | 行グリッド — 追加・削除・インライン編集 |
+| Selection Details | 右 | 選択行のフルプロパティエディタ |
 
 ## このセクションのページ
 
