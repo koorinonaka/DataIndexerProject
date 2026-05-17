@@ -38,4 +38,5 @@ flowchart LR
 
     セカンダリ検索軸。`FDataIndexerIndex`（GUID）はカテゴリ・陣営・レアリティなどの属性をプライマリキーのセットにマップします。Schema がビルダー関数を登録します。
 
+
 </div>

@@ -20,7 +20,54 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
 
 **When to use:** Low-level C++ iteration (`ForEachPrimaryKeys`), as map keys in game systems, or when building index lookup tables.
 
-**When storing as a UPROPERTY:** Bare primary keys can be stored as a UPROPERTY on actors or data assets. When doing so, specify `meta = (Repository = "PropertyPath")` to make the owning repository identifiable.
+### `Repository` metadata
+
+Bare primary keys can be stored as a `UPROPERTY` on actors, data assets, or structs. Add `meta = (Repository = "...")` so the editor knows which repository to drive the row-picker with.
+
+The value is the **name of a property or function** on the same class that returns a `UDataIndexerRepository*`. A no-arg `UFUNCTION` is also accepted.
+
+=== "C++"
+
+    ```cpp
+    // Property reference — Repository must be a UPROPERTY on the same object
+    UPROPERTY(EditAnywhere, meta = (Repository = "Repository"))
+    FDataIndexerPrimaryKey SingleKey;
+
+    UPROPERTY(EditAnywhere, meta = (Repository = "Repository"))
+    TArray<FDataIndexerPrimaryKey> MultipleKeys;
+
+    // Function reference — no-arg UFUNCTION returning UDataIndexerRepository*
+    UPROPERTY(EditAnywhere, meta = (Repository = "GetRepository"))
+    FDataIndexerPrimaryKey KeyFromFunction;
+    ```
+
+=== "Blueprint"
+
+    Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, a **Repository** dropdown appears. Choose the property or function that supplies the row set.
+
+### `ReadOnlyKeys` metadata
+
+Marks a `FDataIndexerPrimaryKey` Blueprint variable as read-only. The row-picker is hidden; the stored value can only be set programmatically.
+
+=== "C++"
+
+    This key is not set via `UPROPERTY` specifiers. Editor customizations manage it through the Blueprint variable metadata API:
+
+    ```cpp
+    // Lock — hide the row-picker
+    FBlueprintEditorUtils::SetBlueprintVariableMetaData(
+        Blueprint, VarName, nullptr,
+        DataIndexer::MetaDataKeys::ReadOnlyKeys, TEXT("true"));
+
+    // Unlock — show the row-picker again
+    FBlueprintEditorUtils::RemoveBlueprintVariableMetaData(
+        Blueprint, VarName, nullptr,
+        DataIndexer::MetaDataKeys::ReadOnlyKeys);
+    ```
+
+=== "Blueprint"
+
+    Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, toggle the **Read Only Keys** checkbox. When checked, the row-picker disappears and the key value is locked.
 
 ## FDataIndexerRowHandle
 

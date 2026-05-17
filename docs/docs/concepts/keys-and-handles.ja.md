@@ -20,7 +20,54 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
 
 **使うべき場面：** 低レベル C++ での走査（`ForEachPrimaryKeys`）、ゲームシステムでのマップキー、インデックス検索テーブルの構築。
 
-**UPROPERTY に保存する場合：** アクターやデータアセットの UPROPERTY にベアなプライマリキーを保存することもできます。その場合は `meta = (Repository = "PropertyPath")` を指定してリポジトリを特定できるようにすると便利です。
+### `Repository` メタデータ
+
+アクター・データアセット・構造体の `UPROPERTY` にベアなプライマリキーを保存できます。エディタが行ピッカーを表示するリポジトリを特定できるよう `meta = (Repository = "...")` を指定してください。
+
+値には同じクラス上の `UDataIndexerRepository*` を返す**プロパティ名または関数名**を指定します。引数なしの `UFUNCTION` も使用できます。
+
+=== "C++"
+
+    ```cpp
+    // プロパティ参照 — 同じオブジェクト上の UPROPERTY を指定
+    UPROPERTY(EditAnywhere, meta = (Repository = "Repository"))
+    FDataIndexerPrimaryKey SingleKey;
+
+    UPROPERTY(EditAnywhere, meta = (Repository = "Repository"))
+    TArray<FDataIndexerPrimaryKey> MultipleKeys;
+
+    // 関数参照 — UDataIndexerRepository* を返す引数なし UFUNCTION
+    UPROPERTY(EditAnywhere, meta = (Repository = "GetRepository"))
+    FDataIndexerPrimaryKey KeyFromFunction;
+    ```
+
+=== "Blueprint"
+
+    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerPrimaryKey` 変数を選択すると **Repository** ドロップダウンが表示されます。行ピッカーに使用するプロパティ名または関数名を選択してください。
+
+### `ReadOnlyKeys` メタデータ
+
+`FDataIndexerPrimaryKey` Blueprint 変数を読み取り専用にします。行ピッカーが非表示になり、値はプログラムからのみ設定できます。
+
+=== "C++"
+
+    このキーは `UPROPERTY` 指定子では設定しません。エディタカスタマイズが Blueprint 変数メタデータ API で管理します。
+
+    ```cpp
+    // ロック — 行ピッカーを非表示
+    FBlueprintEditorUtils::SetBlueprintVariableMetaData(
+        Blueprint, VarName, nullptr,
+        DataIndexer::MetaDataKeys::ReadOnlyKeys, TEXT("true"));
+
+    // ロック解除 — 行ピッカーを再表示
+    FBlueprintEditorUtils::RemoveBlueprintVariableMetaData(
+        Blueprint, VarName, nullptr,
+        DataIndexer::MetaDataKeys::ReadOnlyKeys);
+    ```
+
+=== "Blueprint"
+
+    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerPrimaryKey` 変数を選択し、**Read Only Keys** チェックボックスをオンにします。オンにすると行ピッカーが非表示になり、格納されているキー値がロックされます。
 
 ## FDataIndexerRowHandle
 

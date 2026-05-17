@@ -43,4 +43,5 @@ flowchart LR
 
     Secondary lookup dimensions. An index (`FDataIndexerIndex`, a GUID) maps a domain attribute — category, faction, rarity — to a set of primary keys. The schema registers the builder function for each row.
 
+
 </div>

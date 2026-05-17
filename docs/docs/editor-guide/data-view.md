@@ -9,7 +9,7 @@ The repository editor has three panels:
 | Panel | Location | Purpose |
 |-------|----------|---------|
 | Asset Details | Left | Repository-level properties (Schema Class, Parent Repositories) |
-| Data View | Center | Row grid — add, delete, and inline-edit rows |
+| Data View | Center | Row grid — add, delete, and edit rows |
 | Selection Details | Right | Full property editor for the currently selected row |
 
 ## Adding rows
@@ -28,40 +28,89 @@ The new row appears at the bottom of the Data View.
 Select one or more rows in the Data View, then:
 
 - Press **Delete**, or
-- Right-click → **Delete Selected Rows**
+- Right-click → **Delete**
 
 !!! warning "Deletion is permanent"
     Deleting a row removes its primary key. Any `FDataIndexerRowHandle` or `FDataIndexerPrimaryKey` elsewhere in the project that referenced it will become invalid. There is no undo after save.
+
+## Cell selection
+
+The Data View uses **cell-level selection** modeled after spreadsheet applications. A highlighted border outlines the selected range.
+
+| Interaction | Result |
+|-------------|--------|
+| Click a cell | Select that cell |
+| Click + drag | Select a rectangular range of cells |
+| Shift+click | Extend the selection from the last anchor to the clicked cell |
+| Ctrl+click | Toggle-add or remove the clicked cell from the selection |
+| Ctrl+drag | Toggle-add or remove a rectangular range |
+| Double-click | Enter inline edit mode for that cell |
+| Escape | Exit inline edit mode |
+
+The cursor changes to a crosshair when hovering over selectable cells.
+
+The **Selection Details** panel on the right reflects the row that contains the selected cell(s). To select an entire row for row-level operations (Delete, Duplicate, MoveUp, etc.), right-click a data cell and choose **Select Row**, or right-click the row's drag-handle column.
 
 ## Editing rows
 
 There are two ways to edit a row:
 
 **Inline editing (Data View)**
-: Click a cell directly in the grid. Simple scalar properties, enums, and short strings support inline editing.
+: Double-click a cell in the grid. Simple scalar properties, enums, and short strings support inline editing. Press **Escape** to exit without navigating away, or click another cell to confirm and move the selection.
 
 **Selection Details (full editor)**
-: Click a row to select it. The **Selection Details** panel on the right shows the full property editor with nested struct support, asset pickers, and custom widgets registered by the schema.
+: Select a row (via right-click → **Select Row**, or click the drag-handle column). The **Selection Details** panel on the right shows the full property editor with nested struct support, asset pickers, and custom widgets registered by the schema.
 
 ## Context menu
 
-Right-click a row to open the action menu.
+There are two context menus depending on what you right-click:
 
-![Row right-click context menu](../assets/images/data-view-context-menu.png)
+### Cell context menu
+
+Right-click a **data cell** when cells (not a full row) are selected.
+
+![Cell right-click context menu](../assets/images/data-view-context-menu.png)
 
 | Item | Shortcut | Description |
 |------|----------|-------------|
-| **Copy ID** | — | Copy the selected row's primary key (GUID) to the clipboard |
+| **Copy** | `Ctrl+C` | Copy the selected cell range as tab-delimited values |
+| **Paste** | `Ctrl+V` | Paste cell values into the selected range |
+| **Select Row** | — | Expand selection to the full row containing the selected cells |
+
+### Row context menu
+
+Right-click on the **drag-handle column**, or right-click when a full row is selected.
+
+| Item | Shortcut | Description |
+|------|----------|-------------|
+| **Copy ID** | — | Copy the row's primary key (GUID) to the clipboard |
 | **Search this row** | — | Search for this row's data within the grid |
-| **Copy** | `Ctrl+C` | Copy the selected row |
-| **Paste** | `Ctrl+V` | Paste the copied row onto the selected position |
+| **Copy** | `Ctrl+C` | Copy the selected row(s) |
+| **Paste** | `Ctrl+V` | Paste copied row data onto the selected row(s) |
 | **Duplicate** | `Ctrl+D` | Duplicate the selected row and append it at the end |
 | **Insert** | `Ctrl+N` | Add a new row |
-| **Delete** | `Delete` | Delete the selected row |
+| **Delete** | `Delete` | Delete the selected row(s) |
 | **MoveUp** | `Ctrl+K` | Move the selected row up one position |
 | **MoveDown** | `Ctrl+J` | Move the selected row down one position |
 | **Override** | `Shift+O` | Override an inherited parent-repository row in this repository |
 | **Toggle** | `Shift+T` | Toggle the DevOnlyRow flag |
+
+## Copy and paste
+
+Copy/paste behavior differs based on the current selection mode.
+
+**Row copy/paste** (full row selected):
+
+- `Ctrl+C` copies the entire row struct (all properties).
+- `Ctrl+V` pastes the copied row data onto all selected rows. When the clipboard contains multiple rows, paste starts from the first selected row and writes downward.
+
+**Cell copy/paste** (cells selected):
+
+- `Ctrl+C` copies the selected rectangular range as tab-delimited text. The selection must be rectangular; a notification appears if it is not.
+- `Ctrl+V` pastes into cells starting from the top-left of the current selection. Column names must match the copied columns exactly. If the clipboard holds a single-row range, it is applied to every selected row.
+
+!!! note "Clipboard format mismatch"
+    Pasting row data into a cell selection (or cell data into a row selection) is rejected with a notification. The two clipboard formats are not interchangeable.
 
 ## Column layout
 
@@ -124,22 +173,6 @@ The **Development** category in the Selection Details panel exposes **Editor Fla
 | **Comment Out** | Disables the row. Not included at game runtime, but data is preserved. Use for rows you want to temporarily exclude. |
 | **Not Overridable in Children** | Prevents child repositories from overriding this row via the Override operation. |
 | **Hidden in Children** | Hides this row from child repositories' Data View to prevent accidental reference or editing. |
-
-## Keyboard shortcuts
-
-Shortcuts available when the Data View has focus:
-
-| Command | Shortcut | Description |
-|---------|----------|-------------|
-| Insert | `Ctrl+N` | Add a new row |
-| Copy | `Ctrl+C` | Copy selected row |
-| Paste | `Ctrl+V` | Paste on selected row |
-| Duplicate | `Ctrl+D` | Duplicate selected row |
-| Delete | `Delete` | Delete current selection |
-| MoveUp | `Ctrl+K` | Move selected row up |
-| MoveDown | `Ctrl+J` | Move selected row down |
-| Override | `Shift+O` | Override selected inherited row |
-| Toggle DevOnlyRow | `Shift+T` | Toggle DevOnlyRow flag |
 
 You can also drag the **drag handle** icon (`⠿`) at the left edge of a row to reorder it.
 

@@ -1024,3 +1024,8 @@ pre.mermaid {
   padding: 0 12px 16px;
 }
 
+/* ── dd — p と同サイズに揃える ──────────────────────────────────────────── */
+.md-typeset dd {
+  font-size: 15px;
+}
+

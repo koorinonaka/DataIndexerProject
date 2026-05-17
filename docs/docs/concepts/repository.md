@@ -25,6 +25,31 @@ This lets you build shared base tables (e.g., a global item repository) and doma
 !!! note "Cycle detection"
     `IncludesRepository(Repository)` detects cycles in the parent chain. The editor prevents circular references.
 
+### Override mode and `NotOverridable`
+
+When a row originates from a parent repository and the child's Data View displays it, the row enters *override mode* — editing it in the child creates a local override without modifying the parent. Individual fields can be locked in this mode by adding the `NotOverridable` metadata to the corresponding **User Defined Struct** variable.
+
+=== "C++"
+
+    For native C++ structs, prefer `const` or access control. For UDStruct fields, the customization layer manages this key:
+
+    ```cpp
+    // Lock a UDStruct variable in override mode
+    FStructureEditorUtils::SetMetaData(
+        UserDefinedStruct, VariableGuid,
+        DataIndexer::MetaDataKeys::NotOverridable, TEXT("true"));
+
+    // Check inside a property customization
+    if (PropertyAndParent.Property.HasMetaData(DataIndexer::MetaDataKeys::NotOverridable))
+    {
+        // Render the property read-only
+    }
+    ```
+
+=== "Blueprint"
+
+    Open the **User Defined Struct** editor. Select a variable. In the **Details** panel, toggle **Not Overridable**. When enabled, child repositories that override a parent row cannot edit this field.
+
 ## Public API
 
 ### `GetSchema()`
@@ -69,6 +94,22 @@ FText GetDisplayName(const FDataIndexerPrimaryKey& PrimaryKey) const;
 ```
 
 Delegates to the schema's `GetRowDisplayName`. Used by the editor and Blueprint nodes for human-readable labels.
+
+## Filtering pickers by schema
+
+When a class owns a `UDataIndexerRepository` UPROPERTY and should be constrained to repositories of a specific schema, add `meta = (Schema = "AssetPath")`. The editor resolves the path and filters the asset picker accordingly.
+
+=== "C++"
+
+    ```cpp
+    UPROPERTY(EditDefaultsOnly, Category = DataIndexer,
+        meta = (Schema = "/Game/DataIndexer/DA_MySchema.DA_MySchema"))
+    TObjectPtr<UDataIndexerRepository> MyRepository;
+    ```
+
+=== "Blueprint"
+
+    Open the Blueprint variable's **Details** panel. With a `UDataIndexerRepository` variable selected, a **Schema** picker appears. Selecting a schema restricts the asset picker to only matching repositories. Clear the picker to show all repositories.
 
 ## Serialization
 

@@ -25,6 +25,31 @@ title: リポジトリ
 !!! note "循環検出"
     `IncludesRepository(Repository)` で親チェーンの循環を検出します。エディタは循環参照を防ぎます。
 
+### オーバーライドモードと `NotOverridable`
+
+行が親リポジトリに由来し、子の Data View がその行を表示する場合、その行は*オーバーライドモード*に入ります。子で編集するとローカルオーバーライドが作成され、親のデータは変更されません。対応する **User Defined Struct** 変数に `NotOverridable` メタデータを付加することで、このモードで特定フィールドをロックできます。
+
+=== "C++"
+
+    ネイティブ C++ 構造体の場合は `const` またはアクセス制御を使用してください。UDStruct フィールドの場合、カスタマイズレイヤーがこのキーを管理します。
+
+    ```cpp
+    // オーバーライドモードで UDStruct 変数をロック
+    FStructureEditorUtils::SetMetaData(
+        UserDefinedStruct, VariableGuid,
+        DataIndexer::MetaDataKeys::NotOverridable, TEXT("true"));
+
+    // プロパティカスタマイズ内で確認
+    if (PropertyAndParent.Property.HasMetaData(DataIndexer::MetaDataKeys::NotOverridable))
+    {
+        // プロパティを読み取り専用でレンダリング
+    }
+    ```
+
+=== "Blueprint"
+
+    **User Defined Struct** エディタを開きます。変数を選択し、**Details** パネルで **Not Overridable** をオンにします。有効にすると、親行をオーバーライドした子リポジトリではこのフィールドを編集できなくなります。
+
 ## パブリック API
 
 ### `GetSchema()`
@@ -69,6 +94,22 @@ FText GetDisplayName(const FDataIndexerPrimaryKey& PrimaryKey) const;
 ```
 
 スキーマの `GetRowDisplayName` に委譲します。エディタと Blueprint ノードが人間可読なラベルを表示するために使用します。
+
+## スキーマによるピッカーの絞り込み
+
+クラスが `UDataIndexerRepository` UPROPERTY を持ち、特定のスキーマのリポジトリのみに制限したい場合は `meta = (Schema = "AssetPath")` を追加します。エディタはパスを解決し、アセットピッカーを対応するリポジトリのみに絞り込みます。
+
+=== "C++"
+
+    ```cpp
+    UPROPERTY(EditDefaultsOnly, Category = DataIndexer,
+        meta = (Schema = "/Game/DataIndexer/DA_MySchema.DA_MySchema"))
+    TObjectPtr<UDataIndexerRepository> MyRepository;
+    ```
+
+=== "Blueprint"
+
+    Blueprint 変数の **Details** パネルを開きます。`UDataIndexerRepository` 変数を選択すると **Schema** ピッカーが表示されます。スキーマアセットを選択すると、アセットピッカーが一致するリポジトリのみに絞り込まれます。ピッカーをクリアするとすべてのリポジトリが表示されます。
 
 ## シリアライズ
 
