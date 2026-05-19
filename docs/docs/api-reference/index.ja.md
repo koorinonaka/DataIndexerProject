@@ -52,7 +52,7 @@ PublicDependencyModuleNames.AddRange(new string[]
 
 | ヘッダー | インクルードパス | 内容 |
 |---------|--------------|------|
-| `DataIndexerTypes.h` | `#include "DataIndexerTypes.h"` | `FDataIndexerPrimaryKey`・`FDataIndexerRowHandle`・`FDataIndexerKeysHandle`・`FDataIndexerIndex`・`FDataIndexerIndexKey`・`FDataIndexerImmutableKey` |
+| `DataIndexerTypes.h` | `#include "DataIndexerTypes.h"` | `FDataIndexerPrimaryKey`・`FDataIndexerRowHandle`・`FDataIndexerKeysHandle`・`FDataIndexerIndex`・`FDataIndexerIndexKey` |
 | `DataIndexerRepository.h` | `#include "DataIndexerRepository.h"` | `UDataIndexerRepository` |
 | `DataIndexerSchema.h` | `#include "DataIndexerSchema.h"` | `UDataIndexerSchema`・`FDataIndexerExpandedStructEntry` |
 | `DataIndexerSchemaInterface.h` | `#include "DataIndexerSchemaInterface.h"` | `DataIndexer::TNativeSchemaInterface<T>` |

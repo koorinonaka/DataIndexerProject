@@ -26,6 +26,10 @@ Bare primary keys can be stored as a `UPROPERTY` on actors, data assets, or stru
 
 The value is the **name of a property or function** on the same class that returns a `UDataIndexerRepository*`. A no-arg `UFUNCTION` is also accepted.
 
+=== "Blueprint"
+
+    Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, a **Repository** dropdown appears. Choose the property or function that supplies the row set.
+
 === "C++"
 
     ```cpp
@@ -41,17 +45,22 @@ The value is the **name of a property or function** on the same class that retur
     FDataIndexerPrimaryKey KeyFromFunction;
     ```
 
-=== "Blueprint"
-
-    Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, a **Repository** dropdown appears. Choose the property or function that supplies the row set.
-
 ### `ReadOnlyKeys` metadata
 
 Marks a `FDataIndexerPrimaryKey` Blueprint variable as read-only. The row-picker is hidden; the stored value can only be set programmatically.
 
+=== "Blueprint"
+
+    Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, toggle the **Read Only Keys** checkbox. When checked, the row-picker disappears and the key value is locked.
+
 === "C++"
 
-    This key is not set via `UPROPERTY` specifiers. Editor customizations manage it through the Blueprint variable metadata API:
+    ```cpp
+    UPROPERTY(EditAnywhere, meta = (ReadOnlyKeys))
+    FDataIndexerPrimaryKey ReadOnlyKey;
+    ```
+
+    The stored value can also be controlled programmatically via the Blueprint variable metadata API:
 
     ```cpp
     // Lock — hide the row-picker
@@ -64,10 +73,6 @@ Marks a `FDataIndexerPrimaryKey` Blueprint variable as read-only. The row-picker
         Blueprint, VarName, nullptr,
         DataIndexer::MetaDataKeys::ReadOnlyKeys);
     ```
-
-=== "Blueprint"
-
-    Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, toggle the **Read Only Keys** checkbox. When checked, the row-picker disappears and the key value is locked.
 
 ## FDataIndexerRowHandle
 
@@ -95,6 +100,44 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 
 **When to use:** UPROPERTY on actors, data assets, or save game structs when you want to point to a specific row. Blueprint variables for row references.
 
+### `Repository` metadata
+
+Constrains the repository picker to a specific repository. Add `meta = (Repository = "...")` so the editor pre-selects or restricts the repository shown in the handle picker.
+
+The value is the **name of a property or function** on the same class that returns a `UDataIndexerRepository*`. A no-arg `UFUNCTION` is also accepted.
+
+=== "Blueprint"
+
+    Open the Blueprint variable's **Details** panel. With a `FDataIndexerRowHandle` variable selected, a **Repository** dropdown appears. Choose the property or function that supplies the repository.
+
+=== "C++"
+
+    ```cpp
+    // Property reference
+    UPROPERTY(EditAnywhere, meta = (Repository = "Repository"))
+    FDataIndexerRowHandle RowHandle;
+
+    // Function reference — no-arg UFUNCTION returning UDataIndexerRepository*
+    UPROPERTY(EditAnywhere, meta = (Repository = "GetRepository"))
+    FDataIndexerRowHandle RowHandleFromFunction;
+    ```
+
+### `Schema` metadata
+
+Filters the repository picker to repositories of a specific schema. Add `meta = (Schema = "AssetPath")`. The editor resolves the path and restricts the asset picker to matching repositories.
+
+=== "Blueprint"
+
+    Open the Blueprint variable's **Details** panel. With a `FDataIndexerRowHandle` variable selected, a **Schema** picker appears. Select a schema asset to restrict the repository picker to matching repositories. Clear it to show all repositories.
+
+=== "C++"
+
+    ```cpp
+    UPROPERTY(EditAnywhere,
+        meta = (Schema = "/Game/DataIndexer/DA_MySchema.DA_MySchema"))
+    FDataIndexerRowHandle RowHandle;
+    ```
+
 ## FDataIndexerKeysHandle
 
 `FDataIndexerKeysHandle` addresses a set of rows via a secondary index. It stores a repository and an index identifier. The matching row set is determined at query time by passing a partially-filled row struct.
@@ -116,7 +159,7 @@ struct DATAINDEXER_API FDataIndexerKeysHandle
 
 - `IsValid()` — checks Repository and Index are non-null/non-zero.
 - `ForEachPrimaryKeys(Query, Callback)` — calls `Repository->ForEachPrimaryKeys(Index, Query, Callback)`, where `Query` is a `FConstStructView` of a partially-filled row struct.
-- Use `GetRowsHandleKeys(Handle, Query)` from the Blueprint function library to get a `TArray<FDataIndexerPrimaryKey>`. `Query` is a wildcard struct pin in Blueprint.
+- Use the `GetKeysByIndex` custom K2Node in Blueprint to get a `TArray<FDataIndexerPrimaryKey>`.
 
 **When to use:** When a Blueprint or asset needs to express "look up rows by this index" without fixing the filter value at authoring time. The filter (query struct) is supplied at call time and resolved against the repository's reverse lookup tables.
 

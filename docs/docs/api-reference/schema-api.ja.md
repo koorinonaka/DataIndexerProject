@@ -42,23 +42,22 @@ FText UItemSchema::GetRowDisplayName_Implementation(
 
 ```cpp
 void ForEachIndex(
-    const TFunctionRef<void(const FDataIndexerImmutableKey&)>& Callback) const;
+    const TFunctionRef<void(const FDataIndexerIndex&)>& Callback) const;
 ```
 
 登録されているすべてのインデックスキーを走査します（`BuildIndexKeyFunctions` のキー）。`ReverseLookups` を構築する際にコンパイラがインデックスを列挙するために使用します。
 
 ---
 
-## BuildIndexKeyCall
+## BuildIndexCall
 
 ```cpp
-using FIndexResult = TPair<FDataIndexerIndexKey, FText>;
-TOptional<FIndexResult> BuildIndexKeyCall(
-    const FDataIndexerIndex& Index,
+TOptional<FGuid> BuildIndexCall(
+    const FDataIndexerIndexKey& IndexKey,
     const FConstStructView& RowEntity) const;
 ```
 
-指定した行エンティティに対して `Index` の登録済みビルダー関数を呼び出します。`(IndexKey, DisplayName)` ペアを返します。このインデックスにビルダーが登録されていない場合は `NullOpt` を返します。
+指定した行エンティティに対して `IndexKey` の登録済みビルダー関数を呼び出します。算出したインデックスキー（`FGuid`）を返します。このインデックスにビルダーが登録されていない場合は `NullOpt` を返します。
 
 保存時にコンパイラから呼び出されます。通常、ゲームコードから直接呼び出すことはありません。
 
@@ -89,8 +88,8 @@ void UItemSchema::PostInitProperties()
 }
 ```
 
-関数は `Prototype_BuildIndexKey` シグネチャに一致している必要があります：  
-`(const FInstancedStruct& RowEntity, FText& OutDisplayName) → FGuid`
+関数は `Prototype_BuildIndex` シグネチャに一致している必要があります：  
+`(const FInstancedStruct& RowEntity) → FGuid`
 
 ---
 

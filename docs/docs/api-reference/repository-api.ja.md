@@ -66,17 +66,20 @@ Repository->ForEachPrimaryKeys([&](const FDataIndexerPrimaryKey& Key)
 
 ```cpp
 void ForEachPrimaryKeys(
-    const FDataIndexerIndex& Index,
     const FDataIndexerIndexKey& IndexKey,
+    const FConstStructView Query,
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback) const;
 ```
 
 セカンダリインデックス検索にマッチするプライマリキーを走査します。`ReverseLookups` テーブルを直接参照するため O(マッチ数)、全行を走査しません。
 
 ```cpp
+FItemRow Query;
+Query.Type = EItemType::Weapon;
+
 Repository->ForEachPrimaryKeys(
     UItemSchema::ByTypeIndex(),
-    WeaponIndexKey,
+    FConstStructView::Make(Query),
     [&](const FDataIndexerPrimaryKey& Key)
     {
         // Weapon Row のみ
@@ -89,7 +92,6 @@ Repository->ForEachPrimaryKeys(
 
 ```cpp
 FText GetDisplayName(const FDataIndexerPrimaryKey& PrimaryKey) const;
-FText GetDisplayName(const FDataIndexerIndex& Index, const FDataIndexerIndexKey& IndexKey) const;
 ```
 
 スキーマの `GetRowDisplayName` を呼び出して人間可読なラベルを返します。スキーマが null または行が見つからない場合は `FText::GetEmpty()` を返します。

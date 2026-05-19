@@ -19,6 +19,11 @@ title: リポジトリ
 
 行が親リポジトリに由来し、子の Data View がその行を表示する場合、その行は*オーバーライドモード*に入ります。子で編集するとローカルオーバーライドが作成され、親のデータは変更されません。対応する **User Defined Struct** 変数に `NotOverridable` メタデータを付加することで、このモードで特定フィールドをロックできます。
 
+=== "Blueprint"
+
+    !!! warning "未実装"
+        Blueprint からの `NotOverridable` 設定は現在対応していません。今後のリリースで UI を追加予定です。
+
 === "C++"
 
     ネイティブ C++ 構造体の場合は `const` またはアクセス制御を使用してください。UDStruct フィールドの場合、カスタマイズレイヤーがこのキーを管理します。
@@ -36,14 +41,13 @@ title: リポジトリ
     }
     ```
 
-=== "Blueprint"
-
-    !!! warning "未実装"
-        Blueprint からの `NotOverridable` 設定は現在対応していません。今後のリリースで UI を追加予定です。
-
 ## スキーマによるピッカーの絞り込み
 
 クラスが `UDataIndexerRepository` UPROPERTY を持ち、特定のスキーマのリポジトリのみに制限したい場合は `meta = (Schema = "AssetPath")` を追加します。エディタはパスを解決し、アセットピッカーを対応するリポジトリのみに絞り込みます。
+
+=== "Blueprint"
+
+    Blueprint 変数の **Details** パネルを開きます。`UDataIndexerRepository` 変数を選択すると **Schema** ピッカーが表示されます。スキーマアセットを選択すると、アセットピッカーが一致するリポジトリのみに絞り込まれます。ピッカーをクリアするとすべてのリポジトリが表示されます。
 
 === "C++"
 
@@ -52,10 +56,6 @@ title: リポジトリ
         meta = (Schema = "/Game/DataIndexer/DA_MySchema.DA_MySchema"))
     TObjectPtr<UDataIndexerRepository> MyRepository;
     ```
-
-=== "Blueprint"
-
-    Blueprint 変数の **Details** パネルを開きます。`UDataIndexerRepository` 変数を選択すると **Schema** ピッカーが表示されます。スキーマアセットを選択すると、アセットピッカーが一致するリポジトリのみに絞り込まれます。ピッカーをクリアするとすべてのリポジトリが表示されます。
 
 ## シリアライズ
 

@@ -31,16 +31,6 @@ Conv_PrimaryKeyToString(PrimaryKey) → FString
 
 ---
 
-### Cast Primary Key
-
-```
-CastPrimaryKey(PrimaryKey, OutKey) → bool  [CustomThunk]
-```
-
-ワイルドカード出力 — `OutKey` ピンにはリポジトリのスキーマに登録された具体的なキー構造体型を接続します。キャストが成功した場合に `true` を返します。K2 ノードが内部で使用するため、直接呼び出すことはほとんどありません。
-
----
-
 ### Is Valid Primary Key
 
 ```
@@ -88,13 +78,13 @@ GetRowHandleValue(Handle, OutValue) → bool  [CustomThunk, BlueprintInternalUse
 
 ## Rows Handle ノード
 
-### Get Rows Handle Keys
+### Get Rows Handle Value
 
 ```
-GetRowsHandleKeys(Handle, Query) → TArray<FDataIndexerPrimaryKey>  [CustomThunk, BlueprintInternalUseOnly]
+GetRowsHandleValue(Handle, Query, OutKeys) → bool  [CustomThunk, BlueprintInternalUseOnly]
 ```
 
-Rows Handle のリポジトリと、ワイルドカードの `Query` 構造体にマッチするすべてのプライマリキーを返します。`Query` ピンにはスキーマに登録された具体的なインデックスクエリ構造体型を接続する必要があります。
+ワイルドカードの `Query` 構造体にマッチするプライマリキーを `OutKeys` に書き込みます。`Query` ピンにはスキーマに登録された具体的なインデックスクエリ構造体型を接続する必要があります。マッチするキーが 1 件以上あれば `true` を返します。
 
 !!! note
     このノードは `BlueprintInternalUseOnly` としてマークされています。`FDataIndexerKeysHandle` を解決するときに K2 ノードが内部で使用します。

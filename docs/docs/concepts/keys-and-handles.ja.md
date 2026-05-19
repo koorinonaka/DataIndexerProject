@@ -26,6 +26,10 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
 
 値には同じクラス上の `UDataIndexerRepository*` を返す**プロパティ名または関数名**を指定します。引数なしの `UFUNCTION` も使用できます。
 
+=== "Blueprint"
+
+    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerPrimaryKey` 変数を選択すると **Repository** ドロップダウンが表示されます。行ピッカーに使用するプロパティ名または関数名を選択してください。
+
 === "C++"
 
     ```cpp
@@ -41,17 +45,22 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
     FDataIndexerPrimaryKey KeyFromFunction;
     ```
 
-=== "Blueprint"
-
-    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerPrimaryKey` 変数を選択すると **Repository** ドロップダウンが表示されます。行ピッカーに使用するプロパティ名または関数名を選択してください。
-
 ### `ReadOnlyKeys` メタデータ
 
 `FDataIndexerPrimaryKey` Blueprint 変数を読み取り専用にします。行ピッカーが非表示になり、値はプログラムからのみ設定できます。
 
+=== "Blueprint"
+
+    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerPrimaryKey` 変数を選択し、**Read Only Keys** チェックボックスをオンにします。オンにすると行ピッカーが非表示になり、格納されているキー値がロックされます。
+
 === "C++"
 
-    このキーは `UPROPERTY` 指定子では設定しません。エディタカスタマイズが Blueprint 変数メタデータ API で管理します。
+    ```cpp
+    UPROPERTY(EditAnywhere, meta = (ReadOnlyKeys))
+    FDataIndexerPrimaryKey ReadOnlyKey;
+    ```
+
+    格納値は Blueprint 変数メタデータ API からプログラムで制御することもできます。
 
     ```cpp
     // ロック — 行ピッカーを非表示
@@ -64,10 +73,6 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
         Blueprint, VarName, nullptr,
         DataIndexer::MetaDataKeys::ReadOnlyKeys);
     ```
-
-=== "Blueprint"
-
-    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerPrimaryKey` 変数を選択し、**Read Only Keys** チェックボックスをオンにします。オンにすると行ピッカーが非表示になり、格納されているキー値がロックされます。
 
 ## FDataIndexerRowHandle
 
@@ -95,6 +100,44 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 
 **使うべき場面：** 特定の行を指したいアクター・データアセット・セーブゲーム構造体の UPROPERTY。行参照用の Blueprint 変数。
 
+### `Repository` メタデータ
+
+ハンドルのリポジトリピッカーを特定のリポジトリに制限します。エディタがリポジトリを事前選択または絞り込みできるよう `meta = (Repository = "...")` を指定してください。
+
+値には同じクラス上の `UDataIndexerRepository*` を返す**プロパティ名または関数名**を指定します。引数なしの `UFUNCTION` も使用できます。
+
+=== "Blueprint"
+
+    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerRowHandle` 変数を選択すると **Repository** ドロップダウンが表示されます。リポジトリを提供するプロパティ名または関数名を選択してください。
+
+=== "C++"
+
+    ```cpp
+    // プロパティ参照
+    UPROPERTY(EditAnywhere, meta = (Repository = "Repository"))
+    FDataIndexerRowHandle RowHandle;
+
+    // 関数参照 — UDataIndexerRepository* を返す引数なし UFUNCTION
+    UPROPERTY(EditAnywhere, meta = (Repository = "GetRepository"))
+    FDataIndexerRowHandle RowHandleFromFunction;
+    ```
+
+### `Schema` メタデータ
+
+ハンドルのリポジトリピッカーを特定のスキーマのリポジトリに絞り込みます。`meta = (Schema = "AssetPath")` を追加してください。エディタはパスを解決し、アセットピッカーを一致するリポジトリのみに絞り込みます。
+
+=== "Blueprint"
+
+    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerRowHandle` 変数を選択すると **Schema** ピッカーが表示されます。スキーマアセットを選択するとリポジトリピッカーが一致するリポジトリのみに絞り込まれます。ピッカーをクリアするとすべてのリポジトリが表示されます。
+
+=== "C++"
+
+    ```cpp
+    UPROPERTY(EditAnywhere,
+        meta = (Schema = "/Game/DataIndexer/DA_MySchema.DA_MySchema"))
+    FDataIndexerRowHandle RowHandle;
+    ```
+
 ## FDataIndexerKeysHandle
 
 `FDataIndexerKeysHandle` はセカンダリインデックスを使って行のセットをアドレスします。リポジトリとインデックス識別子を格納し、マッチする行のセットはクエリ時に部分的に埋めた行構造体を渡して決定します。
@@ -116,7 +159,7 @@ struct DATAINDEXER_API FDataIndexerKeysHandle
 
 - `IsValid()` — Repository と Index が null/ゼロでないことを確認する。
 - `ForEachPrimaryKeys(Query, Callback)` — `Repository->ForEachPrimaryKeys(Index, Query, Callback)` に委譲する。`Query` は部分的に埋めた行構造体の `FConstStructView`。
-- Blueprint 関数ライブラリの `GetRowsHandleKeys(Handle, Query)` を使って `TArray<FDataIndexerPrimaryKey>` を取得できる。Blueprint では `Query` はワイルドカード構造体ピン。
+- Blueprint では `GetKeysByIndex` カスタム K2Node を使って `TArray<FDataIndexerPrimaryKey>` を取得できる。
 
 **使うべき場面：** Blueprint やアセットがインデックスを指定しておき、フィルター値（クエリ構造体）は呼び出し時に決める場合。正確なセットはランタイムにリポジトリの逆引きテーブルから解決される。
 

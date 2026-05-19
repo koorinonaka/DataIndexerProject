@@ -29,6 +29,10 @@ This lets you build shared base tables (e.g., a global item repository) and doma
 
 When a row originates from a parent repository and the child's Data View displays it, the row enters *override mode* — editing it in the child creates a local override without modifying the parent. Individual fields can be locked in this mode by adding the `NotOverridable` metadata to the corresponding **User Defined Struct** variable.
 
+=== "Blueprint"
+
+    Open the **User Defined Struct** editor. Select a variable. In the **Details** panel, toggle **Not Overridable**. When enabled, child repositories that override a parent row cannot edit this field.
+
 === "C++"
 
     For native C++ structs, prefer `const` or access control. For UDStruct fields, the customization layer manages this key:
@@ -45,10 +49,6 @@ When a row originates from a parent repository and the child's Data View display
         // Render the property read-only
     }
     ```
-
-=== "Blueprint"
-
-    Open the **User Defined Struct** editor. Select a variable. In the **Details** panel, toggle **Not Overridable**. When enabled, child repositories that override a parent row cannot edit this field.
 
 ## Public API
 
@@ -99,6 +99,10 @@ Delegates to the schema's `GetRowDisplayName`. Used by the editor and Blueprint 
 
 When a class owns a `UDataIndexerRepository` UPROPERTY and should be constrained to repositories of a specific schema, add `meta = (Schema = "AssetPath")`. The editor resolves the path and filters the asset picker accordingly.
 
+=== "Blueprint"
+
+    Open the Blueprint variable's **Details** panel. With a `UDataIndexerRepository` variable selected, a **Schema** picker appears. Selecting a schema restricts the asset picker to only matching repositories. Clear the picker to show all repositories.
+
 === "C++"
 
     ```cpp
@@ -106,10 +110,6 @@ When a class owns a `UDataIndexerRepository` UPROPERTY and should be constrained
         meta = (Schema = "/Game/DataIndexer/DA_MySchema.DA_MySchema"))
     TObjectPtr<UDataIndexerRepository> MyRepository;
     ```
-
-=== "Blueprint"
-
-    Open the Blueprint variable's **Details** panel. With a `UDataIndexerRepository` variable selected, a **Schema** picker appears. Selecting a schema restricts the asset picker to only matching repositories. Clear the picker to show all repositories.
 
 ## Serialization
 
