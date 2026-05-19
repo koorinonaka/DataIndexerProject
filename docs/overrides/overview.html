@@ -17,8 +17,8 @@
       UNREAL ENGINE PLUGIN
     </div>
     {% if is_ja %}
-    <h1>DataTable の、<br>メンテナブルな後継。</h1>
-    <p class="ov-hero-lead">DataIndexer は DataTable の課題に応えた UE5 プラグイン。<br>GUID ベースのキー管理でリネームに強く、使用箇所の特定・コンポジション・セカンダリインデックスをデフォルトでサポート。</p>
+    <h1>DataTable の次は、<br>スプレッドシート感覚で組む。</h1>
+    <p class="ov-hero-lead">DataIndexer は UE5 のためのデータオーサリングプラグイン。<br>スプレッドシート感覚のセル選択・矩形コピー＆ペースト、保存時に走るインデックスとデータ検証 ── Excel と VLOOKUP に頼らないマスターデータ管理を、UE エディタの内部で完結させます。</p>
     <div class="ov-hero-actions">
       <a href="concepts/" class="ov-btn-secondary">コンセプトを学ぶ</a>
       <a href="quick-start/" class="ov-btn-primary">
@@ -27,8 +27,8 @@
       </a>
     </div>
     {% else %}
-    <h1>DataTable's<br>maintainable successor.</h1>
-    <p class="ov-hero-lead">DataIndexer is a UE5 plugin built around DataTable's pain points.<br>GUID-based key management for rename safety, with usage tracking, composition, and secondary indexes built in.</p>
+    <h1>DataTable's next step.<br>Spreadsheet-feel authoring.</h1>
+    <p class="ov-hero-lead">DataIndexer is a data authoring plugin for UE5.<br>Spreadsheet-style cell selection, rectangular copy &amp; paste, and index-backed data validation on save — master data management inside the UE editor, without relying on Excel or VLOOKUP.</p>
     <div class="ov-hero-actions">
       <a href="concepts/" class="ov-btn-secondary">Learn the concepts</a>
       <a href="quick-start/" class="ov-btn-primary">
@@ -52,40 +52,66 @@
     <div class="ov-features-header">
       {% if is_ja %}
       <p class="ov-features-kicker">DataIndexer の特徴</p>
-      <h2>DataTable の機能を引き継ぎ、課題に応える。</h2>
+      <h2>スプレッドシート感覚の編集から、型安全な管理まで。</h2>
       {% else %}
       <p class="ov-features-kicker">What DataIndexer Adds</p>
-      <h2>Built on DataTable's foundation, with the gaps filled.</h2>
+      <h2>Spreadsheet-feel editing to type-safe management.</h2>
       {% endif %}
     </div>
 
     {% if is_ja %}
 
-    <!-- 01 / DataTable の代替 -->
+    <!-- 01 / 専用エディタ -->
     <div class="ov-feature-row">
       <div class="ov-feature-text">
-        <div class="ov-feature-kicker">01 / DataTable の代替</div>
-        <h3>DataTable から、段階的に移行できる。</h3>
+        <div class="ov-feature-kicker">01 / 専用エディタ</div>
+        <h3>編集はセルで。整合性はスキーマで。</h3>
+        <p class="ov-feature-desc">マスターデータを Excel で組んで CSV インポート、参照整合性は VLOOKUP で目視確認 ── この回りくどさを終わらせるための専用エディタ。スプレッドシートの操作感はそのまま、整合性は型システムが保証します。</p>
         <ul class="ov-feature-bullets">
           <li>
-            <strong>DataTable のワークフローをそのまま使える</strong>
-            <p>DataTable で行っていた操作の多くは DataIndexer でも同様に行えます。既存のワークフローを大きく変えることなく、必要な機能から段階的に導入できます。</p>
+            <strong>スプレッドシート感覚のセル操作</strong>
+            <p>セル単位の選択、Shift / Ctrl による拡張選択、矩形範囲のドラッグ、ダブルクリックでインライン編集。表計算と同じ手の動きでデータを組めます。</p>
           </li>
           <li>
-            <strong>JSON インポート / エクスポート</strong>
-            <p>差分・コードレビュー・マージに対応した人間可読 JSON サイドカーで、チーム開発をサポートします。</p>
+            <strong>完全なデータバリデーション</strong>
+            <p>スキーマが各カラムの型と制約を保証。VLOOKUP で参照整合性を確認する必要はもうありません。保存時 / Cook 時に自動検証。</p>
+          </li>
+          <li>
+            <strong>インラインとフルエディタを併用</strong>
+            <p>単純な値はセルで即座に、複雑な構造体は右の Selection Details で。ワークフローを切り替えずに編集できます。</p>
           </li>
         </ul>
       </div>
       <div class="ov-feature-visual">
-        <img src="{{ base_url }}/assets/images/feature-01.png" alt="DataTable drop-in editor">
+        <img src="{{ base_url }}/assets/images/cellop.gif" alt="Dedicated data view editor">
       </div>
     </div>
 
-    <!-- 02 / メンテナンス性 (reversed) -->
+    <!-- 02 / コンポジション (reversed) -->
     <div class="ov-feature-row is-reversed">
       <div class="ov-feature-text">
-        <div class="ov-feature-kicker">02 / メンテナンス性</div>
+        <div class="ov-feature-kicker">02 / コンポジション</div>
+        <h3>継承と統合で、データを重ねる。</h3>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>Repository の継承と統合</strong>
+            <p>UCompositeDataTable が担っていた「親テーブルの統合」を継承。複数の Repository をマージする機能も標準サポートです。</p>
+          </li>
+          <li>
+            <strong>継承時の上書き</strong>
+            <p>子 Repository 内で特定の Row だけを上書き。UCompositeDataTable にはなかった機能で、変更箇所が明確に追えます。</p>
+          </li>
+        </ul>
+      </div>
+      <div class="ov-feature-visual">
+        <img src="{{ base_url }}/assets/images/feature-03.png" alt="Repository composition">
+      </div>
+    </div>
+
+    <!-- 03 / メンテナンス性 -->
+    <div class="ov-feature-row">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">03 / メンテナンス性</div>
         <h3>リネームしても、参照は壊れない。</h3>
         <ul class="ov-feature-bullets">
           <li>
@@ -100,27 +126,6 @@
       </div>
       <div class="ov-feature-visual">
         <img src="{{ base_url }}/assets/images/feature-02.gif" alt="Key reference tracking">
-      </div>
-    </div>
-
-    <!-- 03 / コンポジション -->
-    <div class="ov-feature-row">
-      <div class="ov-feature-text">
-        <div class="ov-feature-kicker">03 / コンポジション</div>
-        <h3>継承と統合で、データを重ねる。</h3>
-        <ul class="ov-feature-bullets">
-          <li>
-            <strong>Repository の継承と統合</strong>
-            <p>親 Repository のデータを継承する機能と、複数の Repository を統合する機能を標準サポート。</p>
-          </li>
-          <li>
-            <strong>継承時の上書き</strong>
-            <p>子 Repository 内で特定の Row だけを上書き。変更箇所が明確に追えます。</p>
-          </li>
-        </ul>
-      </div>
-      <div class="ov-feature-visual">
-        <img src="{{ base_url }}/assets/images/feature-03.png" alt="Repository composition">
       </div>
     </div>
 
@@ -145,58 +150,59 @@
       </div>
     </div>
 
-    <!-- 05 / 専用エディタ -->
-    <div class="ov-feature-row">
-      <div class="ov-feature-text">
-        <div class="ov-feature-kicker">05 / 専用エディタ</div>
-        <h3>編集のための、統合された体験。</h3>
-        <ul class="ov-feature-bullets">
-          <li>
-            <strong>専用データビュー</strong>
-            <p>DataIndexer 専用の表形式エディタ。スキーマに応じた列の定義と表示。</p>
-          </li>
-          <li>
-            <strong>インライン編集</strong>
-            <p>セルをクリックしてそのまま編集。Detail Panel へ移動する手間なく、その場で値を変更できます。</p>
-          </li>
-          <li>
-            <strong>データ検証</strong>
-            <p>スキーマのバリデーションルールで整合性チェック。保存時・Cook 時の自動検証も対応。</p>
-          </li>
-        </ul>
-      </div>
-      <div class="ov-feature-visual">
-        <img src="{{ base_url }}/assets/images/feature-05.gif" alt="Dedicated data view editor">
-      </div>
-    </div>
-
     {% else %}
 
-    <!-- 01 / DataTable Drop-in -->
+    <!-- 01 / Dedicated Editor -->
     <div class="ov-feature-row">
       <div class="ov-feature-text">
-        <div class="ov-feature-kicker">01 / DataTable Drop-in</div>
-        <h3>Migrate from DataTable gradually.</h3>
+        <div class="ov-feature-kicker">01 / Dedicated Editor</div>
+        <h3>Edit in cells. Schema enforces integrity.</h3>
+        <p class="ov-feature-desc">Building master data in Excel, importing via CSV, then verifying referential integrity by hand with VLOOKUP — that roundabout workflow ends here. A dedicated editor with spreadsheet-feel editing and type-system-backed consistency.</p>
         <ul class="ov-feature-bullets">
           <li>
-            <strong>DataTable workflows carry over</strong>
-            <p>Most DataTable operations work the same in DataIndexer. Adopt the features you need without disrupting existing conventions.</p>
+            <strong>Spreadsheet-style cell editing</strong>
+            <p>Per-cell selection, Shift / Ctrl range extension, rectangular drag selection, and double-click inline editing. The same hand motions as a spreadsheet, inside the UE editor.</p>
           </li>
           <li>
-            <strong>JSON import / export</strong>
-            <p>Human-readable JSON sidecars support diffs, code review, and merge workflows for team development.</p>
+            <strong>Full data validation</strong>
+            <p>The schema enforces types and constraints on every column. No more manual VLOOKUP checks for referential integrity. Validation runs automatically on save and cook.</p>
+          </li>
+          <li>
+            <strong>Inline and full editor side by side</strong>
+            <p>Simple values directly in the cell; complex structs in the Selection Details panel on the right. No context switch required.</p>
           </li>
         </ul>
       </div>
       <div class="ov-feature-visual">
-        <img src="{{ base_url }}/assets/images/feature-01.png" alt="DataTable drop-in editor">
+        <img src="{{ base_url }}/assets/images/cellop.gif" alt="Dedicated data view editor">
       </div>
     </div>
 
-    <!-- 02 / Maintainability (reversed) -->
+    <!-- 02 / Composition (reversed) -->
     <div class="ov-feature-row is-reversed">
       <div class="ov-feature-text">
-        <div class="ov-feature-kicker">02 / Maintainability</div>
+        <div class="ov-feature-kicker">02 / Composition</div>
+        <h3>Layer data with inheritance.</h3>
+        <ul class="ov-feature-bullets">
+          <li>
+            <strong>Repository inheritance and merging</strong>
+            <p>Covers the same ground as UCompositeDataTable — inherit from a parent repository or merge multiple repositories, with type-safe schemas throughout.</p>
+          </li>
+          <li>
+            <strong>Per-row overrides</strong>
+            <p>Override only specific rows in a child repository — a capability UCompositeDataTable didn't have. Changes stay traceable and clear.</p>
+          </li>
+        </ul>
+      </div>
+      <div class="ov-feature-visual">
+        <img src="{{ base_url }}/assets/images/feature-03.png" alt="Repository composition">
+      </div>
+    </div>
+
+    <!-- 03 / Maintainability -->
+    <div class="ov-feature-row">
+      <div class="ov-feature-text">
+        <div class="ov-feature-kicker">03 / Maintainability</div>
         <h3>Renames don't break references.</h3>
         <ul class="ov-feature-bullets">
           <li>
@@ -211,27 +217,6 @@
       </div>
       <div class="ov-feature-visual">
         <img src="{{ base_url }}/assets/images/feature-02.gif" alt="Key reference tracking">
-      </div>
-    </div>
-
-    <!-- 03 / Composition -->
-    <div class="ov-feature-row">
-      <div class="ov-feature-text">
-        <div class="ov-feature-kicker">03 / Composition</div>
-        <h3>Layer data with inheritance.</h3>
-        <ul class="ov-feature-bullets">
-          <li>
-            <strong>Repository inheritance and merging</strong>
-            <p>Built-in support for inheriting a parent repository and merging multiple repositories.</p>
-          </li>
-          <li>
-            <strong>Per-row overrides</strong>
-            <p>Override only specific rows in a child repository. Changes stay traceable and clear.</p>
-          </li>
-        </ul>
-      </div>
-      <div class="ov-feature-visual">
-        <img src="{{ base_url }}/assets/images/feature-03.png" alt="Repository composition">
       </div>
     </div>
 
@@ -253,31 +238,6 @@
       </div>
       <div class="ov-feature-visual">
         <img src="{{ base_url }}/assets/images/feature-04.png" alt="Index lookup nodes">
-      </div>
-    </div>
-
-    <!-- 05 / Dedicated Editor -->
-    <div class="ov-feature-row">
-      <div class="ov-feature-text">
-        <div class="ov-feature-kicker">05 / Dedicated Editor</div>
-        <h3>An editing experience built for data.</h3>
-        <ul class="ov-feature-bullets">
-          <li>
-            <strong>Dedicated data view</strong>
-            <p>A tabular editor purpose-built for DataIndexer. Columns match the schema definition.</p>
-          </li>
-          <li>
-            <strong>Inline editing</strong>
-            <p>Click a cell and edit in place. No need to leave the table and navigate to the Detail Panel.</p>
-          </li>
-          <li>
-            <strong>Data validation</strong>
-            <p>Consistency checks defined on the schema, run automatically on save and cook.</p>
-          </li>
-        </ul>
-      </div>
-      <div class="ov-feature-visual">
-        <img src="{{ base_url }}/assets/images/feature-05.gif" alt="Dedicated data view editor">
       </div>
     </div>
 
@@ -363,8 +323,8 @@ function ovCloseLightbox() {
   <div class="ov-cta-inner">
     {% if is_ja %}
     <div>
-      <h2>UE 5.3 / 5.4 / 5.5 対応。</h2>
-      <p class="ov-cta-sub">エンジンソースの変更不要。標準 UE5 プラグインとしてインストール。</p>
+      <h2>編集も、検証も、検索も。<br>すべてエディタの中で。</h2>
+      <p class="ov-cta-sub">マスターデータの構築から参照整合性チェックまで完結します。<br>UE 5.7+ 対応 ── 標準プラグイン、エンジン改変不要。</p>
     </div>
     <a href="quick-start/" class="ov-btn-cta">
       クイックスタート
@@ -374,8 +334,8 @@ function ovCloseLightbox() {
     </a>
     {% else %}
     <div>
-      <h2>UE 5.3 / 5.4 / 5.5.</h2>
-      <p class="ov-cta-sub">Installs as a standard UE5 plugin. No engine source modifications required.</p>
+      <h2>Edit. Validate. Search.<br>All inside the editor.</h2>
+      <p class="ov-cta-sub">From schema definition to referential integrity checks, everything stays within the UE editor.<br>UE 5.7+ — standard plugin, no engine source modifications required.</p>
     </div>
     <a href="quick-start/" class="ov-btn-cta">
       Get started
@@ -428,8 +388,6 @@ function ovCloseLightbox() {
         <span class="ov-card-link">詳しく見る →</span>
       </a>
     </div>
-
-    <div class="ov-section-divider"></div>
 
     <p class="ov-section-heading">はじめる</p>
     <h2 class="ov-subsection-h2">10分で、最初のクエリまで。</h2>
@@ -490,8 +448,6 @@ function ovCloseLightbox() {
         <span class="ov-card-link">Learn more →</span>
       </a>
     </div>
-
-    <div class="ov-section-divider"></div>
 
     <p class="ov-section-heading">Get Started</p>
     <h2 class="ov-subsection-h2">First query in ten minutes.</h2>

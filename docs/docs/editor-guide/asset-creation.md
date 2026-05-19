@@ -16,8 +16,6 @@ Before creating a schema Blueprint, define the row struct it will use. Create a 
    - Set **Row Struct** to the `USTRUCT` type that defines your row data
    - Optionally override **Get Row Display Name** (Blueprint event) to return a human-readable label
 
-![Setting the row struct on a DataIndexerSchema Blueprint](../assets/images/schema-blueprint-creation.png)
-
 Optionally implement **Get Row Display Name** to return a human-readable label for each row. In the example below, `AbilityClass` is used directly as the display name:
 
 ![GetRowDisplayName implementation returning AbilityClass as display name](../assets/images/schema-get-row-display-name.png)

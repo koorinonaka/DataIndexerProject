@@ -72,8 +72,6 @@ A complete walkthrough — from creating a schema and repository to authoring ro
     2. Name it (e.g., `BP_ItemSchema`) and open it
     3. In **Class Defaults → Row Struct**, select your struct (`S_ItemRow`)
 
-    ![Selecting Row Struct in a Schema Blueprint](assets/images/schema-blueprint-creation.png)
-
     Optionally implement **Get Row Display Name** to show a readable label per row in the Data View:
 
     ![GetRowDisplayName implementation](assets/images/schema-get-row-display-name.png)
@@ -177,11 +175,11 @@ A complete walkthrough — from creating a schema and repository to authoring ro
   <ul class="qs-complete-list">
     <li>
       <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
-      <span><strong>Row type defined</strong> — <code>S_ItemRow</code> struct is in the Content Browser</span>
+      <span><strong>Row type defined</strong> — struct for row data is declared</span>
     </li>
     <li>
       <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
-      <span><strong>Schema Blueprint</strong> — <code>BP_ItemSchema</code> is pointed at the struct</span>
+      <span><strong>Schema configured</strong> — schema is linked to the row struct</span>
     </li>
     <li>
       <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
@@ -199,8 +197,6 @@ A complete walkthrough — from creating a schema and repository to authoring ro
 1. Right-click → **Miscellaneous → DataIndexer** and select the Repository asset type
 2. In the Pick Class Dialog, select your schema (e.g., `BP_ItemSchema` or `UItemSchema`)
 3. Name it (e.g., `DI_Items`) and open it
-
-![Repository with schema bound in the Details panel](assets/images/repository-schema-binding.png)
 
 !!! note "Changing the schema"
     The bound schema **can be changed** as long as the Row Struct matches. If the Row Struct differs, migrate via JSON Export / Import.
@@ -255,7 +251,7 @@ For a full breakdown of the editor, see the [Editor Guide](editor-guide/index.md
 
     Pass a repository to **Get All Primary Keys** to retrieve all primary keys, then loop with **For Each Loop** and call **Get Row** for each key.
 
-    ![Node graph for iterating all rows](assets/images/iterate-all-rows.png)
+    ![Node graph for iterating all rows](assets/images/iterate-all-rows.png){ .qs-zoomable }
 
     For index-based filtering, see [Blueprint API → Function Library](api-reference/function-library.md).
 
@@ -333,3 +329,30 @@ For a full breakdown of the editor, see the [Editor Guide](editor-guide/index.md
     Data View, JSON import/export, and custom widgets.
 
 </div>
+
+<div class="qs-lightbox" id="qs-lightbox" onclick="qsCloseLightbox()">
+  <button class="qs-lightbox-close" onclick="qsCloseLightbox()" aria-label="Close">&#x2715;</button>
+  <img class="qs-lightbox-img" src="" alt="Enlarged view" onclick="event.stopPropagation()">
+</div>
+<script>
+function qsOpenLightbox(src) {
+  var lb = document.getElementById('qs-lightbox');
+  lb.querySelector('.qs-lightbox-img').src = src;
+  lb.classList.add('is-open');
+  document.body.style.overflow = 'hidden';
+}
+function qsCloseLightbox() {
+  var lb = document.getElementById('qs-lightbox');
+  if (!lb) return;
+  lb.classList.remove('is-open');
+  document.body.style.overflow = '';
+}
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('img.qs-zoomable').forEach(function(img) {
+    img.addEventListener('click', function() { qsOpenLightbox(img.src); });
+  });
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') qsCloseLightbox();
+  });
+});
+</script>

@@ -1029,3 +1029,51 @@ pre.mermaid {
   font-size: 15px;
 }
 
+/* ── ov-feature-desc — feature row の説明段落に下マージン ───────────────── */
+.ov-feature-desc { margin-bottom: 14px !important; }
+
+/* ── ov-section-divider 削除後の代替スペース ────────────────────────────── */
+.ov-concepts-grid + .ov-section-heading { margin-top: 48px; }
+
+/* ── Quick Start: zoom image + lightbox ─────────────────────────────────── */
+img.qs-zoomable {
+  cursor: zoom-in;
+  transition: opacity 120ms;
+}
+img.qs-zoomable:hover { opacity: 0.88; }
+
+.qs-lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+.qs-lightbox.is-open { display: flex; }
+
+.qs-lightbox-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 6px;
+  cursor: default;
+}
+
+.qs-lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  opacity: 0.7;
+  transition: opacity 120ms;
+}
+.qs-lightbox-close:hover { opacity: 1; }
+

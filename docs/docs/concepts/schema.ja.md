@@ -8,48 +8,122 @@ Schema は 3 つのことを担当します。
 
 1. **行構造体の宣言** — `RowStruct` は Repository の `LocalEntries` に格納される構造体型を識別する `TObjectPtr<const UScriptStruct>` です。
 2. **表示ロジックの提供** — `GetRowDisplayName` は任意の行に対して人間可読なラベルを返す `BlueprintNativeEvent` で、エディタ UI 全体で使用されます。
-3. **拡張関数の登録** — インデックスキービルダー・プロパティテキストカスタマイズ・プロパティウィジェットカスタマイズを名前付き Blueprint または C++ 関数として登録します。
+3. **拡張関数の登録** — 行の検索キー生成・プロパティの表示テキスト・エディタウィジェットをカスタマイズする関数を、Blueprint または C++ の名前付き関数として登録します。
 
-## Blueprint サブクラス化
+## サブクラス化
 
-1. 親クラスに `DataIndexerSchema` を指定して **Blueprint Class** を作成する
-2. **Class Defaults** で **Row Struct** を使用する `USTRUCT` に設定する
-3. `GetRowDisplayName` をオーバーライドして行構造体フィールドから意味のある `FText` を返す
-4. **Build Index Functions** マップでインデックスビルダーを登録する（[インデックス](indexes.md) 参照）
-5. **Property Text Customizations** マップでプロパティごとのカスタムテキストレンダリングを登録する
+=== "Blueprint"
 
-## C++ サブクラス化
+    ### Row Struct の設定
 
-```cpp
-UCLASS()
-class UItemSchema : public UDataIndexerSchema
-{
-    GENERATED_BODY()
+    1. 親クラスに `DataIndexerSchema` を指定して **Blueprint Class** を作成する
+    2. **Class Defaults** で **Row Struct** を使用する `USTRUCT` に設定する
 
-protected:
-    virtual void PostInitProperties() override;
+    ### GetRowDisplayName
 
-public:
-    virtual FText GetRowDisplayName_Implementation(
-        const FDataIndexerPrimaryKey& PrimaryKey,
-        const FInstancedStruct& RowEntity) const override;
-};
-```
+    **Class Defaults** で `GetRowDisplayName` イベントをオーバーライドし、行構造体のフィールドから意味のある `FText` を返します。このラベルはエディタ UI 全体の行一覧・ピッカーで使用されます。
 
-```cpp
-void UItemSchema::PostInitProperties()
-{
-    if (HasAnyFlags(RF_ClassDefaultObject))
+    ### Build Index Functions
+
+    **Class Defaults** の **Build Index Functions** マップでインデックスビルダーを登録します。キーはインデックス名（文字列）、値は `FGuid` を返す関数です（[インデックス](indexes.md) 参照）。
+
+    ### Property Text Customizations
+
+    **Class Defaults** の **Property Text Customizations** マップで、プロパティ名をキーに `FText` を返す関数を登録します。Data View グリッドでのプロパティ値の表示テキストを上書きします。
+
+=== "C++"
+
+    ### 宣言と初期化
+
+    `RowStruct` はコンストラクタで設定します。
+
+    ```cpp
+    UCLASS()
+    class UItemSchema : public UDataIndexerSchema
+    {
+        GENERATED_BODY()
+
+    public:
+        UItemSchema();
+
+        DI_DEFINE_INDEX(ByTypeIndex);
+        DI_DEFINE_INDEX(ByRarityIndex);
+
+    protected:
+        virtual FText GetRowDisplayName_Implementation(
+            const FDataIndexerPrimaryKey& PrimaryKey,
+            const FInstancedStruct& RowEntity) const override;
+
+        UFUNCTION()
+        static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity);
+
+        UFUNCTION()
+        static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity);
+    };
+    ```
+
+    ```cpp
+    UItemSchema::UItemSchema()
     {
         RowStruct = FItemRow::StaticStruct();
+
+        RegisterFunction_BuildIndex( ByTypeIndex(),    GET_FUNCTION_NAME_CHECKED( ThisClass, BuildTypeIndex ) );
+        RegisterFunction_BuildIndex( ByRarityIndex(),  GET_FUNCTION_NAME_CHECKED( ThisClass, BuildRarityIndex ) );
     }
-    Super::PostInitProperties();
-}
-```
+    ```
+
+    `DI_DEFINE_INDEX` で宣言したインデックスごとに `RegisterFunction_BuildIndex` を呼び出し、ビルダー関数を紐付けます。
+
+    ### GetRowDisplayName_Implementation
+
+    `GetRowDisplayName_Implementation` をオーバーライドして行の表示名を返します。見つからない場合は `Super` に委譲します。
+
+    ```cpp
+    FText UItemSchema::GetRowDisplayName_Implementation(
+        const FDataIndexerPrimaryKey& PrimaryKey,
+        const FInstancedStruct& RowEntity) const
+    {
+        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
+        {
+            return Row->DisplayName;
+        }
+        return Super::GetRowDisplayName_Implementation( PrimaryKey, RowEntity );
+    }
+    ```
+
+    ### Build Index Functions
+
+    `DI_DEFINE_INDEX` でインデックスを宣言し、対応する `static UFUNCTION` をビルダーとして実装します（[インデックス](indexes.md) 参照）。
+
+    ```cpp
+    FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
+    {
+        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
+        {
+            return FGuid( static_cast<uint32>( Row->Type ), 0, 0, 0 );
+        }
+        return {};
+    }
+    ```
+
+    ### Property Text Customizations
+
+    `PropertyTextCustomizations` マップにプロパティ名と `FText` を返す関数ポインタを登録します。Blueprint の **Property Text Customizations** マップに相当します。
 
 ## データバリデーション
 
-`IsRowValid` をオーバーライド（エディタ専用）して、**Validate Data** 実行時の各行のバリデーションを追加します。
+!!! warning "Blueprint 未対応"
+    `IsRowValid` の Blueprint オーバーライドは現在対応していません。バリデーションは C++ でのみ実装できます。
+
+`IsRowValid` をオーバーライド（エディタ専用）して、各行のバリデーションロジックを追加します。
+
+検証は次のタイミングで自動的に実行されます。
+
+- Content Browser で **右クリック → Validate Data** を選択したとき
+- アセット保存時（エディタ設定で **Save Validation** を有効にした場合）
+- クック時
+
+戻り値が `EDataValidationResult::Invalid` の場合、`Context` に追加したエラーメッセージがエディタに表示され、保存・クックがブロックされます。
 
 ```cpp
 #if WITH_EDITOR
