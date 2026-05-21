@@ -26,10 +26,6 @@ Bare primary keys can be stored as a `UPROPERTY` on actors, data assets, or stru
 
 The value is the **name of a property or function** on the same class that returns a `UDataIndexerRepository*`. A no-arg `UFUNCTION` is also accepted.
 
-=== "Blueprint"
-
-    Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, a **Repository** dropdown appears. Choose the property or function that supplies the row set.
-
 === "C++"
 
     ```cpp
@@ -45,13 +41,13 @@ The value is the **name of a property or function** on the same class that retur
     FDataIndexerPrimaryKey KeyFromFunction;
     ```
 
-### `ReadOnlyKeys` metadata
-
-Marks a `FDataIndexerPrimaryKey` Blueprint variable as read-only. The row-picker is hidden; the stored value can only be set programmatically.
 
 === "Blueprint"
 
-    Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, toggle the **Read Only Keys** checkbox. When checked, the row-picker disappears and the key value is locked.
+    Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, a **Repository** dropdown appears. Choose the property or function that supplies the row set.
+### `ReadOnlyKeys` metadata
+
+Marks a `FDataIndexerPrimaryKey` Blueprint variable as read-only. The row-picker is hidden; the stored value can only be set programmatically.
 
 === "C++"
 
@@ -74,6 +70,10 @@ Marks a `FDataIndexerPrimaryKey` Blueprint variable as read-only. The row-picker
         DataIndexer::MetaDataKeys::ReadOnlyKeys);
     ```
 
+
+=== "Blueprint"
+
+    Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, toggle the **Read Only Keys** checkbox. When checked, the row-picker disappears and the key value is locked.
 ## FDataIndexerRowHandle
 
 `FDataIndexerRowHandle` pairs a repository reference with a primary key. It is the recommended UPROPERTY type for Blueprint variables and asset references to a single row.
@@ -106,10 +106,6 @@ Constrains the repository picker to a specific repository. Add `meta = (Reposito
 
 The value is the **name of a property or function** on the same class that returns a `UDataIndexerRepository*`. A no-arg `UFUNCTION` is also accepted.
 
-=== "Blueprint"
-
-    Open the Blueprint variable's **Details** panel. With a `FDataIndexerRowHandle` variable selected, a **Repository** dropdown appears. Choose the property or function that supplies the repository.
-
 === "C++"
 
     ```cpp
@@ -122,13 +118,13 @@ The value is the **name of a property or function** on the same class that retur
     FDataIndexerRowHandle RowHandleFromFunction;
     ```
 
-### `Schema` metadata
-
-Filters the repository picker to repositories of a specific schema. Add `meta = (Schema = "AssetPath")`. The editor resolves the path and restricts the asset picker to matching repositories.
 
 === "Blueprint"
 
-    Open the Blueprint variable's **Details** panel. With a `FDataIndexerRowHandle` variable selected, a **Schema** picker appears. Select a schema asset to restrict the repository picker to matching repositories. Clear it to show all repositories.
+    Open the Blueprint variable's **Details** panel. With a `FDataIndexerRowHandle` variable selected, a **Repository** dropdown appears. Choose the property or function that supplies the repository.
+### `Schema` metadata
+
+Filters the repository picker to repositories of a specific schema. Add `meta = (Schema = "AssetPath")`. The editor resolves the path and restricts the asset picker to matching repositories.
 
 === "C++"
 
@@ -138,6 +134,10 @@ Filters the repository picker to repositories of a specific schema. Add `meta = 
     FDataIndexerRowHandle RowHandle;
     ```
 
+
+=== "Blueprint"
+
+    Open the Blueprint variable's **Details** panel. With a `FDataIndexerRowHandle` variable selected, a **Schema** picker appears. Select a schema asset to restrict the repository picker to matching repositories. Clear it to show all repositories.
 ## FDataIndexerKeysHandle
 
 `FDataIndexerKeysHandle` addresses a set of rows via a secondary index. It stores a repository and an index identifier. The matching row set is determined at query time by passing a partially-filled row struct.

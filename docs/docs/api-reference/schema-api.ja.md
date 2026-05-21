@@ -1,6 +1,6 @@
 # Schema API
 
-`UDataIndexerSchema`（`DataIndexerSchema.h`）はすべてのスキーマの抽象基底クラスです。行構造体・表示ロジック・インデックスキービルダーを定義するために C++ でサブクラス化します。
+`UDataIndexerSchema`（`DataIndexerSchema.h`）はすべてのSchemaの抽象基底クラスです。行構造体・表示ロジック・IndexKey ビルダーを定義するために C++ でサブクラス化します。
 
 ## GetRowStruct
 
@@ -45,7 +45,7 @@ void ForEachIndex(
     const TFunctionRef<void(const FDataIndexerIndex&)>& Callback) const;
 ```
 
-登録されているすべてのインデックスキーを走査します（`BuildIndexKeyFunctions` のキー）。`ReverseLookups` を構築する際にコンパイラがインデックスを列挙するために使用します。
+登録されているすべてのIndexKeyを走査します（`BuildIndexKeyFunctions` のKey）。`ReverseLookups` を構築する際にコンパイラがIndexを列挙するために使用します。
 
 ---
 
@@ -57,7 +57,7 @@ TOptional<FGuid> BuildIndexCall(
     const FConstStructView& RowEntity) const;
 ```
 
-指定した行エンティティに対して `IndexKey` の登録済みビルダー関数を呼び出します。算出したインデックスキー（`FGuid`）を返します。このインデックスにビルダーが登録されていない場合は `NullOpt` を返します。
+指定した行エンティティに対して `IndexKey` の登録済みビルダー関数を呼び出します。算出したIndexKey（`FGuid`）を返します。このIndexにビルダーが登録されていない場合は `NullOpt` を返します。
 
 保存時にコンパイラから呼び出されます。通常、ゲームコードから直接呼び出すことはありません。
 
@@ -71,7 +71,7 @@ void RegisterFunction_BuildIndex(
     FName FunctionName);
 ```
 
-`Index` のインデックスキービルダーとして名前付き関数を登録します。CDO から `PostInitProperties` で呼び出してください。
+`Index` のIndexKey ビルダーとして名前付き関数を登録します。CDO から `PostInitProperties` で呼び出してください。
 
 ```cpp
 void UItemSchema::PostInitProperties()

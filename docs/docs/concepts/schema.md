@@ -12,25 +12,6 @@ A schema does three things:
 
 ## Subclassing
 
-=== "Blueprint"
-
-    ### Row Struct
-
-    1. Create a **Blueprint Class** with parent `DataIndexerSchema`
-    2. In **Class Defaults**, assign **Row Struct** to your `USTRUCT`
-
-    ### GetRowDisplayName
-
-    Override `GetRowDisplayName` in **Class Defaults** and return a meaningful `FText` from the row struct fields. This label is used throughout the editor UI in row lists and pickers.
-
-    ### Build Index Functions
-
-    Use the **Build Index Functions** map in **Class Defaults** to register index builders. The key is the index name (string), the value is a function returning `FGuid` (see [Indexes](indexes.md)).
-
-    ### Property Text Customizations
-
-    Use the **Property Text Customizations** map in **Class Defaults** to register per-property text rendering. The key is the property name, the value is a function returning `FText`. Overrides how property values appear in the Data View grid.
-
 === "C++"
 
     ### Declaration and initialization
@@ -110,6 +91,25 @@ A schema does three things:
 
     Register property name and function pointer pairs in the `PropertyTextCustomizations` map. Equivalent to the Blueprint **Property Text Customizations** map.
 
+
+=== "Blueprint"
+
+    ### Row Struct
+
+    1. Create a **Blueprint Class** with parent `DataIndexerSchema`
+    2. In **Class Defaults**, assign **Row Struct** to your `USTRUCT`
+
+    ### GetRowDisplayName
+
+    Override `GetRowDisplayName` in **Class Defaults** and return a meaningful `FText` from the row struct fields. This label is used throughout the editor UI in row lists and pickers.
+
+    ### Build Index Functions
+
+    Use the **Build Index Functions** map in **Class Defaults** to register index builders. The key is the index name (string), the value is a function returning `FGuid` (see [Indexes](indexes.md)).
+
+    ### Property Text Customizations
+
+    Use the **Property Text Customizations** map in **Class Defaults** to register per-property text rendering. The key is the property name, the value is a function returning `FText`. Overrides how property values appear in the Data View grid.
 ## Data validation
 
 !!! warning "Blueprint not supported"

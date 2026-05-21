@@ -1,16 +1,16 @@
 ---
-title: リポジトリメタデータ
+title: Repositoryメタデータ
 ---
 
-# リポジトリメタデータ
+# Repositoryメタデータ
 
-DataIndexer はエディタでのリポジトリプロパティの動作を制御するメタデータキーをいくつか提供しています。このページでは最もよく使われる 2 つ、UPROPERTY ピッカーの **スキーマフィルタリング** と、親子階層における **NotOverridable** フィールドロックを説明します。
+DataIndexer はエディタでのRepositoryプロパティの動作を制御するメタデータKeyをいくつか提供しています。このページでは最もよく使われる 2 つ、UPROPERTY ピッカーの **SchemaFilterリング** と、親子階層における **NotOverridable** フィールドロックを説明します。
 
-## スキーマフィルタリング { #schema-filtering }
+## SchemaFilterリング { #schema-filtering }
 
-クラスが `UDataIndexerRepository` の UPROPERTY を持つ場合、デフォルトではアセットピッカーにスキーマに関わらずプロジェクト内のすべてのリポジトリが表示されます。`meta = (Schema = "...")` を追加すると、特定のスキーマを使用するリポジトリのみに絞り込めます。
+クラスが `UDataIndexerRepository` の UPROPERTY を持つ場合、デフォルトではAssetピッカーにSchemaに関わらずプロジェクト内のすべてのRepositoryが表示されます。`meta = (Schema = "...")` を追加すると、特定のSchemaを使用するRepositoryのみに絞り込めます。
 
-これにより、アイテムスロットにクエストリポジトリを誤って割り当てたり、ショップにキャラクターリポジトリを設定してしまうミスを防げます。
+これにより、アイテムスロットにクエストRepositoryを誤って割り当てたり、ショップにキャラクターRepositoryを設定してしまうミスを防げます。
 
 ### C++
 
@@ -24,17 +24,17 @@ UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DataIndexer",
 TObjectPtr<UDataIndexerRepository> QuestRepository;
 ```
 
-meta の値は**スキーマ Blueprint** のアセットパスです（リポジトリではありません）。アセットを右クリックして **Copy Reference** で取得できる形式と同じです。
+meta の値は**Schema Blueprint** のAssetパスです（Repositoryではありません）。Assetを右クリックして **Copy Reference** で取得できる形式と同じです。
 
 !!! note "パスの形式"
-    パスは `/Game/` から始まる絶対コンテンツパスでなければなりません。プラグインコンテンツは `/PluginName/` です。
+    パスは `/Game/` から始まる絶対コンテンツパスでなければなりません。Pluginコンテンツは `/PluginName/` です。
 
 ### Blueprint
 
 1. 変数を持つ Blueprint を開く
 2. **My Blueprint** パネルで `UDataIndexerRepository` 変数を選択する
 3. **Details** パネルの **Variable** セクションで **Schema** ピッカーを探す
-4. スキーマアセットを選択する — ピッカーが一致するリポジトリのみに絞り込まれる
+4. SchemaAssetを選択する — ピッカーが一致するRepositoryのみに絞り込まれる
 
 ピッカーをクリアすると絞り込みが解除されます。
 
@@ -63,13 +63,13 @@ public:
 };
 ```
 
-各 UPROPERTY のピッカーは対応するスキーマのリポジトリのみを表示します。デザイナーが誤った型を割り当てることができなくなります。
+各 UPROPERTY のピッカーは対応するSchemaのRepositoryのみを表示します。デザイナーが誤った型を割り当てることができなくなります。
 
 ---
 
 ## NotOverridable { #notoverridable }
 
-子リポジトリが親行をオーバーライドすると、デフォルトでは子の Data View ですべてのフィールドが編集可能になります。構造体フィールドに `NotOverridable` メタデータを付加すると、そのフィールドはロックされ、子が親行を編集する際に読み取り専用になります。
+子Repositoryが親行をオーバーライドすると、デフォルトでは子の Data View ですべてのフィールドが編集可能になります。構造体フィールドに `NotOverridable` メタデータを付加すると、そのフィールドはロックされ、子が親行を編集する際に読み取り専用になります。
 
 地域やショップごとに変更すべきでないベースステータス（基本コスト・攻撃力・レアリティ）などに有効です。
 
@@ -79,7 +79,7 @@ public:
 2. ロックしたい変数を選択する
 3. **Details** パネルで **Not Overridable** を有効にする
 
-これで、その行をオーバーライドした子リポジトリではこのフィールドが読み取り専用になります。
+これで、その行をオーバーライドした子Repositoryではこのフィールドが読み取り専用になります。
 
 ### C++（ネイティブ構造体）
 
@@ -134,13 +134,13 @@ void FMyRowCustomization::CustomizeChildren(
 }
 ```
 
-### 例: ベースステータスをロックしたアイテムリポジトリ
+### 例: ベースステータスをロックしたアイテムRepository
 
-シナリオ: グローバルアイテムリポジトリが `BaseValue` と `Rarity` を定義している。地域ショップのリポジトリはアイテムをオーバーライドできる（例: 割引フラグの変更）が、ベースステータスは変更不可にしたい。
+シナリオ: グローバルアイテムRepositoryが `BaseValue` と `Rarity` を定義している。地域ショップのRepositoryはアイテムをオーバーライドできる（例: 割引フラグの変更）が、ベースステータスは変更不可にしたい。
 
 1. `FItemRow` UDStruct の `BaseValue` と `Rarity` に `NotOverridable` を追加する
-2. `DI_AllItems` をグローバルリポジトリとして作成する
-3. `DI_AllItems` を親に持つ `DI_ShopA` を作成する（[親リポジトリ階層](parent-hierarchy.md) を参照）
+2. `DI_AllItems` をグローバルRepositoryとして作成する
+3. `DI_AllItems` を親に持つ `DI_ShopA` を作成する（[親Repository階層](parent-hierarchy.md) を参照）
 4. `DI_ShopA` で親由来の行を開く — `BaseValue` と `Rarity` がグレーアウトされている
 
-階層の構築方法は [親リポジトリ階層](parent-hierarchy.md) を参照してください。
+階層の構築方法は [親Repository階層](parent-hierarchy.md) を参照してください。

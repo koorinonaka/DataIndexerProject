@@ -1,6 +1,6 @@
-# ネイティブスキーマインターフェース
+# ネイティブSchemaインターフェース
 
-`DataIndexer::TNativeSchemaInterface<TRowType>`（`DataIndexerSchemaInterface.h`）は `UDataIndexerRepository` に対する型安全な C++ ファサードです。仮想ディスパッチやキャストなしに、コンパイル時型チェックを伴うクエリが書けます。
+`DataIndexer::TNativeSchemaInterface<TRowType>`（`DataIndexerSchemaInterface.h`）は `UDataIndexerRepository` に対する型安全な C++ ファサードです。仮想ディスパッチやキャストなしに、コンパイル時型チェックを伴うQueryが書けます。
 
 ## セットアップ
 
@@ -50,7 +50,7 @@ static FText GetDisplayName(
     const FDataIndexerPrimaryKey& PrimaryKey);
 ```
 
-リポジトリからフェッチした行エンティティでスキーマの `GetRowDisplayName` を呼び出します。スキーマが null の場合は `FText::FromName(NAME_None)` を返します。
+Repositoryからフェッチした行エンティティでSchemaの `GetRowDisplayName` を呼び出します。Schemaが null の場合は `FText::FromName(NAME_None)` を返します。
 
 ```cpp
 FText Name = FItemInterface::GetDisplayName(Repository, PrimaryKey);
@@ -66,7 +66,7 @@ static const TRowType* FindRow(
     const FDataIndexerPrimaryKey& PrimaryKey);
 ```
 
-`Repository.FindRowEntity(PrimaryKey)` に委譲した後、`TRowType` へのポインタを返します。キーが見つからない場合・型が一致しない場合は `nullptr` を返します。
+`Repository.FindRowEntity(PrimaryKey)` に委譲した後、`TRowType` へのポインタを返します。Keyが見つからない場合・型が一致しない場合は `nullptr` を返します。
 
 ```cpp
 if (const FItemRow* Row = FItemInterface::FindRow(Repository, Key))
@@ -87,7 +87,7 @@ static const TRowType* FindRow(
 
 ハンドルを検証してから `FindRow(*RowHandle.Repository, RowHandle.PrimaryKey)` に委譲します。ハンドルが無効な場合は `nullptr` を返します。
 
-行に保存されたリポジトリ間リレーションを解決するときに使います。`FCharacterRow::DefaultWeapon`（ItemRepository を指す `FDataIndexerRowHandle`）を解決する例：
+行に保存されたRepository間リレーションを解決するときに使います。`FCharacterRow::DefaultWeapon`（ItemRepository を指す `FDataIndexerRowHandle`）を解決する例：
 
 ```cpp
 // CharacterTypes.h
@@ -114,7 +114,7 @@ static void ForEachPrimaryKeys(
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback);
 ```
 
-リポジトリ内（親を含む）のすべての PrimaryKey を走査します。
+Repository内（親を含む）のすべての PrimaryKey を走査します。
 
 ```cpp
 FItemInterface::ForEachPrimaryKeys(Repository, [](const FDataIndexerPrimaryKey& Key)
@@ -125,7 +125,7 @@ FItemInterface::ForEachPrimaryKeys(Repository, [](const FDataIndexerPrimaryKey& 
 
 ---
 
-## ForEachPrimaryKeys（インデックス指定）
+## ForEachPrimaryKeys（Index指定）
 
 ```cpp
 static void ForEachPrimaryKeys(
@@ -135,7 +135,7 @@ static void ForEachPrimaryKeys(
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback);
 ```
 
-`Row` からインデックスキーを計算し、そのキーに一致する PrimaryKey だけを走査します。「このクエリ行と同じフィールド値を持つ行をすべて取得する」意図でフィールドを部分的に埋めた行を渡します。
+`Row` からIndexKeyを計算し、そのKeyに一致する PrimaryKey だけを走査します。「このQuery行と同じフィールド値を持つ行をすべて取得する」意図でフィールドを部分的に埋めた行を渡します。
 
 ```cpp
 FItemRow Query;
@@ -180,7 +180,7 @@ QueryByRarity.Rarity = EItemRarity::Rare;
 TArray<FDataIndexerPrimaryKey> RareKeys =
     FItemInterface::GetPrimaryKeys(Repository, UItemSchema::ByRarityIndex(), QueryByRarity);
 
-// Type × Rarity の複合インデックスで絞り込み
+// Type × Rarity の複合Indexで絞り込み
 FItemRow QueryByTypeAndRarity;
 QueryByTypeAndRarity.Type   = EItemType::Weapon;
 QueryByTypeAndRarity.Rarity = EItemRarity::Rare;

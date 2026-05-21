@@ -17,8 +17,8 @@
       UNREAL ENGINE PLUGIN
     </div>
     {% if is_ja %}
-    <h1>DataTable の次は、<br>スプレッドシート感覚で組む。</h1>
-    <p class="ov-hero-lead">DataIndexer は UE5 のためのデータオーサリングプラグイン。<br>スプレッドシート感覚のセル選択・矩形コピー＆ペースト、保存時に走るインデックスとデータ検証 ── Excel と VLOOKUP に頼らないマスターデータ管理を、UE エディタの内部で完結させます。</p>
+    <h1>リネームしても、<br>参照は壊れない。</h1>
+    <p class="ov-hero-lead">DataIndexer は UE5 のためのゲームデータ管理プラグイン。すべての行は GUID（<code>FDataIndexerPrimaryKey</code>）で識別されるため、リネームしても既存の参照はすべて有効のまま。型安全な C++ / Blueprint API と Schema による一元管理が、データ規模が拡大しても保守コストを抑えます。</p>
     <div class="ov-hero-actions">
       <a href="concepts/" class="ov-btn-secondary">コンセプトを学ぶ</a>
       <a href="quick-start/" class="ov-btn-primary">
@@ -27,8 +27,8 @@
       </a>
     </div>
     {% else %}
-    <h1>DataTable's next step.<br>Spreadsheet-feel authoring.</h1>
-    <p class="ov-hero-lead">DataIndexer is a data authoring plugin for UE5.<br>Spreadsheet-style cell selection, rectangular copy &amp; paste, and index-backed data validation on save — master data management inside the UE editor, without relying on Excel or VLOOKUP.</p>
+    <h1>References that<br>survive renames.</h1>
+    <p class="ov-hero-lead">DataIndexer is a game data management plugin for UE5. Every row is identified by a GUID (<code>FDataIndexerPrimaryKey</code>), so references survive renames, moves, and reimports. A type-safe C++ / Blueprint API and a centralized Schema keep maintenance costs low as your data grows.</p>
     <div class="ov-hero-actions">
       <a href="concepts/" class="ov-btn-secondary">Learn the concepts</a>
       <a href="quick-start/" class="ov-btn-primary">
@@ -61,29 +61,25 @@
 
     {% if is_ja %}
 
-    <!-- 01 / 専用エディタ -->
+    <!-- 01 / メンテナンス性 -->
     <div class="ov-feature-row">
       <div class="ov-feature-text">
-        <div class="ov-feature-kicker">01 / 専用エディタ</div>
-        <h3>編集はセルで。整合性はスキーマで。</h3>
-        <p class="ov-feature-desc">マスターデータを Excel で組んで CSV インポート、参照整合性は VLOOKUP で目視確認 ── この回りくどさを終わらせるための専用エディタ。スプレッドシートの操作感はそのまま、整合性は型システムが保証します。</p>
+        <div class="ov-feature-kicker">01 / メンテナンス性</div>
+        <h3>リネームしても、参照は壊れない。</h3>
+        <p class="ov-feature-desc">DataTable の FName 参照はリネームで壊れます。DataIndexer は GUID（<code>FDataIndexerPrimaryKey</code>）で識別するため、名前が変わっても参照は生き続けます。</p>
         <ul class="ov-feature-bullets">
           <li>
-            <strong>スプレッドシート感覚のセル操作</strong>
-            <p>セル単位の選択、Shift / Ctrl による拡張選択、矩形範囲のドラッグ、ダブルクリックでインライン編集。表計算と同じ手の動きでデータを組めます。</p>
+            <strong>GUID ベースの PrimaryKey</strong>
+            <p>キー名を変更しても参照はそのまま維持。Blueprint やコードの参照が壊れません。</p>
           </li>
           <li>
-            <strong>完全なデータバリデーション</strong>
-            <p>スキーマが各カラムの型と制約を保証。VLOOKUP で参照整合性を確認する必要はもうありません。保存時 / Cook 時に自動検証。</p>
-          </li>
-          <li>
-            <strong>インラインとフルエディタを併用</strong>
-            <p>単純な値はセルで即座に、複雑な構造体は右の Selection Details で。ワークフローを切り替えずに編集できます。</p>
+            <strong>Key 参照の追跡</strong>
+            <p>どのアセット・コードから参照されているかをエディタ上で確認できます。</p>
           </li>
         </ul>
       </div>
       <div class="ov-feature-visual">
-        <img src="{{ base_url }}/assets/images/cellop.gif" alt="Dedicated data view editor">
+        <img src="{{ base_url }}/assets/images/feature-02.gif" alt="Key reference tracking">
       </div>
     </div>
 
@@ -108,24 +104,25 @@
       </div>
     </div>
 
-    <!-- 03 / メンテナンス性 -->
+    <!-- 03 / 専用エディタ -->
     <div class="ov-feature-row">
       <div class="ov-feature-text">
-        <div class="ov-feature-kicker">03 / メンテナンス性</div>
-        <h3>リネームしても、参照は壊れない。</h3>
+        <div class="ov-feature-kicker">03 / 専用エディタ</div>
+        <h3>編集はセルで。整合性はスキーマで。</h3>
+        <p class="ov-feature-desc">マスターデータを Excel で組んで CSV インポート、参照整合性は VLOOKUP で目視確認 ── この回りくどさを終わらせるための専用エディタ。スプレッドシートの操作感はそのまま、整合性は型システムが保証します。</p>
         <ul class="ov-feature-bullets">
           <li>
-            <strong>Key 参照の追跡</strong>
-            <p>どのアセット・コードから参照されているかをエディタ上で確認できます。</p>
+            <strong>スプレッドシート感覚のセル操作</strong>
+            <p>セル単位の選択、Shift / Ctrl による拡張選択、矩形範囲のドラッグ、ダブルクリックでインライン編集。表計算と同じ手の動きでデータを組めます。</p>
           </li>
           <li>
-            <strong>GUID ベースの PrimaryKey</strong>
-            <p>キー名を変更しても参照はそのまま維持。Blueprint やコードの参照が壊れません。</p>
+            <strong>完全なデータバリデーション</strong>
+            <p>スキーマが各カラムの型と制約を保証。VLOOKUP で参照整合性を確認する必要はもうありません。保存時 / Cook 時に自動検証。</p>
           </li>
         </ul>
       </div>
       <div class="ov-feature-visual">
-        <img src="{{ base_url }}/assets/images/feature-02.gif" alt="Key reference tracking">
+        <img src="{{ base_url }}/assets/images/cellop.gif" alt="Dedicated data view editor">
       </div>
     </div>
 
@@ -152,29 +149,25 @@
 
     {% else %}
 
-    <!-- 01 / Dedicated Editor -->
+    <!-- 01 / Maintainability -->
     <div class="ov-feature-row">
       <div class="ov-feature-text">
-        <div class="ov-feature-kicker">01 / Dedicated Editor</div>
-        <h3>Edit in cells. Schema enforces integrity.</h3>
-        <p class="ov-feature-desc">Building master data in Excel, importing via CSV, then verifying referential integrity by hand with VLOOKUP — that roundabout workflow ends here. A dedicated editor with spreadsheet-feel editing and type-system-backed consistency.</p>
+        <div class="ov-feature-kicker">01 / Maintainability</div>
+        <h3>Renames don't break references.</h3>
+        <p class="ov-feature-desc">DataTable row references are FName strings — rename a row and every reference silently breaks. DataIndexer assigns a GUID (<code>FDataIndexerPrimaryKey</code>) to every row, so references survive any rename.</p>
         <ul class="ov-feature-bullets">
           <li>
-            <strong>Spreadsheet-style cell editing</strong>
-            <p>Per-cell selection, Shift / Ctrl range extension, rectangular drag selection, and double-click inline editing. The same hand motions as a spreadsheet, inside the UE editor.</p>
+            <strong>GUID-based PrimaryKey</strong>
+            <p>Change a key's name freely — Blueprint and code references stay intact.</p>
           </li>
           <li>
-            <strong>Full data validation</strong>
-            <p>The schema enforces types and constraints on every column. No more manual VLOOKUP checks for referential integrity. Validation runs automatically on save and cook.</p>
-          </li>
-          <li>
-            <strong>Inline and full editor side by side</strong>
-            <p>Simple values directly in the cell; complex structs in the Selection Details panel on the right. No context switch required.</p>
+            <strong>Key usage tracking</strong>
+            <p>See which assets and code reference a given row, directly in the editor.</p>
           </li>
         </ul>
       </div>
       <div class="ov-feature-visual">
-        <img src="{{ base_url }}/assets/images/cellop.gif" alt="Dedicated data view editor">
+        <img src="{{ base_url }}/assets/images/feature-02.gif" alt="Key reference tracking">
       </div>
     </div>
 
@@ -199,24 +192,25 @@
       </div>
     </div>
 
-    <!-- 03 / Maintainability -->
+    <!-- 03 / Dedicated Editor -->
     <div class="ov-feature-row">
       <div class="ov-feature-text">
-        <div class="ov-feature-kicker">03 / Maintainability</div>
-        <h3>Renames don't break references.</h3>
+        <div class="ov-feature-kicker">03 / Dedicated Editor</div>
+        <h3>Edit in cells. Schema enforces integrity.</h3>
+        <p class="ov-feature-desc">Building master data in Excel, importing via CSV, then verifying referential integrity by hand with VLOOKUP — that roundabout workflow ends here. A dedicated editor with spreadsheet-feel editing and type-system-backed consistency.</p>
         <ul class="ov-feature-bullets">
           <li>
-            <strong>Key usage tracking</strong>
-            <p>See which assets and code reference a given row, directly in the editor.</p>
+            <strong>Spreadsheet-style cell editing</strong>
+            <p>Per-cell selection, Shift / Ctrl range extension, rectangular drag selection, and double-click inline editing. The same hand motions as a spreadsheet, inside the UE editor.</p>
           </li>
           <li>
-            <strong>GUID-based PrimaryKey</strong>
-            <p>Change a key's name freely — Blueprint and code references stay intact.</p>
+            <strong>Full data validation</strong>
+            <p>The schema enforces types and constraints on every column. No more manual VLOOKUP checks for referential integrity. Validation runs automatically on save and cook.</p>
           </li>
         </ul>
       </div>
       <div class="ov-feature-visual">
-        <img src="{{ base_url }}/assets/images/feature-02.gif" alt="Key reference tracking">
+        <img src="{{ base_url }}/assets/images/cellop.gif" alt="Dedicated data view editor">
       </div>
     </div>
 

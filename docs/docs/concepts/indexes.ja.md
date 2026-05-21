@@ -1,6 +1,6 @@
-# インデックス
+# Index
 
-インデックスはセカンダリ検索軸で、カテゴリ・陣営・レアリティなど任意のドメイン属性で行のセットを取得できます。リポジトリ全体を走査せず、直接マルチマップ参照によって O(マッチ数) で結果を返します。
+Indexはセカンダリ検索軸で、カテゴリ・陣営・レアリティなど任意のドメイン属性で行のセットを取得できます。Repository全体を走査せず、直接マルチマップ参照によって O(マッチ数) で結果を返します。
 
 ## 型
 
@@ -8,26 +8,26 @@
 |----|------|
 | `FDataIndexerIndex` | 検索軸を識別する。決定論的 GUID とエディタ専用の `DevComment` を保持 |
 
-インデックスキーはビルダー関数が返す生の `FGuid` 値です。`FDataIndexerIndexKey` のような独立した型はありません。
+IndexKeyはビルダー関数が返す生の `FGuid` 値です。`FDataIndexerIndexKey` のような独立した型はありません。
 
-## インデックスの仕組み
+## Indexの仕組み
 
-保存時にコンパイラが各行に対してすべての **BuildIndex** 関数を呼び出します。ビルダーはインデックスキーとなる `FGuid` を返し、任意でエディタ表示用の `FText` を設定します。結果はリポジトリの `ReverseLookups` テーブルに格納されます。
+保存時にコンパイラが各行に対してすべての **BuildIndex** 関数を呼び出します。ビルダーはIndexKeyとなる `FGuid` を返し、任意でエディタ表示用の `FText` を設定します。結果はRepositoryの `ReverseLookups` テーブルに格納されます。
 
 ```
 ReverseLookups[FDataIndexerIndex] → { TMap<FGuid, TArray<FDataIndexerPrimaryKey>> }
 ```
 
-実行時の `Repository.ForEachPrimaryKeys(Index, Query, Callback)` はビルダーをクエリ構造体に対して呼び出してルックアップ GUID を導出し、マップを直接引くため高速です。
+実行時の `Repository.ForEachPrimaryKeys(Index, Query, Callback)` はビルダーをQuery構造体に対して呼び出してルックアップ GUID を導出し、マップを直接引くため高速です。
 
-## インデックスの定義
+## Indexの定義
 
 ### C++ の場合
 
-スキーマクラスに `DI_DEFINE_INDEX` マクロでインデックスを宣言します。マクロはクラスパスと名前から決定論的 GUID を生成する静的アクセサ関数を展開します。
+Schemaクラスに `DI_DEFINE_INDEX` マクロでIndexを宣言します。マクロはクラスパスと名前から決定論的 GUID を生成する静的アクセサ関数を展開します。
 
 !!! note "プロジェクト側で定義が必要"
-    `DI_DEFINE_INDEX` は DataIndexer プラグインには含まれていません。プロジェクトのヘッダ（例：`DataIndexerKeyHelpers.h`）に以下のように定義してください。
+    `DI_DEFINE_INDEX` は DataIndexer Pluginには含まれていません。プロジェクトのヘッダ（例：`DataIndexerKeyHelpers.h`）に以下のように定義してください。
 
 ```cpp title="DataIndexerKeyHelpers.h"
 #define DI_DEFINE_INDEX( VarName ) \
@@ -84,20 +84,20 @@ FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
 
 ### Blueprint の場合
 
-1. スキーマ Blueprint を開いて **Class Defaults** へ
+1. Schema Blueprint を開いて **Class Defaults** へ
 2. **Build Index Functions** にエントリを追加：
    - **Key**：`FDataIndexerIndex` 変数（固定 GUID を変数デフォルト値に設定）
    - **Value**：`Prototype_BuildIndex` シグネチャに合った関数参照（`RowEntity → FGuid`）
 
-実装例（クラス別インデックス）：
+実装例（クラス別Index）：
 
 ![BuildIndexByClass の実装例](../assets/images/build-index-by-class.png)
 
 `Get Instanced Struct Value` で行データを取り出し、`Enum to String` → `Parse String to Guid` でクラス Enum から決定論的 GUID を生成して返します。
 
-## インデックスによるクエリ
+## IndexによるQuery
 
-**C++** — クエリとして使いたいフィールドだけを埋めた行を渡します。
+**C++** — Queryとして使いたいフィールドだけを埋めた行を渡します。
 
 ```cpp
 // Weapon タイプのアイテムをすべて取得
@@ -108,7 +108,7 @@ TArray<FDataIndexerPrimaryKey> Keys =
     FItemInterface::GetPrimaryKeys(*Repository, UItemSchema::ByTypeIndex(), Query);
 ```
 
-逆引きインデックス（例：特定のアイテムを `DefaultWeapon` に持つキャラクターを取得）:
+逆引きIndex（例：特定のアイテムを `DefaultWeapon` に持つキャラクターを取得）:
 
 ```cpp
 FCharacterRow Query;
@@ -121,13 +121,13 @@ TArray<FDataIndexerPrimaryKey> Characters =
 
 **Blueprint:**
 
-`FDataIndexerKeysHandle` UPROPERTY と **Get Rows Handle Keys** 関数ライブラリノードを使います。ノードはハンドルと **Query** ワイルドカード構造体ピンを受け取ります。インデックスを駆動するフィールドを埋めてください（例：`ByType` インデックスなら `Type = Weapon` を設定）。
+`FDataIndexerKeysHandle` UPROPERTY と **Get Rows Handle Keys** 関数ライブラリNodeを使います。Nodeはハンドルと **Query** ワイルドカード構造体ピンを受け取ります。Indexを駆動するフィールドを埋めてください（例：`ByType` Indexなら `Type = Weapon` を設定）。
 
-## インデックスキーの安定性
+## IndexKeyの安定性
 
 ビルダー関数が返す GUID はエディタをまたいで不変でなければなりません。enum の序数・文字列ハッシュなど安定した値から導出してください。ビルダー内で `FGuid::NewGuid()` を使うのは NG です。
 
-`DI_DEFINE_INDEX` は `FGuid::NewDeterministicGuid(StaticClass()->GetPathName() + "." + インデックス名)` を使用するため、インデックス名やスキーマクラス名（`GetPathName()` が変わる）のリネームは GUID 変更を引き起こします。これらの名前は安定した API として扱ってください。
+`DI_DEFINE_INDEX` は `FGuid::NewDeterministicGuid(StaticClass()->GetPathName() + "." + Index名)` を使用するため、Index名やSchemaクラス名（`GetPathName()` が変わる）のリネームは GUID 変更を引き起こします。これらの名前は安定した API として扱ってください。
 
 !!! note "ReverseLookups の再構築タイミング"
     エディタでは参照時に自動構築されます。パッケージビルドではクック時に構築されるため、手動での再保存は不要です。

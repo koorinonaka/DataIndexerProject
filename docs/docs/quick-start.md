@@ -52,34 +52,7 @@ A complete walkthrough — from creating a schema and repository to authoring ro
 
 ## Create a Struct and Schema { #step-1 .step }
 
-=== ":material-puzzle: Editor & Blueprint"
-
-    **Create a Blueprint Struct**{ .step-label }
-
-    Define the shape of a single row as a Blueprint struct in the Content Browser.
-
-    ![Creating a Blueprint struct for row data](assets/images/bp-struct-creation.png)
-
-    1. Right-click in the **Content Browser** → **Blueprints → Structure**
-    2. Name it (e.g., `S_ItemRow`) and double-click to open
-    3. Add a variable for each data field — `DisplayName` (Text), `Type` (Enum), `BaseValue` (Integer), etc.
-
-    **Create a Schema Blueprint**{ .step-label }
-
-    A Schema Blueprint links your struct to a repository and controls editor behavior.
-
-    1. Right-click → **Blueprint Class**, search for `DataIndexerSchema`, select it
-    2. Name it (e.g., `BP_ItemSchema`) and open it
-    3. In **Class Defaults → Row Struct**, select your struct (`S_ItemRow`)
-
-    Optionally implement **Get Row Display Name** to show a readable label per row in the Data View:
-
-    ![GetRowDisplayName implementation](assets/images/schema-get-row-display-name.png)
-
-    !!! note
-        This logic handles the per-row display equivalent of DataTable's RowName. Rows are automatically renamed by referencing this function, keeping labels always in sync.
-
-=== ":material-language-cpp: C++"
+=== "C++"
 
     **Define a Row Struct**{ .step-label }
 
@@ -167,6 +140,33 @@ A complete walkthrough — from creating a schema and repository to authoring ro
     }
     ```
 
+
+=== "Blueprint"
+
+    **Create a Blueprint Struct**{ .step-label }
+
+    Define the shape of a single row as a Blueprint struct in the Content Browser.
+
+    ![Creating a Blueprint struct for row data](assets/images/bp-struct-creation.png)
+
+    1. Right-click in the **Content Browser** → **Blueprints → Structure**
+    2. Name it (e.g., `S_ItemRow`) and double-click to open
+    3. Add a variable for each data field — `DisplayName` (Text), `Type` (Enum), `BaseValue` (Integer), etc.
+
+    **Create a Schema Blueprint**{ .step-label }
+
+    A Schema Blueprint links your struct to a repository and controls editor behavior.
+
+    1. Right-click → **Blueprint Class**, search for `DataIndexerSchema`, select it
+    2. Name it (e.g., `BP_ItemSchema`) and open it
+    3. In **Class Defaults → Row Struct**, select your struct (`S_ItemRow`)
+
+    Optionally implement **Get Row Display Name** to show a readable label per row in the Data View:
+
+    ![GetRowDisplayName implementation](assets/images/schema-get-row-display-name.png)
+
+    !!! note
+        This logic handles the per-row display equivalent of DataTable's RowName. Rows are automatically renamed by referencing this function, keeping labels always in sync.
 <div class="qs-complete">
   <p class="qs-complete-title">
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="8"/><path d="m5 9 3 3 5-6"/></svg>
@@ -234,28 +234,7 @@ For a full breakdown of the editor, see the [Editor Guide](editor-guide/index.md
 
 ## Query Examples { #step-3 .step }
 
-=== ":material-puzzle: Editor & Blueprint"
-
-    **Reference a specific row**{ .step-label }
-
-    Spawn a **Get Row** node directly in the graph:
-
-    1. Right-click in the graph → search for **Get Row** and add it
-    2. Set **Handle Repository** to the repository you created
-    3. Select a row via the **Handle Primary Key** ComboBox
-    4. Wire the **Out Row** output pin into your logic
-
-    ![Get Row node example](assets/images/get-row-node.png)
-
-    **Iterate all rows**{ .step-label }
-
-    Pass a repository to **Get All Primary Keys** to retrieve all primary keys, then loop with **For Each Loop** and call **Get Row** for each key.
-
-    ![Node graph for iterating all rows](assets/images/iterate-all-rows.png){ .qs-zoomable }
-
-    For index-based filtering, see [Blueprint API → Function Library](api-reference/function-library.md).
-
-=== ":material-language-cpp: C++"
+=== "C++"
 
     Use `FItemInterface` (alias for `TNativeSchemaInterface<FItemRow>`).
 
@@ -281,6 +260,27 @@ For a full breakdown of the editor, see the [Editor Guide](editor-guide/index.md
     }
     ```
 
+
+=== "Blueprint"
+
+    **Reference a specific row**{ .step-label }
+
+    Spawn a **Get Row** node directly in the graph:
+
+    1. Right-click in the graph → search for **Get Row** and add it
+    2. Set **Handle Repository** to the repository you created
+    3. Select a row via the **Handle Primary Key** ComboBox
+    4. Wire the **Out Row** output pin into your logic
+
+    ![Get Row node example](assets/images/get-row-node.png)
+
+    **Iterate all rows**{ .step-label }
+
+    Pass a repository to **Get All Primary Keys** to retrieve all primary keys, then loop with **For Each Loop** and call **Get Row** for each key.
+
+    ![Node graph for iterating all rows](assets/images/iterate-all-rows.png){ .qs-zoomable }
+
+    For index-based filtering, see [Blueprint API → Function Library](api-reference/function-library.md).
 <div class="qs-complete">
   <p class="qs-complete-title">
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="9" r="8"/><path d="m5 9 3 3 5-6"/></svg>

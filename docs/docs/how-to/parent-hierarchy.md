@@ -64,12 +64,6 @@ Instead, maintain `DI_ShopA` as a standalone repository and use a `FDataIndexerH
 
 Querying `DI_ShopA` transparently returns rows from both the child and all parents. No special handling is needed.
 
-=== "Blueprint"
-
-    Pass `DI_ShopA` to **Get All Primary Keys** — the result includes all primary keys visible through the full hierarchy. Feed each key into **Get Row** as usual.
-
-    To compare against the parent's original value, pass `DI_AllItems` to a second **Get Row** node with the same key.
-
 === "C++"
 
     ```cpp
@@ -92,6 +86,12 @@ Querying `DI_ShopA` transparently returns rows from both the child and all paren
     }
     ```
 
+
+=== "Blueprint"
+
+    Pass `DI_ShopA` to **Get All Primary Keys** — the result includes all primary keys visible through the full hierarchy. Feed each key into **Get Row** as usual.
+
+    To compare against the parent's original value, pass `DI_AllItems` to a second **Get Row** node with the same key.
 ## Multi-level hierarchies
 
 The composition is recursive. `DI_RegionSale` can set `DI_ShopA` as its parent, which in turn has `DI_AllItems`:
