@@ -1,10 +1,10 @@
 # Function Library
 
-`UDataIndexerFunctionLibrary` は `UBlueprintFunctionLibrary` で、Blueprint グラフで DataIndexer 型を操作するユーティリティNodeを提供します。すべてのNodeは **DataIndexer** カテゴリに属します。
+`UDataIndexerFunctionLibrary` は `UBlueprintFunctionLibrary` で、Blueprint グラフで DataIndexer 型を操作するユーティリティノードを提供します。すべてのノードは **DataIndexer** カテゴリに属します。
 
 ---
 
-## Primary Key Node
+## Primary Key ノード
 
 ### Equal / Not Equal
 
@@ -13,7 +13,7 @@ EqualEqual_PrimaryKeyPrimaryKey(A, B) → bool
 NotEqual_PrimaryKeyPrimaryKey(A, B) → bool
 ```
 
-コンパクトNodeタイトルは `==` と `!=`。`BlueprintThreadSafe`。
+コンパクトノードタイトルは `==` と `!=`。`BlueprintThreadSafe`。
 
 2 つの `FDataIndexerPrimaryKey` の等値比較を行います。`FGuid::operator==` に委譲します。
 
@@ -25,9 +25,9 @@ NotEqual_PrimaryKeyPrimaryKey(A, B) → bool
 Conv_PrimaryKeyToString(PrimaryKey) → FString
 ```
 
-コンパクトNodeタイトルは `→`。`BlueprintAutocast`、`BlueprintThreadSafe`。
+コンパクトノードタイトルは `→`。`BlueprintAutocast`、`BlueprintThreadSafe`。
 
-プライマリKeyを GUID 文字列表現（例：`"A1B2C3D4-..."`）に変換します。
+PrimaryKeyを GUID 文字列表現（例：`"A1B2C3D4-..."`）に変換します。
 
 ---
 
@@ -37,11 +37,11 @@ Conv_PrimaryKeyToString(PrimaryKey) → FString
 IsValidPrimaryKey(PrimaryKey) → bool
 ```
 
-プライマリKeyがゼロでない場合（`FGuid::IsValid()`）に `true` を返します。
+PrimaryKeyがゼロでない場合（`FGuid::IsValid()`）に `true` を返します。
 
 ---
 
-## Row Handle Node
+## Row Handle ノード
 
 ### Is Valid Row Handle
 
@@ -72,11 +72,11 @@ GetRowHandleValue(Handle, OutValue) → bool  [CustomThunk, BlueprintInternalUse
 ハンドルから型付き行構造体を `OutValue` に取り出します。`OutValue` ワイルドカードピンには正しい行構造体型の変数を接続する必要があります。ハンドルが無効な場合は `false` を返します。
 
 !!! note
-    このNodeは `BlueprintInternalUseOnly` としてマークされています。推奨される型付き取得には `UK2Node_DataIndexerGetRow` の **Get Row** K2 Nodeを使用してください。
+    このノードは `BlueprintInternalUseOnly` としてマークされています。推奨される型付き取得には `UK2Node_DataIndexerGetRow` の **Get Row** K2 ノードを使用してください。
 
 ---
 
-## Rows Handle Node
+## Rows Handle ノード
 
 ### Get Rows Handle Value
 
@@ -84,10 +84,10 @@ GetRowHandleValue(Handle, OutValue) → bool  [CustomThunk, BlueprintInternalUse
 GetRowsHandleValue(Handle, Query, OutKeys) → bool  [CustomThunk, BlueprintInternalUseOnly]
 ```
 
-ワイルドカードの `Query` 構造体にマッチするプライマリKeyを `OutKeys` に書き込みます。`Query` ピンにはSchemaに登録された具体的なIndexQuery構造体型を接続する必要があります。マッチするKeyが 1 件以上あれば `true` を返します。
+ワイルドカードの `Query` 構造体にマッチするPrimaryKeyを `OutKeys` に書き込みます。`Query` ピンにはSchemaに登録された具体的なIndex クエリ構造体型を接続する必要があります。マッチするキーが 1 件以上あれば `true` を返します。
 
 !!! note
-    このNodeは `BlueprintInternalUseOnly` としてマークされています。`FDataIndexerKeysHandle` を解決するときに K2 Nodeが内部で使用します。
+    このノードは `BlueprintInternalUseOnly` としてマークされています。`FDataIndexerKeysHandle` を解決するときに K2 ノードが内部で使用します。
 
 ---
 
@@ -97,4 +97,4 @@ GetRowsHandleValue(Handle, Query, OutKeys) → bool  [CustomThunk, BlueprintInte
 GetAllPrimaryKeys(Repository) → TArray<FDataIndexerPrimaryKey>
 ```
 
-Repositoryを通して見えるすべてのプライマリKeyを返します（親Repositoryを含む）。Blueprint で UI リストへの表示やすべての行の走査に使います。
+Repositoryを通して見えるすべてのPrimaryKeyを返します（親Repositoryを含む）。Blueprint で UI リストへの表示やすべての行の走査に使います。

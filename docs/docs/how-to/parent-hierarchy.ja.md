@@ -4,7 +4,7 @@ title: 親Repository階層
 
 # 親Repository階層
 
-Repositoryは 1 つ以上の*親*Repositoryを宣言できます。走査・Query時には階層が再帰的に辿られ、親の行は子を通して見えるようになります。これにより、行を複製せずに共有ベーステーブルとドメイン固有のオーバーレイを構築できます。
+Repositoryは 1 つ以上の*親*Repositoryを宣言できます。走査・クエリ時には階層が再帰的に辿られ、親の行は子を通して見えるようになります。これにより、行を複製せずに共有ベーステーブルとドメイン固有のオーバーレイを構築できます。
 
 ## シナリオ
 
@@ -46,7 +46,7 @@ Data View に両Repositoryの行が表示されます。親由来の行はエデ
 2. グリッドで親由来の行をクリックする
 3. その行が**オーバーライドモード**に入る — フィールドを編集すると `DI_AllItems` を変更せずに `DI_ShopA` の `LocalEntries` にローカルコピーが作られる
 
-オーバーライドされた行は両方に存在します。`DI_AllItems` は元の値を保持し、`DI_ShopA` のローカルコピーが変更後の値を持ちます。`DI_ShopA` をQueryするとオーバーライドされた値が返ります。
+オーバーライドされた行は両方に存在します。`DI_AllItems` は元の値を保持し、`DI_ShopA` のローカルコピーが変更後の値を持ちます。`DI_ShopA` をクエリするとオーバーライドされた値が返ります。
 
 オーバーライドを戻すには、行を選択してツールバーの **Reset to Parent** ボタンを押してください。
 
@@ -60,9 +60,9 @@ Data View に両Repositoryの行が表示されます。親由来の行はエデ
 
 この場合は `DI_ShopA` をスタンドアロンのRepositoryとして管理し、`FDataIndexerHandle` の配列やセカンダリIndexでショップの在庫を明示的に定義してください。親階層は、全件の可視性とオプションのフィールドオーバーライドが必要なときに使用するものです。サブセット管理には適していません。
 
-## ランタイムQuery { #runtime-querying }
+## ランタイムクエリ { #runtime-querying }
 
-`DI_ShopA` をQueryすると、子と全親の行が透過的に返ります。特別な処理は不要です。
+`DI_ShopA` をクエリすると、子と全親の行が透過的に返ります。特別な処理は不要です。
 
 === "C++"
 
@@ -77,7 +77,7 @@ Data View に両Repositoryの行が表示されます。親由来の行はエデ
     }
     ```
 
-    元の親の値だけを取得したい場合（例: 元のステータス表示）は、親Repositoryに直接Queryします。
+    元の親の値だけを取得したい場合（例: 元のステータス表示）は、親Repositoryに直接クエリします。
 
     ```cpp
     if (const FItemRow* BaseRow = FItemInterface::FindRow(AllItemsRepository, Key))
@@ -89,9 +89,9 @@ Data View に両Repositoryの行が表示されます。親由来の行はエデ
 
 === "Blueprint"
 
-    **Get All Primary Keys** に `DI_ShopA` を渡すと、階層全体で見えるすべてのプライマリKeyが返ります。各Keyを通常通り **Get Row** に渡してください。
+    **Get All Primary Keys** に `DI_ShopA` を渡すと、階層全体で見えるすべてのPrimaryKeyが返ります。各キーを通常通り **Get Row** に渡してください。
 
-    親の元の値と比較したい場合は、同じKeyで `DI_AllItems` を別の **Get Row** Nodeに渡します。
+    親の元の値と比較したい場合は、同じキーで `DI_AllItems` を別の **Get Row** ノードに渡します。
 ## 多段階層
 
 合成は再帰的です。`DI_RegionSale` が `DI_ShopA` を親に持ち、`DI_ShopA` がさらに `DI_AllItems` を親に持つ構成も可能です。
@@ -102,7 +102,7 @@ DI_AllItems
             └── DI_RegionSale
 ```
 
-`DI_RegionSale` をQueryすると全チェーンが走査されます。`DI_ShopA` のオーバーライドは `DI_AllItems` より優先され、`DI_RegionSale` のオーバーライドはさらにその上書きになります。
+`DI_RegionSale` をクエリすると全チェーンが走査されます。`DI_ShopA` のオーバーライドは `DI_AllItems` より優先され、`DI_RegionSale` のオーバーライドはさらにその上書きになります。
 
 循環した親参照を誤って作ってしまった場合もエディタのサイクル検出が無限ループを防ぎます。
 

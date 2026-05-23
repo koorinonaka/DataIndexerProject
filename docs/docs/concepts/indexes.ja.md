@@ -18,7 +18,7 @@ IndexKeyはビルダー関数が返す生の `FGuid` 値です。`FDataIndexerIn
 ReverseLookups[FDataIndexerIndex] → { TMap<FGuid, TArray<FDataIndexerPrimaryKey>> }
 ```
 
-実行時の `Repository.ForEachPrimaryKeys(Index, Query, Callback)` はビルダーをQuery構造体に対して呼び出してルックアップ GUID を導出し、マップを直接引くため高速です。
+実行時の `Repository.ForEachPrimaryKeys(Index, Query, Callback)` はビルダーをクエリ構造体に対して呼び出してルックアップ GUID を導出し、マップを直接引くため高速です。
 
 ## Indexの定義
 
@@ -86,7 +86,7 @@ FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
 
 1. Schema Blueprint を開いて **Class Defaults** へ
 2. **Build Index Functions** にエントリを追加：
-   - **Key**：`FDataIndexerIndex` 変数（固定 GUID を変数デフォルト値に設定）
+   - **キー**：`FDataIndexerIndex` 変数（固定 GUID を変数デフォルト値に設定）
    - **Value**：`Prototype_BuildIndex` シグネチャに合った関数参照（`RowEntity → FGuid`）
 
 実装例（クラス別Index）：
@@ -95,9 +95,9 @@ FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
 
 `Get Instanced Struct Value` で行データを取り出し、`Enum to String` → `Parse String to Guid` でクラス Enum から決定論的 GUID を生成して返します。
 
-## IndexによるQuery
+## Indexによるクエリ
 
-**C++** — Queryとして使いたいフィールドだけを埋めた行を渡します。
+**C++** — クエリとして使いたいフィールドだけを埋めた行を渡します。
 
 ```cpp
 // Weapon タイプのアイテムをすべて取得
@@ -121,7 +121,7 @@ TArray<FDataIndexerPrimaryKey> Characters =
 
 **Blueprint:**
 
-`FDataIndexerKeysHandle` UPROPERTY と **Get Rows Handle Keys** 関数ライブラリNodeを使います。Nodeはハンドルと **Query** ワイルドカード構造体ピンを受け取ります。Indexを駆動するフィールドを埋めてください（例：`ByType` Indexなら `Type = Weapon` を設定）。
+`FDataIndexerKeysHandle` UPROPERTY と **Get Rows Handle キー** 関数ライブラリノードを使います。ノードはハンドルと **クエリ** ワイルドカード構造体ピンを受け取ります。Indexを駆動するフィールドを埋めてください（例：`ByType` Indexなら `Type = Weapon` を設定）。
 
 ## IndexKeyの安定性
 

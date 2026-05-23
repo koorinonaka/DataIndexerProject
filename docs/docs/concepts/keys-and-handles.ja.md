@@ -1,4 +1,4 @@
-# Keys & Handles
+# キー & Handles
 
 DataIndexer は行を特定するために 3 種類のアドレス型を使用します。それぞれ異なるコンテキストに最適化されています。
 
@@ -14,15 +14,15 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
 **主な特性：**
 
 - エディタで行を作成したときに 1 度だけ生成され、以後変更されない。
-- Assetの移動・リネーム・Repositoryのリファクタリングを経ても維持される。
-- Repositoryの `LocalEntries` のKeyとして使用される。
+- アセットの移動・リネーム・Repositoryのリファクタリングを経ても維持される。
+- Repositoryの `LocalEntries` のキーとして使用される。
 - メタデータから所有Repositoryを特定・保存し、追跡できるようになる。
 
-**使うべき場面：** 低レベル C++ での走査（`ForEachPrimaryKeys`）、ゲームシステムでのマップKey、Index検索テーブルの構築。
+**使うべき場面：** 低レベル C++ での走査（`ForEachPrimaryKeys`）、ゲームシステムでのマップキー、Index検索テーブルの構築。
 
 ### `Repository` メタデータ
 
-アクター・データAsset・構造体の `UPROPERTY` にベアなプライマリKeyを保存できます。エディタが行ピッカーを表示するRepositoryを特定できるよう `meta = (Repository = "...")` を指定してください。
+アクター・データアセット・構造体の `UPROPERTY` にベアなPrimaryKeyを保存できます。エディタが行ピッカーを表示するRepositoryを特定できるよう `meta = (Repository = "...")` を指定してください。
 
 値には同じクラス上の `UDataIndexerRepository*` を返す**プロパティ名または関数名**を指定します。引数なしの `UFUNCTION` も使用できます。
 
@@ -73,10 +73,10 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
 
 === "Blueprint"
 
-    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerPrimaryKey` 変数を選択し、**Read Only Keys** チェックボックスをオンにします。オンにすると行ピッカーが非表示になり、格納されているKey値がロックされます。
+    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerPrimaryKey` 変数を選択し、**Read Only キー** チェックボックスをオンにします。オンにすると行ピッカーが非表示になり、格納されているキー値がロックされます。
 ## FDataIndexerRowHandle
 
-`FDataIndexerRowHandle` はRepository参照とプライマリKeyをペアにします。Blueprint 変数や単一行へのAsset参照に推奨される UPROPERTY 型です。
+`FDataIndexerRowHandle` はRepository参照とPrimaryKeyをペアにします。Blueprint 変数や単一行へのアセット参照に推奨される UPROPERTY 型です。
 
 ```cpp
 USTRUCT(BlueprintType, meta = (PresentAsType = "NamedStruct"))
@@ -98,7 +98,7 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 - `GetRowDisplayName()` — Schema駆動の表示ラベルを `TOptional<FText>` で返す。ハンドルが無効な場合は empty。
 - エディタはこれを名前付き行ピッカーとしてレンダリングし、Schemaからの表示名を表示する。
 
-**使うべき場面：** 特定の行を指したいアクター・データAsset・セーブゲーム構造体の UPROPERTY。行参照用の Blueprint 変数。
+**使うべき場面：** 特定の行を指したいアクター・データアセット・セーブゲーム構造体の UPROPERTY。行参照用の Blueprint 変数。
 
 ### `Repository` メタデータ
 
@@ -124,7 +124,7 @@ struct DATAINDEXER_API FDataIndexerRowHandle
     Blueprint 変数の **Details** パネルを開きます。`FDataIndexerRowHandle` 変数を選択すると **Repository** ドロップダウンが表示されます。Repositoryを提供するプロパティ名または関数名を選択してください。
 ### `Schema` メタデータ
 
-ハンドルのRepositoryピッカーを特定のSchemaのRepositoryに絞り込みます。`meta = (Schema = "AssetPath")` を追加してください。エディタはパスを解決し、Assetピッカーを一致するRepositoryのみに絞り込みます。
+ハンドルのRepositoryピッカーを特定のSchemaのRepositoryに絞り込みます。`meta = (Schema = "AssetPath")` を追加してください。エディタはパスを解決し、アセットピッカーを一致するRepositoryのみに絞り込みます。
 
 === "C++"
 
@@ -137,10 +137,10 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 
 === "Blueprint"
 
-    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerRowHandle` 変数を選択すると **Schema** ピッカーが表示されます。SchemaAssetを選択するとRepositoryピッカーが一致するRepositoryのみに絞り込まれます。ピッカーをクリアするとすべてのRepositoryが表示されます。
+    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerRowHandle` 変数を選択すると **Schema** ピッカーが表示されます。Schema アセットを選択するとRepositoryピッカーが一致するRepositoryのみに絞り込まれます。ピッカーをクリアするとすべてのRepositoryが表示されます。
 ## FDataIndexerKeysHandle
 
-`FDataIndexerKeysHandle` はセカンダリIndexを使って行のセットをアドレスします。RepositoryとIndex識別子を格納し、マッチする行のセットはQuery時に部分的に埋めた行構造体を渡して決定します。
+`FDataIndexerKeysHandle` はセカンダリIndexを使って行のセットをアドレスします。RepositoryとIndex識別子を格納し、マッチする行のセットはクエリ時に部分的に埋めた行構造体を渡して決定します。
 
 ```cpp
 USTRUCT(BlueprintType)
@@ -159,14 +159,14 @@ struct DATAINDEXER_API FDataIndexerKeysHandle
 
 - `IsValid()` — Repository と Index が null/ゼロでないことを確認する。
 - `ForEachPrimaryKeys(Query, Callback)` — `Repository->ForEachPrimaryKeys(Index, Query, Callback)` に委譲する。`Query` は部分的に埋めた行構造体の `FConstStructView`。
-- Blueprint では `GetKeysByIndex` カスタム K2Node を使って `TArray<FDataIndexerPrimaryKey>` を取得できる。
+- Blueprint では `GetKeysByIndex` カスタム K2ノード を使って `TArray<FDataIndexerPrimaryKey>` を取得できる。
 
-**使うべき場面：** Blueprint やAssetがIndexを指定しておき、Filterー値（Query構造体）は呼び出し時に決める場合。正確なセットはランタイムにRepositoryの逆引きテーブルから解決される。
+**使うべき場面：** Blueprint やアセットがIndexを指定しておき、フィルター値（クエリ構造体）は呼び出し時に決める場合。正確なセットはランタイムにRepositoryの逆引きテーブルから解決される。
 
 ## まとめ
 
-| 型 | アドレス対象 | Blueprint 対応 | Repositoryを保持 | Queryタイミング |
+| 型 | アドレス対象 | Blueprint 対応 | Repositoryを保持 | クエリタイミング |
 |----|------------|---------------|----------------|----------------|
 | `FDataIndexerPrimaryKey` | 1行 | Yes (BlueprintType) | No | n/a |
 | `FDataIndexerRowHandle` | 1行 | Yes (BlueprintType) | Yes | n/a |
-| `FDataIndexerKeysHandle` | N行（Index経由） | Yes (BlueprintType) | Yes | Query構造体を呼び出し時に渡す |
+| `FDataIndexerKeysHandle` | N行（Index経由） | Yes (BlueprintType) | Yes | クエリ構造体を呼び出し時に渡す |

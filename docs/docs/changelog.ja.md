@@ -46,7 +46,7 @@ DataIndexer のすべての注目すべき変更をここに記録します。
 
 ### 追加 { .release-group .release-group--add }
 
-- 親合成機能付き `UDataIndexerRepository` データAsset。
+- 親合成機能付き `UDataIndexerRepository` データアセット。
 - Blueprint サブクラス化可能な `UDataIndexerSchema` コントラクトクラス。
 - `FDataIndexerPrimaryKey`（GUID ベース）・`FDataIndexerRowHandle`・`FDataIndexerIndex`。
 - 3 パネル構成のカスタムエディタ（行リスト・詳細フォーム・カラム設定）。

@@ -4,7 +4,7 @@ DataIndexer Repositoryは JSON によるエクスポート・インポート・D
 
 ## エクスポート
 
-1. コンテンツブラウザでRepositoryAssetを右クリック
+1. コンテンツブラウザでRepository アセットを右クリック
 2. **Export JSON** を選択
 3. 保存先のパスを選択する
 
@@ -39,7 +39,7 @@ DataIndexer Repositoryは JSON によるエクスポート・インポート・D
 
 ## インポート
 
-1. コンテンツブラウザでRepositoryAssetを右クリック
+1. コンテンツブラウザでRepository アセットを右クリック
 2. **Import JSON** を選択
 3. JSON ファイルを選択する
 
@@ -58,7 +58,7 @@ DataIndexer Repositoryは JSON によるエクスポート・インポート・D
 
 VCS 連携（Perforce・Git）を設定済みの環境では、コンテンツブラウザからリビジョン間の差分を視覚的に確認できます。
 
-1. コンテンツブラウザでRepositoryAssetを右クリック
+1. コンテンツブラウザでRepository アセットを右クリック
 2. **ソース管理** → **Diff Against Depot**（Perforce）または **Diff Against Revision**（Git）を選択
 
 DataIndexer は比較対象の両リビジョンを一時 JSON ファイルとしてエクスポートし、設定済みのテキスト差分ツール（Beyond Compare・WinMerge など）を起動して差分を表示します。

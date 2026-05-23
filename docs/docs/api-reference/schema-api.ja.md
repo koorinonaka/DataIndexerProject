@@ -45,7 +45,7 @@ void ForEachIndex(
     const TFunctionRef<void(const FDataIndexerIndex&)>& Callback) const;
 ```
 
-登録されているすべてのIndexKeyを走査します（`BuildIndexKeyFunctions` のKey）。`ReverseLookups` を構築する際にコンパイラがIndexを列挙するために使用します。
+登録されているすべてのIndexKeyを走査します（`BuildIndexKeyFunctions` のキー）。`ReverseLookups` を構築する際にコンパイラがIndexを列挙するために使用します。
 
 ---
 

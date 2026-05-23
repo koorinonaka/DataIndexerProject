@@ -8,7 +8,7 @@ Schema は 3 つのことを担当します。
 
 1. **行構造体の宣言** — `RowStruct` は Repository の `LocalEntries` に格納される構造体型を識別する `TObjectPtr<const UScriptStruct>` です。
 2. **表示ロジックの提供** — `GetRowDisplayName` は任意の行に対して人間可読なラベルを返す `BlueprintNativeEvent` で、エディタ UI 全体で使用されます。
-3. **拡張関数の登録** — 行の検索Key生成・プロパティの表示テキスト・エディタウィジェットをカスタマイズする関数を、Blueprint または C++ の名前付き関数として登録します。
+3. **拡張関数の登録** — 行の検索キー生成・プロパティの表示テキスト・エディタウィジェットをカスタマイズする関数を、Blueprint または C++ の名前付き関数として登録します。
 
 ## サブクラス化
 
@@ -105,11 +105,11 @@ Schema は 3 つのことを担当します。
 
     ### Build Index Functions
 
-    **Class Defaults** の **Build Index Functions** マップでIndex ビルダーを登録します。KeyはIndex名（文字列）、値は `FGuid` を返す関数です（[Index](indexes.md) 参照）。
+    **Class Defaults** の **Build Index Functions** マップでIndex ビルダーを登録します。キーはIndex名（文字列）、値は `FGuid` を返す関数です（[Index](indexes.md) 参照）。
 
     ### Property Text Customizations
 
-    **Class Defaults** の **Property Text Customizations** マップで、プロパティ名をKeyに `FText` を返す関数を登録します。Data View グリッドでのプロパティ値の表示テキストを上書きします。
+    **Class Defaults** の **Property Text Customizations** マップで、プロパティ名をキーに `FText` を返す関数を登録します。Data View グリッドでのプロパティ値の表示テキストを上書きします。
 ## データバリデーション
 
 !!! warning "Blueprint 未対応"
@@ -120,7 +120,7 @@ Schema は 3 つのことを担当します。
 検証は次のタイミングで自動的に実行されます。
 
 - Content Browser で **右クリック → Validate Data** を選択したとき
-- Asset保存時（エディタ設定で **Save Validation** を有効にした場合）
+- アセット保存時（エディタ設定で **Save Validation** を有効にした場合）
 - クック時
 
 戻り値が `EDataValidationResult::Invalid` の場合、`Context` に追加したエラーメッセージがエディタに表示され、保存・クックがブロックされます。

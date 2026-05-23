@@ -4,11 +4,11 @@ title: Repositoryメタデータ
 
 # Repositoryメタデータ
 
-DataIndexer はエディタでのRepositoryプロパティの動作を制御するメタデータKeyをいくつか提供しています。このページでは最もよく使われる 2 つ、UPROPERTY ピッカーの **SchemaFilterリング** と、親子階層における **NotOverridable** フィールドロックを説明します。
+DataIndexer はエディタでのRepositoryプロパティの動作を制御するメタデータキーをいくつか提供しています。このページでは最もよく使われる 2 つ、UPROPERTY ピッカーの **Schemaフィルタリング** と、親子階層における **NotOverridable** フィールドロックを説明します。
 
-## SchemaFilterリング { #schema-filtering }
+## Schemaフィルタリング { #schema-filtering }
 
-クラスが `UDataIndexerRepository` の UPROPERTY を持つ場合、デフォルトではAssetピッカーにSchemaに関わらずプロジェクト内のすべてのRepositoryが表示されます。`meta = (Schema = "...")` を追加すると、特定のSchemaを使用するRepositoryのみに絞り込めます。
+クラスが `UDataIndexerRepository` の UPROPERTY を持つ場合、デフォルトではアセットピッカーにSchemaに関わらずプロジェクト内のすべてのRepositoryが表示されます。`meta = (Schema = "...")` を追加すると、特定のSchemaを使用するRepositoryのみに絞り込めます。
 
 これにより、アイテムスロットにクエストRepositoryを誤って割り当てたり、ショップにキャラクターRepositoryを設定してしまうミスを防げます。
 
@@ -24,7 +24,7 @@ UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "DataIndexer",
 TObjectPtr<UDataIndexerRepository> QuestRepository;
 ```
 
-meta の値は**Schema Blueprint** のAssetパスです（Repositoryではありません）。Assetを右クリックして **Copy Reference** で取得できる形式と同じです。
+meta の値は**Schema Blueprint** のアセットパスです（Repositoryではありません）。アセットを右クリックして **Copy Reference** で取得できる形式と同じです。
 
 !!! note "パスの形式"
     パスは `/Game/` から始まる絶対コンテンツパスでなければなりません。Pluginコンテンツは `/PluginName/` です。
@@ -34,7 +34,7 @@ meta の値は**Schema Blueprint** のAssetパスです（Repositoryではあり
 1. 変数を持つ Blueprint を開く
 2. **My Blueprint** パネルで `UDataIndexerRepository` 変数を選択する
 3. **Details** パネルの **Variable** セクションで **Schema** ピッカーを探す
-4. SchemaAssetを選択する — ピッカーが一致するRepositoryのみに絞り込まれる
+4. Schema アセットを選択する — ピッカーが一致するRepositoryのみに絞り込まれる
 
 ピッカーをクリアすると絞り込みが解除されます。
 

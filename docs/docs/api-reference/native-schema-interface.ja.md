@@ -1,6 +1,6 @@
 # ネイティブSchemaインターフェース
 
-`DataIndexer::TNativeSchemaInterface<TRowType>`（`DataIndexerSchemaInterface.h`）は `UDataIndexerRepository` に対する型安全な C++ ファサードです。仮想ディスパッチやキャストなしに、コンパイル時型チェックを伴うQueryが書けます。
+`DataIndexer::TNativeSchemaInterface<TRowType>`（`DataIndexerSchemaInterface.h`）は `UDataIndexerRepository` に対する型安全な C++ ファサードです。仮想ディスパッチやキャストなしに、コンパイル時型チェックを伴うクエリが書けます。
 
 ## セットアップ
 
@@ -66,7 +66,7 @@ static const TRowType* FindRow(
     const FDataIndexerPrimaryKey& PrimaryKey);
 ```
 
-`Repository.FindRowEntity(PrimaryKey)` に委譲した後、`TRowType` へのポインタを返します。Keyが見つからない場合・型が一致しない場合は `nullptr` を返します。
+`Repository.FindRowEntity(PrimaryKey)` に委譲した後、`TRowType` へのポインタを返します。キーが見つからない場合・型が一致しない場合は `nullptr` を返します。
 
 ```cpp
 if (const FItemRow* Row = FItemInterface::FindRow(Repository, Key))
@@ -135,7 +135,7 @@ static void ForEachPrimaryKeys(
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback);
 ```
 
-`Row` からIndexKeyを計算し、そのKeyに一致する PrimaryKey だけを走査します。「このQuery行と同じフィールド値を持つ行をすべて取得する」意図でフィールドを部分的に埋めた行を渡します。
+`Row` からIndexKeyを計算し、そのキーに一致する PrimaryKey だけを走査します。「このクエリ行と同じフィールド値を持つ行をすべて取得する」意図でフィールドを部分的に埋めた行を渡します。
 
 ```cpp
 FItemRow Query;
