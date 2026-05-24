@@ -1,4 +1,5 @@
 site_name: DataIndexer
+site_url: https://koorinonaka.github.io/DataIndexerProject/
 site_description: >-
   DataIndexer is an Unreal Engine plugin for building structured,
   indexable game data assets with a dedicated editor workflow.
