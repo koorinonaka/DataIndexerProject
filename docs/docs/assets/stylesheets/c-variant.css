@@ -1126,7 +1126,10 @@ img.fn-node {
   position: relative; overflow: hidden;
   transition: border-color 120ms, background 120ms;
 }
-.ov-mm-node:hover { border-color: var(--md-accent-fg-color); }
+.ov-mm-node:hover {
+  border-color: var(--md-accent-fg-color);
+  background: var(--md-accent-fg-color--transparent, var(--md-default-fg-color--lightest));
+}
 
 /* accent bar — opacity fades by step */
 .ov-mm-node::before {
@@ -1153,7 +1156,7 @@ img.fn-node {
   background: var(--md-code-bg-color);
   border: 1px solid var(--md-default-fg-color--lightest);
   padding: 1px 5px; border-radius: 3px;
-  margin: 0.25rem 0 0; align-self: flex-start;
+  margin: 0.25rem 0 0.1rem; align-self: flex-start;
 }
 .ov-mm-node-text {
   font: 400 0.78rem/1.5 var(--md-text-font);
@@ -1164,6 +1167,7 @@ img.fn-node {
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   color: var(--md-default-fg-color--lighter);
+  pointer-events: none; user-select: none;
 }
 .ov-mm-arrow span {
   font: 600 0.6rem/1 var(--md-code-font, monospace);
@@ -1173,7 +1177,7 @@ img.fn-node {
 .ov-mm-arrow::after {
   content: "→";
   color: var(--md-accent-fg-color); opacity: 0.6;
-  font-size: 1rem; margin-top: 0.25rem;
+  font-size: 1rem; margin-top: 0.3rem;
 }
 
 .ov-mm-reading {
@@ -1202,7 +1206,7 @@ img.fn-node {
   transition: background 120ms;
 }
 .ov-chapter:first-child { border-top: 1px solid var(--md-default-fg-color--lightest); }
-.ov-chapter:hover { background: var(--md-default-fg-color--lightest); }
+.ov-chapter:hover { background: var(--md-accent-fg-color--transparent, var(--md-default-fg-color--lightest)); }
 
 .ov-chapter-num {
   width: 2.75rem; height: 2.75rem; border-radius: 50%;
@@ -1257,8 +1261,53 @@ img.fn-node {
 }
 
 @media (max-width: 768px) {
-  .ov-mm-diagram { grid-template-columns: 1fr; grid-auto-rows: auto; }
-  .ov-mm-arrow { padding: 12px 0; }
-  .ov-mm-arrow::after { display: inline-block; transform: rotate(90deg); }
+  .ov-mm-diagram {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    padding: 1rem;
+  }
+  .ov-mm-arrow {
+    flex-direction: row;
+    justify-content: center;
+    padding: 0.4rem 0;
+    gap: 0.5rem;
+  }
+  .ov-mm-arrow::after {
+    content: "↓";
+    margin-top: 0;
+    font-size: 1.2rem;
+  }
+  .ov-chapter {
+    grid-template-columns: 3.5rem 1fr 1.5rem;
+    gap: 0.9rem;
+    padding: 1.2rem 0;
+  }
+  .ov-chapter-num {
+    margin-left: 0.4rem;
+    width: 2.25rem; height: 2.25rem;
+    font-size: 0.72rem;
+  }
 }
+
+/* ── Concept hub: node & chapter icons (CSS mask) ────────────────────────── */
+.ov-mm-node-icon,
+.ov-chapter-icon {
+  display: inline-block;
+  background: var(--md-accent-fg-color);
+  opacity: 0.85;
+  -webkit-mask: var(--ov-icon) center / contain no-repeat;
+          mask: var(--ov-icon) center / contain no-repeat;
+}
+.ov-mm-node-icon {
+  position: absolute; top: 0.65rem; right: 0.7rem;
+  width: 1.1rem; height: 1.1rem;
+}
+.ov-chapter-icon {
+  width: 1.25rem; height: 1.25rem;
+  flex-shrink: 0;
+}
+.icon-schema     { --ov-icon: url("../icons/icon-schema.svg"); }
+.icon-repository { --ov-icon: url("../icons/icon-repository.svg"); }
+.icon-keys       { --ov-icon: url("../icons/icon-keys.svg"); }
+.icon-indexes    { --ov-icon: url("../icons/icon-indexes.svg"); }
 

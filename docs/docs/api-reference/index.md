@@ -55,14 +55,14 @@ PublicDependencyModuleNames.AddRange(new string[]
 !!! warning "Do not reference DataIndexerEd"
     `DataIndexerEd` is `UncookedOnly`. Never add it to `PublicDependencyModuleNames` or `PrivateDependencyModuleNames` in a Runtime or game module. It will not be available in packaged builds and will cause build failures.
 
-| Header | Include path | Contents |
-|--------|-------------|----------|
-| `DataIndexerTypes.h` | `#include "DataIndexerTypes.h"` | `FDataIndexerPrimaryKey`, `FDataIndexerRowHandle`, `FDataIndexerKeysHandle`, `FDataIndexerIndex`, `FDataIndexerIndexKey`, `FDataIndexerImmutableKey` |
-| `DataIndexerRepository.h` | `#include "DataIndexerRepository.h"` | `UDataIndexerRepository` |
-| `DataIndexerSchema.h` | `#include "DataIndexerSchema.h"` | `UDataIndexerSchema`, `FDataIndexerExpandedStructEntry` |
-| `DataIndexerSchemaInterface.h` | `#include "DataIndexerSchemaInterface.h"` | `DataIndexer::TNativeSchemaInterface<T>` |
-| `DataIndexerDrivenCollection.h` | `#include "DataIndexerDrivenCollection.h"` | `UDataIndexerDrivenCollection` |
-| `DataIndexerFunctionLibrary.h` | `#include "DataIndexerFunctionLibrary.h"` | `UDataIndexerFunctionLibrary` |
+| Header | Contents |
+|--------|----------|
+| `DataIndexerTypes.h` | Core value types for row access: primary keys, row/keys handles, index definitions, and index key builders |
+| `DataIndexerRepository.h` | Repository class for querying rows, iterating index keys, and resolving display names |
+| `DataIndexerSchema.h` | Schema class for row struct access, index key builder registration, and property customization |
+| `DataIndexerSchemaInterface.h` | Typed C++ façade for type-safe repository queries without casting |
+| `DataIndexerDrivenCollection.h` | Data-driven collection that auto-updates when index contents change |
+| `DataIndexerFunctionLibrary.h` | Blueprint utility nodes for key/handle operations, validation, and conversion |
 
 <div class="grid cards" markdown>
 

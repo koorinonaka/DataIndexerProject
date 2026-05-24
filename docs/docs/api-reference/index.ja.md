@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # API リファレンス
 
 DataIndexer のランタイム API は 2 種類あります — デザイナー向けの Blueprint ノードと、コードサイド統合用の型付き C++ API です。
@@ -50,14 +55,14 @@ PublicDependencyModuleNames.AddRange(new string[]
 !!! warning "DataIndexerEd を参照しないこと"
     `DataIndexerEd` は `UncookedOnly` です。Runtime またはゲームモジュールの `PublicDependencyModuleNames` や `PrivateDependencyModuleNames` には絶対に追加しないでください。パッケージビルドでは使用できず、ビルドエラーが発生します。
 
-| ヘッダー | インクルードパス | 内容 |
-|---------|--------------|------|
-| `DataIndexerTypes.h` | `#include "DataIndexerTypes.h"` | `FDataIndexerPrimaryKey`・`FDataIndexerRowHandle`・`FDataIndexerKeysHandle`・`FDataIndexerIndex`・`FDataIndexerIndexKey` |
-| `DataIndexerRepository.h` | `#include "DataIndexerRepository.h"` | `UDataIndexerRepository` |
-| `DataIndexerSchema.h` | `#include "DataIndexerSchema.h"` | `UDataIndexerSchema`・`FDataIndexerExpandedStructEntry` |
-| `DataIndexerSchemaInterface.h` | `#include "DataIndexerSchemaInterface.h"` | `DataIndexer::TNativeSchemaInterface<T>` |
-| `DataIndexerDrivenCollection.h` | `#include "DataIndexerDrivenCollection.h"` | `UDataIndexerDrivenCollection` |
-| `DataIndexerFunctionLibrary.h` | `#include "DataIndexerFunctionLibrary.h"` | `UDataIndexerFunctionLibrary` |
+| ヘッダー | 内容 |
+|---------|------|
+| `DataIndexerTypes.h` | 行アクセス用の基本値型 — PrimaryKey・RowHandle・KeysHandle・Index・IndexKey |
+| `DataIndexerRepository.h` | 行クエリ・IndexKey 走査・表示名解決を行うリポジトリクラス |
+| `DataIndexerSchema.h` | 行構造体アクセス・IndexKey ビルダー登録・プロパティカスタマイズを管理するスキーマクラス |
+| `DataIndexerSchemaInterface.h` | キャストなしで型安全な Repository クエリを行う型付き C++ ファサード |
+| `DataIndexerDrivenCollection.h` | インデックス内容の変更に自動追従するデータ駆動コレクション |
+| `DataIndexerFunctionLibrary.h` | キー・ハンドル操作・検証・変換用の Blueprint ユーティリティノード群 |
 
 <div class="grid cards" markdown>
 

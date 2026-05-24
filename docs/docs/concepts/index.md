@@ -10,6 +10,7 @@ DataIndexer is built around four interconnected concepts. Understanding how they
 <div class="ov-mm-diagram">
   <a class="ov-mm-node" href="schema/">
     <span class="ov-mm-node-step">STEP 01</span>
+    <span class="ov-mm-node-icon icon-schema"></span>
     <span class="ov-mm-node-title">Schema</span>
     <code class="ov-mm-node-code">UDataIndexerSchema</code>
     <span class="ov-mm-node-text">The design blueprint that defines row types, display, and indexes.</span>
@@ -17,6 +18,7 @@ DataIndexer is built around four interconnected concepts. Understanding how they
   <span class="ov-mm-arrow"><span>defines</span></span>
   <a class="ov-mm-node" href="repository/">
     <span class="ov-mm-node-step">STEP 02</span>
+    <span class="ov-mm-node-icon icon-repository"></span>
     <span class="ov-mm-node-title">Repository</span>
     <code class="ov-mm-node-code">UDataIndexerRepository</code>
     <span class="ov-mm-node-text">The typed asset that stores rows.</span>
@@ -24,6 +26,7 @@ DataIndexer is built around four interconnected concepts. Understanding how they
   <span class="ov-mm-arrow"><span>contains</span></span>
   <a class="ov-mm-node" href="keys-and-handles/">
     <span class="ov-mm-node-step">STEP 03</span>
+    <span class="ov-mm-node-icon icon-keys"></span>
     <span class="ov-mm-node-title">Keys &amp; Handles</span>
     <code class="ov-mm-node-code">FDataIndexerPrimaryKey</code>
     <span class="ov-mm-node-text">GUIDs that uniquely identify each row.</span>
@@ -31,6 +34,7 @@ DataIndexer is built around four interconnected concepts. Understanding how they
   <span class="ov-mm-arrow"><span>resolves via</span></span>
   <a class="ov-mm-node" href="indexes/">
     <span class="ov-mm-node-step">STEP 04</span>
+    <span class="ov-mm-node-icon icon-indexes"></span>
     <span class="ov-mm-node-title">Indexes</span>
     <code class="ov-mm-node-code">FDataIndexerIndexKey</code>
     <span class="ov-mm-node-text">Fast reverse lookup by any attribute.</span>
@@ -40,7 +44,7 @@ DataIndexer is built around four interconnected concepts. Understanding how they
 <p class="ov-mm-reading">
   <span class="ov-mm-reading-label">READING ORDER</span>
   <span>·</span>
-  New to DataIndexer? Read in order:<br>
+  New to DataIndexer? Read in order:
   <a href="schema/">Schema</a> →
   <a href="repository/">Repository</a> →
   <a href="keys-and-handles/">Keys &amp; Handles</a> →
@@ -55,6 +59,7 @@ DataIndexer is built around four interconnected concepts. Understanding how they
   <div class="ov-chapter-num">01</div>
   <div class="ov-chapter-body">
     <div class="ov-chapter-head">
+      <span class="ov-chapter-icon icon-schema"></span>
       <h3>Schema</h3>
       <code>UDataIndexerSchema</code>
     </div>
@@ -72,6 +77,7 @@ DataIndexer is built around four interconnected concepts. Understanding how they
   <div class="ov-chapter-num">02</div>
   <div class="ov-chapter-body">
     <div class="ov-chapter-head">
+      <span class="ov-chapter-icon icon-repository"></span>
       <h3>Repository</h3>
       <code>UDataIndexerRepository</code>
     </div>
@@ -89,6 +95,7 @@ DataIndexer is built around four interconnected concepts. Understanding how they
   <div class="ov-chapter-num">03</div>
   <div class="ov-chapter-body">
     <div class="ov-chapter-head">
+      <span class="ov-chapter-icon icon-keys"></span>
       <h3>Keys &amp; Handles</h3>
       <code>FDataIndexerPrimaryKey</code>
     </div>
@@ -106,6 +113,7 @@ DataIndexer is built around four interconnected concepts. Understanding how they
   <div class="ov-chapter-num">04</div>
   <div class="ov-chapter-body">
     <div class="ov-chapter-head">
+      <span class="ov-chapter-icon icon-indexes"></span>
       <h3>Indexes</h3>
       <code>FDataIndexerIndexKey</code>
     </div>
