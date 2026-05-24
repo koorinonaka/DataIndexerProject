@@ -3,6 +3,8 @@
 .vsconfig
 .vscode
 .claude
+.github/
+!.github/workflows/
 .idea
 *.sln*
 *.suo
