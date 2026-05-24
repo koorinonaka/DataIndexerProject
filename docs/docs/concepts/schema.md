@@ -91,6 +91,40 @@ A schema does three things:
 
     Register property name and function pointer pairs in the `PropertyTextCustomizations` map. Equivalent to the Blueprint **Property Text Customizations** map.
 
+    Declare one `static UFUNCTION` per property and call `RegisterFunction_PropertyTextCustomization` in the constructor.
+
+    ```cpp
+    // In the class declaration
+    UFUNCTION()
+    static FText GetTypeDisplayText(const FInstancedStruct& RowEntity);
+    ```
+
+    ```cpp
+    UItemSchema::UItemSchema()
+    {
+        RowStruct = FItemRow::StaticStruct();
+
+        RegisterFunction_PropertyTextCustomization(
+            GET_MEMBER_NAME_CHECKED(FItemRow, Type),
+            GET_FUNCTION_NAME_CHECKED(ThisClass, GetTypeDisplayText));
+    }
+    ```
+
+    ```cpp
+    FText UItemSchema::GetTypeDisplayText(const FInstancedStruct& RowEntity)
+    {
+        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
+        {
+            switch (Row->Type)
+            {
+                case EItemType::Weapon: return NSLOCTEXT("Item", "TypeWeapon", "Weapon");
+                case EItemType::Armor:  return NSLOCTEXT("Item", "TypeArmor",  "Armor");
+                default: break;
+            }
+        }
+        return FText::GetEmpty();
+    }
+    ```
 
 === "Blueprint"
 
@@ -110,6 +144,15 @@ A schema does three things:
     ### Property Text Customizations
 
     Use the **Property Text Customizations** map in **Class Defaults** to register per-property text rendering. The key is the property name, the value is a function returning `FText`. Overrides how property values appear in the Data View grid.
+
+    Add an entry for each property you want to override. For example, to render `Type` as a localized label instead of the raw enum integer:
+
+    | Key (property name) | Value (function) |
+    |---|---|
+    | `Type` | `GetTypeDisplayText` |
+
+    The function must accept `FInstancedStruct` (the row) and return `FText`. Return `FText::GetEmpty()` to fall back to the default display.
+
 ## Data validation
 
 !!! warning "Blueprint not supported"
@@ -169,3 +212,5 @@ void UItemSchema::InitializeExpandedStructEntries()
 ```
 
 In Blueprint, toggle the **Expanded Struct Entries** map from the Class Defaults panel.
+
+![Column Layout panel showing per-property column visibility checkboxes](../assets/images/schema-column-layout.png)

@@ -100,7 +100,7 @@
 }
 
 /* ── Features ─────────────────────────────────────────────────────────────── */
-.ov-features { padding: 140px 88px 56px; }
+.ov-features { padding: 80px 88px 36px; }
 .ov-features-inner { max-width: 1100px; margin: 0 auto; }
 .ov-features-header { margin-bottom: 48px; max-width: 640px; }
 .ov-features-kicker {
@@ -340,14 +340,186 @@
 .ov-sample-toggle svg { transition: transform 0.3s; flex-shrink: 0; }
 .ov-sample-toggle.is-expanded svg { transform: rotate(180deg); }
 
+/* ── Hero: H1 marker, meta, pulse dot, screenshot glow ───────────────────── */
+.ov-hero h1 em {
+  font-style: normal;
+  background: linear-gradient(180deg, transparent 62%, rgba(46,110,224,0.18) 62%);
+  padding: 0 2px;
+}
+.ov-hero-meta {
+  display: flex; gap: 18px; flex-wrap: wrap;
+  margin: 0 0 40px !important;
+  font-size: 12px; color: var(--text-muted, #6b6660);
+  letter-spacing: 0.02em;
+}
+.ov-hero-meta-item { display: inline-flex; align-items: center; gap: 6px; }
+.ov-hero-meta-item strong { color: var(--text-strong); font-weight: 600; }
+@keyframes ov-pulse-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%       { transform: scale(1.6); opacity: 0.4; }
+}
+.ov-pulse-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent, #2e6ee0);
+  display: inline-block;
+  animation: ov-pulse-dot 1.8s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) { .ov-pulse-dot { animation: none; } }
+.ov-screenshot-wrap { position: relative; }
+.ov-screenshot-wrap::before {
+  content: "";
+  position: absolute;
+  inset: 30px 50px -30px 50px;
+  background: radial-gradient(60% 80% at 50% 0%, rgba(46,110,224,0.18), transparent 70%);
+  filter: blur(20px);
+  z-index: 0;
+  pointer-events: none;
+}
+.ov-screenshot { position: relative; z-index: 1; }
+
+/* ── Shared section head ──────────────────────────────────────────────────── */
+.ov-section-head { margin-bottom: 40px; max-width: 760px; }
+.ov-section-head h2 {
+  font-size: 36px; font-weight: 800; line-height: 1.18;
+  letter-spacing: -0.028em; margin: 8px 0 0 !important;
+  color: var(--text-strong, rgba(10,9,8,0.96));
+  text-wrap: balance; border-bottom: none !important;
+}
+.ov-section-lead {
+  font-size: 16px; line-height: 1.65;
+  color: var(--text-muted, #6b6660);
+  margin: 14px 0 0 !important;
+}
+
+/* ── Chips ────────────────────────────────────────────────────────────────── */
+.ov-chip {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px; border-radius: 9999px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.04em;
+}
+.ov-chip--bad  { background: #fbe9e3; color: #a83d1a; }
+.ov-chip--good { background: #e5f0e9; color: #1f7a52; }
+.ov-chip--blue { background: var(--accent-soft, #ecf2ff); color: var(--accent-soft-text, #1e4fb5); }
+
+/* ── Before/After section ────────────────────────────────────────────────── */
+.ov-ba { padding: 140px 88px 80px; background: var(--bg-alt, #f7f6f3); }
+[data-md-color-scheme="slate"] .ov-ba { background: #161412; }
+.ov-ba-inner { max-width: 1100px; margin: 0 auto; }
+.ov-ba-table {
+  background: #fff;
+  border: 1px solid var(--border, rgba(15,14,13,0.10));
+  border-radius: 12px; overflow: hidden;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.04), 0 0.8px 3px rgba(0,0,0,0.02);
+}
+[data-md-color-scheme="slate"] .ov-ba-table { background: #1f1d1a; border-color: rgba(255,255,255,0.10); }
+.ov-ba-row {
+  display: grid; grid-template-columns: 1.3fr 1.4fr 1.4fr;
+  border-bottom: 1px solid var(--border-faint, rgba(15,14,13,0.06));
+}
+.ov-ba-row:last-child { border-bottom: 0; }
+.ov-ba-cell {
+  padding: 18px 22px; font-size: 14px; line-height: 1.62;
+  color: var(--text, rgba(15,14,13,0.92));
+  display: flex; gap: 10px;
+  border-right: 1px solid var(--border-faint, rgba(15,14,13,0.06));
+}
+.ov-ba-cell:last-child { border-right: 0; }
+.ov-ba-col-h { flex-direction: column; gap: 4px; background: var(--bg-alt, #f7f6f3); }
+[data-md-color-scheme="slate"] .ov-ba-col-h { background: rgba(255,248,235,0.04); }
+.ov-ba-scenario { font-weight: 700; color: var(--text-strong); font-size: 14px; }
+.ov-ba-detail   { font-size: 12px; color: var(--text-muted); font-family: var(--md-code-font, monospace); }
+.ov-ba-bad  { background: #fdfaf7; }
+.ov-ba-good { background: #fafdfb; }
+[data-md-color-scheme="slate"] .ov-ba-bad  { background: rgba(180,80,30,0.06); }
+[data-md-color-scheme="slate"] .ov-ba-good { background: rgba(50,150,100,0.06); }
+.ov-ba-icon {
+  flex-shrink: 0; width: 22px; height: 22px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.ov-ba-bad  .ov-ba-icon { background: #fbe9e3; }
+.ov-ba-good .ov-ba-icon { background: #e5f0e9; }
+.ov-ba-header { background: #fff !important; }
+[data-md-color-scheme="slate"] .ov-ba-header { background: #1f1d1a !important; }
+.ov-ba-header .ov-ba-cell {
+  padding: 16px 22px 14px; font-weight: 700; font-size: 12px;
+  color: var(--text-muted); letter-spacing: 0.12em; text-transform: uppercase;
+  background: transparent !important;
+}
+.ov-ba-footnote {
+  margin-top: 24px; display: flex; align-items: center; gap: 16px;
+  font-size: 13px; color: var(--text-muted);
+}
+.ov-ba-footnote p { margin: 0; }
+.ov-ba-footnote a { color: var(--accent); text-decoration: none; border-bottom: 1px solid currentColor; }
+
+/* ── Dual Code section ───────────────────────────────────────────────────── */
+.ov-dual { padding: 48px 88px 80px; }
+.ov-dual-inner { max-width: 1100px; margin: 0 auto; }
+.ov-dual-tabs {
+  display: flex; align-items: center; gap: 0;
+  border-bottom: 1px solid var(--border, rgba(15,14,13,0.10));
+  margin-bottom: 24px;
+}
+.ov-dual-tab {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: transparent; border: 0;
+  padding: 12px 18px; font: inherit;
+  font-size: 14px; font-weight: 600;
+  color: var(--text-muted, #6b6660); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  letter-spacing: -0.005em; transition: color 0.12s;
+}
+.ov-dual-tab:hover { color: var(--text-strong); }
+.ov-dual-tab.active { color: var(--text-strong); border-bottom-color: var(--accent, #2e6ee0); }
+.ov-dual-tab-trail {
+  margin-left: auto; font-size: 12px; color: var(--text-faint, #a39e98);
+  font-family: var(--md-code-font, monospace); letter-spacing: 0.02em;
+}
+.ov-dual-pane { min-height: 360px; }
+.ov-dual-bp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.ov-dual-bp-fig { margin: 0; }
+.ov-dual-bp-frame {
+  border: 1px solid var(--border, rgba(15,14,13,0.10));
+  border-radius: 10px; overflow: hidden; height: 320px;
+  background: #1a1917; cursor: zoom-in;
+}
+.ov-dual-bp-frame img {
+  width: 100%; height: 100%;
+  object-fit: cover; object-position: left top;
+  display: block; transition: transform 0.2s ease;
+}
+.ov-dual-bp-frame:hover img { transform: scale(1.02); }
+.ov-dual-bp-fig figcaption { margin-top: 10px; font-size: 13px; color: var(--text-muted); }
+.ov-dual-callouts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 36px; }
+.ov-callout {
+  background: #fff; border: 1px solid var(--border, rgba(15,14,13,0.10));
+  border-radius: 10px; padding: 20px 22px;
+}
+[data-md-color-scheme="slate"] .ov-callout { background: rgba(255,248,235,0.04); border-color: rgba(255,255,255,0.10); }
+.ov-callout .ov-chip { margin-bottom: 12px; display: inline-flex; }
+.ov-callout-title {
+  font-size: 16px; font-weight: 700; color: var(--text-strong);
+  letter-spacing: -0.015em; margin-bottom: 6px;
+}
+.ov-callout-text { font-size: 13.5px; line-height: 1.65; color: var(--text-muted); }
+
+/* ov-mm-* CSS → c-variant.css に移動 */
+/* ── Dual Code: code block height override ───────────────────────────────── */
+.ov-dual .ov-sample-wrap { max-height: none; }
+
+/* ── Kinsoku for new section H2s ─────────────────────────────────────────── */
+:lang(ja) .ov-section-head h2 { line-break: strict; overflow-wrap: anywhere; }
+
 /* ── Responsive ───────────────────────────────────────────────────────────── */
 @media (max-width: 76.1875em) {
   .ov-hero-inner, .ov-screenshot-wrap { padding: 0 40px; }
-  .ov-features { padding: 140px 40px 56px; }
+  .ov-features { padding: 80px 40px 36px; }
   .ov-samples { padding: 0 40px 80px; }
   .ov-also { padding: 0 40px 80px; }
   .ov-cta { padding: 60px 40px; }
   .ov-bottom-sections { padding: 60px 40px 80px; }
+  .ov-ba { padding: 140px 40px 80px; }
+  .ov-dual { padding: 48px 40px 80px; }
 }
 /* ── Japanese kinsoku (禁則処理) ──────────────────────────────────────────── */
 :lang(ja) .ov-hero h1,
@@ -363,7 +535,7 @@
   .ov-hero-inner, .ov-screenshot-wrap { padding: 0 24px; }
   .ov-hero h1 { font-size: 40px; }
   .ov-hero-lead { font-size: 16px; }
-  .ov-features { padding: 120px 24px 60px; }
+  .ov-features { padding: 64px 24px 28px; }
   .ov-features-header h2 { font-size: 28px; }
   .ov-feature-row {
     grid-template-columns: 1fr; gap: 32px; padding: 40px 0;
@@ -379,4 +551,14 @@
   .ov-cta h2 { font-size: 24px; }
   .ov-bottom-sections { padding: 40px 24px 60px; }
   .ov-concepts-grid, .ov-getstarted-grid { grid-template-columns: 1fr; }
+  /* BA */
+  .ov-ba { padding: 100px 24px 60px; }
+  .ov-ba-row { grid-template-columns: 1fr; }
+  .ov-ba-cell { border-right: 0; border-bottom: 1px solid var(--border-faint, rgba(15,14,13,0.06)); }
+  /* Dual */
+  .ov-dual { padding: 36px 24px 60px; }
+  .ov-dual-bp-grid { grid-template-columns: 1fr; }
+  .ov-dual-callouts { grid-template-columns: 1fr; }
+  .ov-dual-tab-trail { display: none; }
+  /* Mental model responsive → c-variant.css */
 }

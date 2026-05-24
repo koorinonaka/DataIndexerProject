@@ -21,19 +21,11 @@ Repositoryは 1 つ以上の親Repositoryを参照できます。走査・クエ
 
 === "C++"
 
-    ネイティブ C++ 構造体の場合は `const` またはアクセス制御を使用してください。UDStruct フィールドの場合、カスタマイズレイヤーがこのキーを管理します。
+    UPROPERTY に `meta = (NotOverridable)` を付加します。Override 行では、このメタが付いたプロパティは読み取り専用になります。
 
     ```cpp
-    // オーバーライドモードで UDStruct 変数をロック
-    FStructureEditorUtils::SetMetaData(
-        UserDefinedStruct, VariableGuid,
-        DataIndexer::MetaDataKeys::NotOverridable, TEXT("true"));
-
-    // プロパティカスタマイズ内で確認
-    if (PropertyAndParent.Property.HasMetaData(DataIndexer::MetaDataKeys::NotOverridable))
-    {
-        // プロパティを読み取り専用でレンダリング
-    }
+    UPROPERTY(EditDefaultsOnly, Category = DataIndexer, meta = (NotOverridable))
+    FString InheritedReadOnlyField;
     ```
 
 
@@ -43,14 +35,30 @@ Repositoryは 1 つ以上の親Repositoryを参照できます。走査・クエ
         Blueprint からの `NotOverridable` 設定は現在対応していません。今後のリリースで UI を追加予定です。
 ## Schemaによるピッカーの絞り込み
 
-クラスが `UDataIndexerRepository` UPROPERTY を持ち、特定のSchemaのRepositoryのみに制限したい場合は `meta = (Schema = "AssetPath")` を追加します。エディタはパスを解決し、アセットピッカーを対応するRepositoryのみに絞り込みます。
+クラスが `UDataIndexerRepository` UPROPERTY を持ち、特定のSchemaのRepositoryのみに制限したい場合は `meta = (Schema = "...")` を追加します。UPROPERTY のほかに UFUNCTION も指定できます。エディタはスキーマを解決し、アセットピッカーを対応するRepositoryのみに絞り込みます。
 
 === "C++"
 
+    C++ では、アセットパスではなく同クラス上の **UPROPERTY 名** または **UFUNCTION 名** を指定します。
+
+    **UFUNCTION で指定する場合**
+
     ```cpp
-    UPROPERTY(EditDefaultsOnly, Category = DataIndexer,
-        meta = (Schema = "/Game/DataIndexer/DA_MySchema.DA_MySchema"))
+    UPROPERTY(EditDefaultsOnly, Category = DataIndexer, meta = (Schema = "GetSchema"))
     TObjectPtr<UDataIndexerRepository> MyRepository;
+
+    UFUNCTION()
+    UDataIndexerSchema* GetSchema() const;
+    ```
+
+    **UPROPERTY で指定する場合**
+
+    ```cpp
+    UPROPERTY(EditDefaultsOnly, Category = DataIndexer, meta = (Schema = "MySchema"))
+    TObjectPtr<UDataIndexerRepository> MyRepository;
+
+    UPROPERTY(EditDefaultsOnly, Category = DataIndexer)
+    TObjectPtr<UDataIndexerSchema> MySchema;
     ```
 
 

@@ -17,7 +17,7 @@
       UNREAL ENGINE PLUGIN
     </div>
     {% if is_ja %}
-    <h1>リネームしても、<br>参照は壊れない。</h1>
+    <h1>リネームしても、<br><em>参照は壊れない</em>。</h1>
     <p class="ov-hero-lead">DataIndexer は UE5 のためのゲームデータ管理プラグイン。すべての行は GUID（<code>FDataIndexerPrimaryKey</code>）で識別されるため、リネームしても既存の参照はすべて有効のまま。型安全な C++ / Blueprint API と Schema による一元管理が、データ規模が拡大しても保守コストを抑えます。</p>
     <div class="ov-hero-actions">
       <a href="concepts/" class="ov-btn-secondary">コンセプトを学ぶ</a>
@@ -26,8 +26,13 @@
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
       </a>
     </div>
+    <div class="ov-hero-meta">
+      <span class="ov-hero-meta-item"><span class="ov-pulse-dot"></span><strong>UE 5.7+</strong> 対応</span>
+      <span class="ov-hero-meta-item">標準プラグイン形式 · <strong>エンジン改変不要</strong></span>
+      <span class="ov-hero-meta-item">C++ &amp; Blueprint 両対応</span>
+    </div>
     {% else %}
-    <h1>References that<br>survive renames.</h1>
+    <h1>References that<br><em>survive renames</em>.</h1>
     <p class="ov-hero-lead">DataIndexer is a game data management plugin for UE5. Every row is identified by a GUID (<code>FDataIndexerPrimaryKey</code>), so references survive renames, moves, and reimports. A type-safe C++ / Blueprint API and a centralized Schema keep maintenance costs low as your data grows.</p>
     <div class="ov-hero-actions">
       <a href="concepts/" class="ov-btn-secondary">Learn the concepts</a>
@@ -36,6 +41,11 @@
         <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><path d="M3 8h10m-4-4 4 4-4 4"/></svg>
       </a>
     </div>
+    <div class="ov-hero-meta">
+      <span class="ov-hero-meta-item"><span class="ov-pulse-dot"></span><strong>UE 5.7+</strong> ready</span>
+      <span class="ov-hero-meta-item">Standard plugin · <strong>no engine modifications</strong></span>
+      <span class="ov-hero-meta-item">C++ &amp; Blueprint</span>
+    </div>
     {% endif %}
   </div>
   <div class="ov-screenshot-wrap">
@@ -43,6 +53,184 @@
     <img src="{{ base_url }}/assets/images/editor-overview.png"
          alt="DataIndexer editor overview"
          class="ov-screenshot">
+  </div>
+</section>
+
+<!-- Before/After -->
+<section class="ov-ba">
+  <div class="ov-ba-inner">
+    <div class="ov-section-head">
+      {% if is_ja %}
+      <p class="ov-features-kicker">なぜ DataIndexer か</p>
+      <h2>行をリネームしても、<br>参照は切れない。</h2>
+      <p class="ov-section-lead">ゲームデータの寿命はプロジェクトより長い。命名規則の見直し、デザイナーの気変わり、ローカライズ ── 何度行をリネームしても、参照側のコード・Blueprint・アセットが一切壊れない世界を目指して設計されています。</p>
+      {% else %}
+      <p class="ov-features-kicker">Why DataIndexer</p>
+      <h2>References that broke with DataTable now survive.</h2>
+      <p class="ov-section-lead">Game data outlives any project. Rename rows, restructure schemas, reimport assets — DataIndexer's GUID-based keys mean code, Blueprint, and asset references stay intact.</p>
+      {% endif %}
+    </div>
+
+    <div class="ov-ba-table">
+      <div class="ov-ba-row ov-ba-header">
+        <div class="ov-ba-cell ov-ba-col-h">{% if is_ja %}シナリオ{% else %}Scenario{% endif %}</div>
+        <div class="ov-ba-cell"><span class="ov-chip ov-chip--bad">DataTable</span></div>
+        <div class="ov-ba-cell"><span class="ov-chip ov-chip--good">DataIndexer</span></div>
+      </div>
+
+      {% if is_ja %}
+      <div class="ov-ba-row">
+        <div class="ov-ba-cell ov-ba-col-h">
+          <div class="ov-ba-scenario">行のリネーム</div>
+          <div class="ov-ba-detail">例: IronSword → Iron_Sword</div>
+        </div>
+        <div class="ov-ba-cell ov-ba-bad">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#a83d1a" stroke-width="2" aria-hidden="true"><path d="M4 4l8 8m0-8l-8 8"/></svg></span>
+          <span>FName 参照のため、全参照箇所が静かに壊れる。手動で全置換が必要。</span>
+        </div>
+        <div class="ov-ba-cell ov-ba-good">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <span>GUID 参照のため、表示名の変更は参照に影響しない。</span>
+        </div>
+      </div>
+      <div class="ov-ba-row">
+        <div class="ov-ba-cell ov-ba-col-h">
+          <div class="ov-ba-scenario">リファクタ時の影響範囲</div>
+          <div class="ov-ba-detail">参照元の特定</div>
+        </div>
+        <div class="ov-ba-cell ov-ba-bad">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#b6571a" stroke-width="2" aria-hidden="true"><path d="M8 2v7m0 3v1"/></svg></span>
+          <span>grep / FName 検索で機械的に追跡。Blueprint 内の参照は見落としやすい。</span>
+        </div>
+        <div class="ov-ba-cell ov-ba-good">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <span>エディタ上で Key 参照を可視化。アセット・コード横断で追跡でき、安心してリファクタリングできる設計。</span>
+        </div>
+      </div>
+      <div class="ov-ba-row">
+        <div class="ov-ba-cell ov-ba-col-h">
+          <div class="ov-ba-scenario">親テーブルの統合</div>
+          <div class="ov-ba-detail">複数の表をマージ</div>
+        </div>
+        <div class="ov-ba-cell ov-ba-bad">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#b6571a" stroke-width="2" aria-hidden="true"><path d="M8 2v7m0 3v1"/></svg></span>
+          <span>UCompositeDataTable で対応可能だが、行単位の上書きは不可。</span>
+        </div>
+        <div class="ov-ba-cell ov-ba-good">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <span>親 Repository の合成で実現。子 Repository から特定の Row だけを上書きでき、変更箇所が明確に追える。</span>
+        </div>
+      </div>
+      <div class="ov-ba-row">
+        <div class="ov-ba-cell ov-ba-col-h">
+          <div class="ov-ba-scenario">属性での逆引き</div>
+          <div class="ov-ba-detail">例: Rarity=Rare の Item を全部</div>
+        </div>
+        <div class="ov-ba-cell ov-ba-bad">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#a83d1a" stroke-width="2" aria-hidden="true"><path d="M4 4l8 8m0-8l-8 8"/></svg></span>
+          <span>全行を線形走査して自前でフィルタ。</span>
+        </div>
+        <div class="ov-ba-cell ov-ba-good">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <span>スキーマで定義した Index 経由で O(1) 近似の高速検索。</span>
+        </div>
+      </div>
+      <div class="ov-ba-row">
+        <div class="ov-ba-cell ov-ba-col-h">
+          <div class="ov-ba-scenario">型と参照整合性の検証</div>
+          <div class="ov-ba-detail">保存・Cook 時の安全性</div>
+        </div>
+        <div class="ov-ba-cell ov-ba-bad">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#a83d1a" stroke-width="2" aria-hidden="true"><path d="M4 4l8 8m0-8l-8 8"/></svg></span>
+          <span>目視確認が主な手段で、データの不整合にランタイムで初めて気付くことも。</span>
+        </div>
+        <div class="ov-ba-cell ov-ba-good">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <span>スキーマがリレーションと参照整合性を保存・Cook 時に自動検証。データ不整合をランタイム前に検出。</span>
+        </div>
+      </div>
+      {% else %}
+      <div class="ov-ba-row">
+        <div class="ov-ba-cell ov-ba-col-h">
+          <div class="ov-ba-scenario">Row rename</div>
+          <div class="ov-ba-detail">e.g. IronSword → Iron_Sword</div>
+        </div>
+        <div class="ov-ba-cell ov-ba-bad">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#a83d1a" stroke-width="2" aria-hidden="true"><path d="M4 4l8 8m0-8l-8 8"/></svg></span>
+          <span>FName references silently break site-wide. Manual find-replace required.</span>
+        </div>
+        <div class="ov-ba-cell ov-ba-good">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <span>GUID references. Display name changes don't affect references.</span>
+        </div>
+      </div>
+      <div class="ov-ba-row">
+        <div class="ov-ba-cell ov-ba-col-h">
+          <div class="ov-ba-scenario">Refactor impact</div>
+          <div class="ov-ba-detail">Tracking reference sites</div>
+        </div>
+        <div class="ov-ba-cell ov-ba-bad">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#b6571a" stroke-width="2" aria-hidden="true"><path d="M8 2v7m0 3v1"/></svg></span>
+          <span>grep / FName search. Blueprint references easy to miss.</span>
+        </div>
+        <div class="ov-ba-cell ov-ba-good">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <span>Key usage visualized in the editor. Track across assets and code.</span>
+        </div>
+      </div>
+      <div class="ov-ba-row">
+        <div class="ov-ba-cell ov-ba-col-h">
+          <div class="ov-ba-scenario">Parent table merge</div>
+          <div class="ov-ba-detail">Merging multiple tables</div>
+        </div>
+        <div class="ov-ba-cell ov-ba-bad">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#b6571a" stroke-width="2" aria-hidden="true"><path d="M8 2v7m0 3v1"/></svg></span>
+          <span>UCompositeDataTable works, but no per-row overrides.</span>
+        </div>
+        <div class="ov-ba-cell ov-ba-good">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <span>Repository inheritance. Override individual rows with change tracking.</span>
+        </div>
+      </div>
+      <div class="ov-ba-row">
+        <div class="ov-ba-cell ov-ba-col-h">
+          <div class="ov-ba-scenario">Attribute lookup</div>
+          <div class="ov-ba-detail">e.g. all Rarity=Rare items</div>
+        </div>
+        <div class="ov-ba-cell ov-ba-bad">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#a83d1a" stroke-width="2" aria-hidden="true"><path d="M4 4l8 8m0-8l-8 8"/></svg></span>
+          <span>Linear scan with manual filter.</span>
+        </div>
+        <div class="ov-ba-cell ov-ba-good">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <span>Near-O(1) lookup via Schema-defined Index.</span>
+        </div>
+      </div>
+      <div class="ov-ba-row">
+        <div class="ov-ba-cell ov-ba-col-h">
+          <div class="ov-ba-scenario">Type validation</div>
+          <div class="ov-ba-detail">Safety on save and cook</div>
+        </div>
+        <div class="ov-ba-cell ov-ba-bad">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#a83d1a" stroke-width="2" aria-hidden="true"><path d="M4 4l8 8m0-8l-8 8"/></svg></span>
+          <span>Manual eyeballing. Data inconsistencies surface at runtime.</span>
+        </div>
+        <div class="ov-ba-cell ov-ba-good">
+          <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
+          <span>Schema validates on save and cook. Type and referential integrity guaranteed.</span>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <div class="ov-ba-footnote">
+      <span class="ov-mm-eyebrow">MIGRATION</span>
+      {% if is_ja %}
+      <p>既存の DataTable プロジェクトからは <a href="how-to/migrate-from-datatable/">「DataTable から移行する」</a> ガイドで段階的に移行できます。</p>
+      {% else %}
+      <p>Existing DataTable projects can migrate incrementally — see the <a href="how-to/migrate-from-datatable/">Migrate from DataTable</a> guide.</p>
+      {% endif %}
+    </div>
   </div>
 </section>
 
@@ -239,53 +427,106 @@
   </div>
 </section>
 
-<!-- Code Samples -->
-<section class="ov-samples">
-  <div class="ov-samples-inner">
-    <p class="ov-samples-kicker">{% if is_ja %}実装例{% else %}In Practice{% endif %}</p>
-    <div class="ov-samples-grid">
+<!-- Dual Code -->
+<section class="ov-dual">
+  <div class="ov-dual-inner">
+    <div class="ov-section-head">
+      {% if is_ja %}
+      <p class="ov-features-kicker">In Practice · 実装例</p>
+      <h2>C++ でも Blueprint でも、同じデータに同じ整合性で。</h2>
+      <p class="ov-section-lead">C++ では型安全な Native Interface で、Blueprint では Get Row ノードで — どちらからでも同じ Repository を参照できます。</p>
+      {% else %}
+      <p class="ov-features-kicker">In Practice</p>
+      <h2>The same data. C++ or Blueprint.</h2>
+      <p class="ov-section-lead">C++ queries via a type-safe native interface. Blueprint queries via Get Row nodes. Both read from the same Repository.</p>
+      {% endif %}
+    </div>
 
-      <!-- Blueprint -->
-      <div class="ov-sample-col">
-        <div class="ov-sample-label">Blueprint</div>
-        <div class="ov-bp-pair">
-          <div class="ov-bp-thumb"
+    <div class="ov-dual-tabs">
+      <button class="ov-dual-tab active" data-tab="cpp">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M2 3h12v10H2V3zm1.5 2.5v5h2v-2h2v2h2v-5h-2v2h-2v-2h-2zm7.5 0v5h2.5L13 9V5.5h-2z"/></svg>
+        C++
+      </button>
+      <button class="ov-dual-tab" data-tab="bp">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><circle cx="4.5" cy="4.5" r="1.5"/><circle cx="11.5" cy="4.5" r="1.5"/><circle cx="4.5" cy="11.5" r="1.5"/><circle cx="11.5" cy="11.5" r="1.5"/><path d="M4.5 4.5h7M4.5 11.5h7M4.5 4.5v7M11.5 4.5v7" stroke="currentColor" stroke-width="1" fill="none"/></svg>
+        Blueprint
+      </button>
+      <span class="ov-dual-tab-trail">{% if is_ja %}C++ も Blueprint も同じ Repository を参照{% else %}C++ and Blueprint share the same Repository{% endif %}</span>
+    </div>
+
+    <div class="ov-dual-pane" data-pane="cpp">
+      <div class="ov-sample-wrap" id="ov-samp-cpp">
+<pre class="ov-sample-pre"><code class="language-cpp">// 行構造体と Interface エイリアスを定義
+USTRUCT(BlueprintType)
+struct FItemRow
+{
+    GENERATED_BODY()
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite) FText       DisplayName;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite) EItemType   Type;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite) EItemRarity Rarity;
+    UPROPERTY(EditAnywhere, BlueprintReadWrite) int32       BaseValue = 0;
+};
+using FItemInterface = DataIndexer::TNativeSchemaInterface&lt;FItemRow&gt;;
+
+// 特定の行を取得
+if (const FItemRow* Row = FItemInterface::FindRow(Repository, PrimaryKey))
+{
+    FText Name = Row->DisplayName;
+}
+
+// Index で属性別に逆引き
+FItemRow Filter; Filter.Rarity = EItemRarity::Rare;
+for (const FDataIndexerPrimaryKey&amp; K :
+     FItemInterface::GetPrimaryKeys(
+         Repository, UItemSchema::ByRarityIndex(), Filter))
+{
+    Process(*FItemInterface::FindRow(Repository, K));
+}</code></pre>
+      </div>
+    </div>
+
+    <div class="ov-dual-pane" data-pane="bp" hidden>
+      <div class="ov-dual-bp-grid">
+        <figure class="ov-dual-bp-fig">
+          <div class="ov-dual-bp-frame"
                onclick="ovOpenLightbox('{{ base_url }}/assets/images/bp-struct-sample.png')"
                role="button"
                aria-label="{% if is_ja %}構造体定義を拡大{% else %}Enlarge struct definition{% endif %}">
             <img src="{{ base_url }}/assets/images/bp-struct-sample.png"
                  alt="Blueprint struct setup">
-            <span class="ov-bp-thumb-caption">{% if is_ja %}構造体を定義{% else %}Struct definition{% endif %}</span>
           </div>
-          <div class="ov-bp-thumb"
+          <figcaption>{% if is_ja %}① 構造体を定義 — エディタで型を組み立てる{% else %}① Define the struct — build types in the editor{% endif %}</figcaption>
+        </figure>
+        <figure class="ov-dual-bp-fig">
+          <div class="ov-dual-bp-frame"
                onclick="ovOpenLightbox('{{ base_url }}/assets/images/bp-node-sample.png')"
                role="button"
                aria-label="{% if is_ja %}クエリノードを拡大{% else %}Enlarge query nodes{% endif %}">
             <img src="{{ base_url }}/assets/images/bp-node-sample.png"
                  alt="Blueprint node wiring">
-            <span class="ov-bp-thumb-caption">{% if is_ja %}クエリを組む{% else %}Query nodes{% endif %}</span>
           </div>
-        </div>
+          <figcaption>{% if is_ja %}② ノードでクエリ — Get Row / Get Primary Keys{% else %}② Query with nodes — Get Row / Get Primary Keys{% endif %}</figcaption>
+        </figure>
       </div>
+    </div>
 
-      <!-- C++ -->
-      <div class="ov-sample-col">
-        <div class="ov-sample-label">C++</div>
-        <div class="ov-sample-wrap" id="ov-samp-cpp">
-<pre class="ov-sample-pre"><code class="language-cpp">// セカンダリインデックスで逆引き — O(1)
-FItemRow Filter;
-Filter.Rarity = EItemRarity::Rare;
-
-for (const FDataIndexerPrimaryKey&amp; Key :
-     FItemInterface::GetPrimaryKeys(
-         *ItemRepository, UItemSchema::ByRarityIndex(), Filter))
-{
-    const FItemRow&amp; Row = *FItemInterface::FindRow(*ItemRepository, Key);
-    ProcessItem(Row);
-}</code></pre>
-        </div>
+    <div class="ov-dual-callouts">
+      <div class="ov-callout">
+        <span class="ov-chip ov-chip--blue">Type-safe</span>
+        <div class="ov-callout-title">{% if is_ja %}型はスキーマで一元管理{% else %}Types in one place{% endif %}</div>
+        <div class="ov-callout-text">{% if is_ja %}C++ は <code>TNativeSchemaInterface&lt;T&gt;</code> で型安全なクエリ。Blueprint は Get Row ノードで同じ行データを視覚的に扱えます。{% else %}C++ queries are type-safe via <code>TNativeSchemaInterface&lt;T&gt;</code>. Blueprint uses Get Row nodes for the same data.{% endif %}</div>
       </div>
-
+      <div class="ov-callout">
+        <span class="ov-chip ov-chip--blue">Validated</span>
+        <div class="ov-callout-title">{% if is_ja %}保存・Cook 時に自動検証{% else %}Auto-validated on save and cook{% endif %}</div>
+        <div class="ov-callout-text">{% if is_ja %}Row 間のリレーションと参照整合性をスキーマが自動チェック。データ不整合をランタイム前に検出します。{% else %}Row-to-row relations and referential integrity checked automatically. Catch data inconsistencies before runtime.{% endif %}</div>
+      </div>
+      <div class="ov-callout">
+        <span class="ov-chip ov-chip--blue">Indexed</span>
+        <div class="ov-callout-title">{% if is_ja %}O(1) 近似の逆引き{% else %}Near-O(1) reverse lookup{% endif %}</div>
+        <div class="ov-callout-text">{% if is_ja %}スキーマで Index を宣言すれば、属性ベースの検索が高速に。行数が増えても性能劣化なし。{% else %}Declare an Index on the schema. Attribute-based search stays fast as row count grows.{% endif %}</div>
+      </div>
     </div>
   </div>
 </section>

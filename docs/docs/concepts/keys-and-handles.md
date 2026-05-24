@@ -100,28 +100,6 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 
 **When to use:** UPROPERTY on actors, data assets, or save game structs when you want to point to a specific row. Blueprint variables for row references.
 
-### `Repository` metadata
-
-Constrains the repository picker to a specific repository. Add `meta = (Repository = "...")` so the editor pre-selects or restricts the repository shown in the handle picker.
-
-The value is the **name of a property or function** on the same class that returns a `UDataIndexerRepository*`. A no-arg `UFUNCTION` is also accepted.
-
-=== "C++"
-
-    ```cpp
-    // Property reference
-    UPROPERTY(EditAnywhere, meta = (Repository = "Repository"))
-    FDataIndexerRowHandle RowHandle;
-
-    // Function reference — no-arg UFUNCTION returning UDataIndexerRepository*
-    UPROPERTY(EditAnywhere, meta = (Repository = "GetRepository"))
-    FDataIndexerRowHandle RowHandleFromFunction;
-    ```
-
-
-=== "Blueprint"
-
-    Open the Blueprint variable's **Details** panel. With a `FDataIndexerRowHandle` variable selected, a **Repository** dropdown appears. Choose the property or function that supplies the repository.
 ### `Schema` metadata
 
 Filters the repository picker to repositories of a specific schema. Add `meta = (Schema = "AssetPath")`. The editor resolves the path and restricts the asset picker to matching repositories.

@@ -100,28 +100,6 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 
 **使うべき場面：** 特定の行を指したいアクター・データアセット・セーブゲーム構造体の UPROPERTY。行参照用の Blueprint 変数。
 
-### `Repository` メタデータ
-
-ハンドルのRepositoryピッカーを特定のRepositoryに制限します。エディタがRepositoryを事前選択または絞り込みできるよう `meta = (Repository = "...")` を指定してください。
-
-値には同じクラス上の `UDataIndexerRepository*` を返す**プロパティ名または関数名**を指定します。引数なしの `UFUNCTION` も使用できます。
-
-=== "C++"
-
-    ```cpp
-    // プロパティ参照
-    UPROPERTY(EditAnywhere, meta = (Repository = "Repository"))
-    FDataIndexerRowHandle RowHandle;
-
-    // 関数参照 — UDataIndexerRepository* を返す引数なし UFUNCTION
-    UPROPERTY(EditAnywhere, meta = (Repository = "GetRepository"))
-    FDataIndexerRowHandle RowHandleFromFunction;
-    ```
-
-
-=== "Blueprint"
-
-    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerRowHandle` 変数を選択すると **Repository** ドロップダウンが表示されます。Repositoryを提供するプロパティ名または関数名を選択してください。
 ### `Schema` メタデータ
 
 ハンドルのRepositoryピッカーを特定のSchemaのRepositoryに絞り込みます。`meta = (Schema = "AssetPath")` を追加してください。エディタはパスを解決し、アセットピッカーを一致するRepositoryのみに絞り込みます。

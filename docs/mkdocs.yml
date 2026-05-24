@@ -55,6 +55,7 @@ extra_css:
 extra_javascript:
   - assets/javascripts/toc-fix.js
   - assets/javascripts/quick-start-progress.js
+  - assets/javascripts/overview-tabs.js
 
 markdown_extensions:
   - admonition
@@ -139,8 +140,8 @@ nav:
   - Getting Started: quick-start.md
   - Core Concepts:
     - concepts/index.md
-    - Repository: concepts/repository.md
     - Schema: concepts/schema.md
+    - Repository: concepts/repository.md
     - Keys & Handles: concepts/keys-and-handles.md
     - Indexes: concepts/indexes.md
   - Editor Guide:

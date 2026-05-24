@@ -91,6 +91,40 @@ Schema は 3 つのことを担当します。
 
     `PropertyTextCustomizations` マップにプロパティ名と `FText` を返す関数ポインタを登録します。Blueprint の **Property Text Customizations** マップに相当します。
 
+    プロパティごとに `static UFUNCTION` を宣言し、コンストラクタで `RegisterFunction_PropertyTextCustomization` を呼び出します。
+
+    ```cpp
+    // クラス宣言内
+    UFUNCTION()
+    static FText GetTypeDisplayText(const FInstancedStruct& RowEntity);
+    ```
+
+    ```cpp
+    UItemSchema::UItemSchema()
+    {
+        RowStruct = FItemRow::StaticStruct();
+
+        RegisterFunction_PropertyTextCustomization(
+            GET_MEMBER_NAME_CHECKED(FItemRow, Type),
+            GET_FUNCTION_NAME_CHECKED(ThisClass, GetTypeDisplayText));
+    }
+    ```
+
+    ```cpp
+    FText UItemSchema::GetTypeDisplayText(const FInstancedStruct& RowEntity)
+    {
+        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
+        {
+            switch (Row->Type)
+            {
+                case EItemType::Weapon: return NSLOCTEXT("Item", "TypeWeapon", "武器");
+                case EItemType::Armor:  return NSLOCTEXT("Item", "TypeArmor",  "防具");
+                default: break;
+            }
+        }
+        return FText::GetEmpty();
+    }
+    ```
 
 === "Blueprint"
 
@@ -110,6 +144,15 @@ Schema は 3 つのことを担当します。
     ### Property Text Customizations
 
     **Class Defaults** の **Property Text Customizations** マップで、プロパティ名をキーに `FText` を返す関数を登録します。Data View グリッドでのプロパティ値の表示テキストを上書きします。
+
+    上書きしたいプロパティごとにエントリを追加します。例えば `Type` を生の列挙値整数ではなくローカライズ済みラベルで表示する場合：
+
+    | キー（プロパティ名） | 値（関数） |
+    |---|---|
+    | `Type` | `GetTypeDisplayText` |
+
+    関数は `FInstancedStruct`（行）を受け取り `FText` を返します。デフォルト表示にフォールバックするには `FText::GetEmpty()` を返します。
+
 ## データバリデーション
 
 !!! warning "Blueprint 未対応"
@@ -169,3 +212,5 @@ void UItemSchema::InitializeExpandedStructEntries()
 ```
 
 Blueprint では Class Defaults パネルの **Expanded Struct Entries** マップから切り替えられます。
+
+![カラムごとの表示・非表示を切り替える Column Layout パネル](../assets/images/schema-column-layout.png)
