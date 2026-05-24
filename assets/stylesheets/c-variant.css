@@ -1,0 +1,1313 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   c-variant.css — DataIndexer Docs C案 (Hub-and-Detail) の MkDocs Material 適用
+   既存 extra.css と併用。tokens.css の値を Material の CSS variables に反映。
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── デザイントークン（tokens.css と同じ値） ─────────────────────────────── */
+:root,
+[data-md-color-scheme="di-light"] {
+  /* Warm neutrals */
+  --md-default-bg-color: #ffffff;
+  --md-default-fg-color: rgba(10, 9, 8, 0.98);
+  --md-default-fg-color--light: #4a4644;
+  --md-default-fg-color--lighter: #a39e98;
+  --md-typeset-color: rgba(10, 9, 8, 0.98);
+  --text-muted: #4a4644;
+  --md-typeset-a-color: #2e6ee0;
+
+  /* Code */
+  --md-code-bg-color: #f7f6f3;
+  --md-code-fg-color: #2d2a26;
+
+  /* Tabs (= 上部セクションバー) */
+  --md-primary-bg-color: rgba(15, 14, 13, 0.92);
+  --md-primary-fg-color: #ffffff;
+
+  /* Accent ピル / リンク */
+  --md-accent-fg-color: #2e6ee0;
+  --md-accent-fg-color--transparent: rgba(46, 110, 224, 0.10);
+
+  /* C-variant 独自 */
+  --di-bg-alt: #f7f6f3;
+  --di-border: 1px solid rgba(15, 14, 13, 0.10);
+  --di-border-strong: 1px solid rgba(15, 14, 13, 0.16);
+  --di-text-strong: rgba(10, 9, 8, 0.96);
+  --di-accent: #2e6ee0;
+  --di-accent-soft: #ecf2ff;
+  --di-shadow-card:
+    rgba(0,0,0,0.04) 0px 4px 18px,
+    rgba(0,0,0,0.027) 0px 2px 7.85px,
+    rgba(0,0,0,0.02) 0px 0.8px 2.93px;
+}
+
+[data-md-color-scheme="slate"] {
+  --md-default-bg-color: #1a1917;
+  --md-default-fg-color: rgba(245, 240, 232, 0.92);
+  --md-default-fg-color--light: rgba(245, 240, 232, 0.60);
+  --md-typeset-a-color: #6098f5;
+  --md-code-bg-color: #232120;
+  --di-bg-alt: #1f1d1a;
+  --di-border: 1px solid rgba(255, 248, 235, 0.10);
+  --di-text-strong: rgba(252, 248, 240, 0.98);
+  --di-accent: #6098f5;
+  --di-accent-soft: rgba(96, 152, 245, 0.14);
+  --text-muted: #9a948a;
+}
+
+/* ── 全体 — Inter + 日本語フォールバック ─────────────────────────────────── */
+.md-typeset,
+.md-header,
+.md-tabs,
+.md-nav {
+  font-family: "Inter", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", -apple-system, sans-serif;
+  letter-spacing: -0.005em;
+}
+.md-typeset code,
+.md-typeset pre {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* ── ヘッダ ─────────────────────────────────────────────────────────────── */
+.md-header {
+  background: var(--md-default-bg-color);
+  color: var(--md-default-fg-color);
+  border-bottom: var(--di-border);
+  box-shadow: none;
+}
+.md-header__title {
+  font-weight: 700;
+  font-size: 0.875rem;
+  letter-spacing: -0.01em;
+}
+
+/* 検索バーをピル風に */
+.md-search__form {
+  background: var(--di-bg-alt);
+  border: var(--di-border);
+  border-radius: 5px;
+  height: 32px;
+}
+.md-search__input {
+  font-size: 13px;
+  color: var(--md-default-fg-color--light);
+}
+.md-search__input::placeholder {
+  color: var(--md-default-fg-color--lighter);
+}
+
+/* ── 上部セクションバー（= Material tabs） ──────────────────────────────── */
+.md-tabs {
+  background: var(--di-bg-alt);
+  color: var(--md-default-fg-color);
+  border-bottom: var(--di-border);
+  height: 42px;
+}
+.md-tabs__list {
+  height: 42px;
+}
+.md-tabs__link {
+  font-size: 13px;
+  font-weight: 500;
+  opacity: 1;
+  color: var(--md-default-fg-color--light);
+  margin: 0;
+  padding: 0 10px;
+  height: 42px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-bottom: 2px solid transparent;
+  transition: color 120ms, border-color 120ms, background 120ms;
+}
+.md-tabs__link:hover {
+  color: var(--di-text-strong);
+  border-bottom-color: rgba(15, 14, 13, 0.16);
+  background: rgba(15, 14, 13, 0.025);
+}
+.md-tabs__link--active {
+  color: var(--di-text-strong);
+  font-weight: 600;
+  border-bottom-color: var(--di-accent);
+}
+
+/* ── 左ツリー（左サイドナビ）─────────────────────────────────────────── */
+.md-sidebar--primary {
+  width: 230px;
+}
+/* 上部フェード除去 */
+.md-sidebar--primary .md-sidebar__scrollwrap {
+  -webkit-mask-image: none;
+          mask-image: none;
+}
+.md-nav--primary .md-nav__title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+  background: transparent;
+  box-shadow: none;
+  padding: 4px 10px;
+}
+
+.md-nav__item .md-nav__link {
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--md-default-fg-color--light);
+  padding: 4px 10px;
+  border-radius: 5px;
+  margin: 1px 4px;
+}
+.md-nav__item .md-nav__link:hover {
+  background: var(--di-bg-alt);
+  color: var(--di-text-strong);
+}
+/* active リンク — Material のデフォルト上書きを含め統一 */
+.md-sidebar--primary .md-nav__link--active,
+.md-sidebar--primary .md-nav__link--active:focus,
+.md-sidebar--primary .md-nav__link--active:hover {
+  background: var(--di-accent-soft);
+  color: var(--di-accent);
+  font-weight: 600;
+}
+
+/* [fix1] セクション見出しコンテナ垂直ズレ修正 + box-shadow フェード除去 (navigation.indexes あり) */
+.md-nav__link.md-nav__container {
+  padding: 0;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  box-shadow: none;
+}
+
+/* [fix2] lifted active label の box-shadow フェード除去 (navigation.indexes なしセクション用)
+   Material: .md-nav--lifted > ... > .md-nav__item--active > .md-nav__link { box-shadow: ...; } */
+@media screen and (min-width: 76.25em) {
+  .md-nav--lifted > .md-nav__list > .md-nav__item--active > .md-nav__link {
+    box-shadow: none;
+  }
+}
+
+/* [fix3] アンカー scroll-margin — sticky 合計 (94px) に合わせる。JS の active 判定と連動 */
+.md-typeset :is(h2, h3, h4, h5, h6) {
+  scroll-margin-top: 94px;
+}
+
+/* ── 中央読書カラム ─────────────────────────────────────────────────────── */
+.md-main__inner {
+  margin-top: 0;
+}
+.md-content {
+  max-width: none;
+}
+.md-content__inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 28px 48px 64px;
+}
+.md-content__inner > h1:first-child {
+  font-size: 36px;
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  color: var(--di-text-strong);
+}
+
+/* リード段落 */
+.md-typeset h1 + p {
+  font-size: 17px;
+  line-height: 1.55;
+  color: var(--md-default-fg-color--light);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  margin-bottom: 28px;
+}
+
+/* ── コードブロック ─────────────────────────────────────────────────────────── */
+/* レイアウトのみ共通。背景色はスキーム別 */
+.md-typeset pre > code,
+.md-typeset .highlight pre {
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+/* ダークモード: warm near-black を強制 */
+[data-md-color-scheme="slate"] .md-typeset pre > code,
+[data-md-color-scheme="slate"] .md-typeset .highlight pre {
+  background: #1a1917;
+  color: #e6e1d8;
+}
+
+/* インラインコード */
+.md-typeset code {
+  background: var(--md-code-bg-color);
+  border: 1px solid rgba(15, 14, 13, 0.06);
+  border-radius: 3px;
+  padding: 1px 5px;
+  font-size: 0.86em;
+}
+
+/* ── 右ペインを使わない（toc.integrate で左ナビ末尾に統合） ─────────────── */
+@media screen and (min-width: 76.25em) {
+  .md-sidebar--secondary {
+    display: none;
+  }
+}
+
+/* Quick Reference カード本体（.admonition.quickref 内で使用） */
+.di-qr {
+  margin-bottom: 18px;
+  font-size: 13px;
+}
+.di-qr__label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+  margin: 18px 0 6px;
+}
+.di-qr__label:first-child { margin-top: 0; }
+.di-qr__card {
+  border: var(--di-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: var(--di-bg-alt);
+}
+.di-qr__type {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--di-text-strong);
+  font-weight: 600;
+}
+.di-qr__inherits {
+  font-size: 11.5px;
+  color: var(--md-default-fg-color--light);
+  margin-top: 2px;
+}
+.di-qr__inherits code {
+  background: transparent;
+  border: 0;
+  padding: 0;
+}
+.di-qr__pills {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+.di-qr__pill {
+  display: inline-flex;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: var(--di-accent-soft);
+  color: var(--di-accent);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(46, 110, 224, 0.15);
+}
+.di-qr__pill--gray {
+  background: var(--di-bg-alt);
+  color: var(--md-default-fg-color--light);
+  border-color: rgba(15, 14, 13, 0.10);
+}
+.di-qr__method {
+  display: block;
+  padding: 6px 8px;
+  border-radius: 5px;
+  margin-bottom: 2px;
+  text-decoration: none;
+  transition: background 100ms, box-shadow 100ms;
+}
+.di-qr__method:hover {
+  background: var(--di-bg-alt);
+  box-shadow: inset 2px 0 0 var(--di-accent);
+}
+.di-qr__method-name {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 12px;
+  color: var(--di-text-strong);
+  font-weight: 600;
+}
+.di-qr__method-desc {
+  font-size: 11.5px;
+  color: var(--md-default-fg-color--light);
+  margin-top: 1px;
+}
+.di-qr__chips {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.di-qr__chip {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  padding: 2px 6px;
+  border: var(--di-border);
+  border-radius: 5px;
+  color: var(--md-default-fg-color);
+  background: var(--di-bg-alt);
+  cursor: pointer;
+}
+.di-qr__meta {
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--md-default-fg-color--light);
+}
+.di-qr__meta-row {
+  display: flex;
+  justify-content: space-between;
+}
+.di-qr__meta-row strong {
+  color: var(--di-text-strong);
+  font-weight: 500;
+}
+
+/* ── "Got stuck?" カード（左サイドナビ最下部） ───────────────────────────── */
+.di-stuck {
+  margin: 18px 12px 0;
+  padding: 12px;
+  border: var(--di-border);
+  border-radius: 8px;
+  background: var(--di-bg-alt);
+}
+.di-stuck__title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+  margin-bottom: 6px;
+}
+.di-stuck__body {
+  font-size: 12.5px;
+  color: var(--md-default-fg-color);
+  line-height: 1.55;
+  margin-bottom: 8px;
+}
+.di-stuck__cta {
+  font-size: 12px;
+  color: var(--di-accent);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* ── Quick Reference — 本文内 admonition として右に float ───────────────── */
+.md-typeset .admonition.quickref,
+.md-typeset details.quickref {
+  float: right;
+  width: 280px;
+  margin: 4px 0 16px 24px;
+  border: var(--di-border);
+  border-left: var(--di-border);
+  background: var(--di-bg-alt);
+  border-radius: 8px;
+  box-shadow: var(--di-shadow-card);
+  font-size: 13px;
+}
+.md-typeset .admonition.quickref > .admonition-title {
+  background: transparent;
+  border-bottom: var(--di-border);
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+  padding: 8px 12px;
+}
+.md-typeset .admonition.quickref > .admonition-title::before { display: none; }
+@media (max-width: 960px) {
+  .md-typeset .admonition.quickref { float: none; width: auto; margin: 0 0 16px; }
+}
+
+/* ── タブアイコン（SVG mask — nth-child で active 時も確実に表示） ──────── */
+/* アクティブ時 href が "./" になるため href マッチではなく位置で特定 */
+.md-tabs__item:nth-child(1) .md-tabs__link { --tab-icon: url("../icons/icon-book.svg"); }     /* Overview */
+.md-tabs__item:nth-child(2) .md-tabs__link { --tab-icon: url("../icons/icon-arrow.svg"); }    /* Getting Started */
+.md-tabs__item:nth-child(3) .md-tabs__link { --tab-icon: url("../icons/icon-cube.svg"); }     /* Core Concepts */
+.md-tabs__item:nth-child(4) .md-tabs__link { --tab-icon: url("../icons/icon-edit.svg"); }     /* Editor Guide */
+.md-tabs__item:nth-child(5) .md-tabs__link { --tab-icon: url("../icons/icon-search.svg"); }   /* API Reference */
+.md-tabs__item:nth-child(6) .md-tabs__link { --tab-icon: url("../icons/icon-log.svg"); }      /* Changelog */
+.md-tabs__item:nth-child(1) .md-tabs__link::before,
+.md-tabs__item:nth-child(2) .md-tabs__link::before,
+.md-tabs__item:nth-child(3) .md-tabs__link::before,
+.md-tabs__item:nth-child(4) .md-tabs__link::before,
+.md-tabs__item:nth-child(5) .md-tabs__link::before,
+.md-tabs__item:nth-child(6) .md-tabs__link::before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: currentColor;
+  -webkit-mask: var(--tab-icon) center / contain no-repeat;
+          mask: var(--tab-icon) center / contain no-repeat;
+  opacity: 0.6;
+}
+.md-tabs__link--active::before { opacity: 1; }
+
+/* ── H1 margin ───────────────────────────────────────────────────────────── */
+.md-typeset h1 {
+  margin: 0 0 12px;
+}
+
+/* ── H2 — 22px / 1.25 / -0.015em / 36px before / 10px after ─────────────── */
+.md-typeset h2 {
+  font-size: 22px;
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  margin: 36px 0 10px;
+}
+
+/* ── 本文 / リスト — 15px / 1.65 / mb 14px ──────────────────────────────── */
+.md-typeset p,
+.md-typeset ol,
+.md-typeset ul {
+  font-size: 15px;
+  margin: 0 0 14px;
+}
+
+/* ── コードブロック外側マージン — 14px 上 / 18px 下 ─────────────────────── */
+.md-typeset .highlight {
+  margin: 14px 0 18px;
+}
+
+/* ── パンくず（navigation.path） ─────────────────────────────────────────── */
+/* md-content__inner 内に配置済み。水平位置は親の padding: 0 48px から継承 */
+nav.md-path {
+  margin: 0 0 14px;
+  padding-top: 0;
+}
+[dir="ltr"] .md-typeset .md-path__list,
+[dir="rtl"] .md-typeset .md-path__list,
+.md-path__list {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+[dir="ltr"] .md-typeset .md-path__item,
+[dir="rtl"] .md-typeset .md-path__item,
+.md-path__item {
+  display: inline-flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--md-default-fg-color--light);
+}
+.md-path__item + .md-path__item::before {
+  content: "/";
+  color: var(--md-default-fg-color--lighter);
+  padding: 0 6px;
+}
+.md-path__link {
+  color: var(--md-default-fg-color--light);
+  text-decoration: none;
+  border-bottom: 1px dotted transparent;
+  transition: color 120ms, border-color 120ms;
+}
+.md-path__link:hover {
+  color: var(--di-text-strong);
+  border-bottom-color: var(--md-default-fg-color--lighter);
+  text-decoration: none;
+}
+.md-path__item--active,
+.md-path__item:last-child {
+  color: var(--di-text-strong);
+  font-weight: 600;
+}
+
+/* ── admonition 上マージン ────────────────────────────────────────────────── */
+.md-typeset .admonition,
+.md-typeset details {
+  margin-top: 18px;
+}
+.md-typeset details[open] > summary {
+  margin-bottom: 14px;
+}
+.md-typeset .admonition-title,
+.md-typeset summary.admonition-title {
+  margin-bottom: 8px;
+}
+
+/* ── hl_lines ハイライト行 — dark code bg 上で視認可能に ────────────────── */
+.md-typeset .highlight .hll {
+  background: rgba(255, 255, 255, 0.11);
+  display: block;
+  margin: 0 -16px;
+  padding: 0 16px;
+}
+
+/* ── コンテンツタブ — テキストのみのタブが狭く見えるのを防ぐ ─────────────── */
+.md-typeset .tabbed-set .tabbed-content .tabbed-block {
+  padding: 14px 0 2px;
+}
+
+/* ── 日本語ページはトラッキング無効 ──────────────────────────────────────── */
+:lang(ja) .md-typeset,
+:lang(ja) .md-nav,
+:lang(ja) .md-header {
+  letter-spacing: 0;
+}
+
+/* ── Mermaid FOUC 防止: JS がレンダリングするまで生ソースを非表示 ──────── */
+pre.mermaid {
+  visibility: hidden;
+}
+
+/* ── 検索バグ修正 ─────────────────────────────────────────────────────────── */
+/* [fix4] アイコン縦ズレ — height:32px 固定時に Material の絶対配置 top がずれるため上書き */
+.md-search__icon[for="__search"],
+.md-search__options {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.md-search__options .md-search__icon.md-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* [fix5] サジェスト文字ズレ — __input の font-size 変更を __suggest にも適用 */
+.md-search__suggest {
+  font-size: 13px;
+  line-height: 32px;
+}
+
+/* [fix6] ヘッダタイトル — サイト名を非表示にしてページタイトルのみ常時表示 */
+.md-header__topic:first-child {
+  display: none;
+}
+.md-header__topic:last-child {
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: auto;
+}
+
+/* ── Grid card アイコンサイズ調整 — .lg (1.5em) からやや縮小 ────────────── */
+.md-typeset .grid.cards .twemoji.lg {
+  font-size: 1.2em;
+}
+
+/* ── H3 — 16px / 1.35 / 600 ──────────────────────────────────────────────── */
+.md-typeset h3 {
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 600;
+}
+
+/* ── 左ナビ 多段インデントリセット ─────────────────────────────────────────── */
+/* Material は .md-nav__item 入れ子ごとに padding-left を加算する。全段フラットに統一 */
+.md-sidebar--primary .md-nav__item .md-nav__item {
+  padding-left: 0;
+}
+
+/* ── サイドバー subsection labels（Blueprint API / C++ API 等）────────────── */
+/* .md-nav__item--section の直下 .md-nav__link は計測HTMLの .label と同一スタイルに */
+.md-sidebar--primary .md-nav__item--section > .md-nav__link:not(.md-nav__container) {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+  padding: 4px 10px;
+  margin: 14px 4px 0;
+  border-radius: 0;
+  background: transparent !important;
+  cursor: default;
+  pointer-events: none;
+}
+.md-sidebar--primary .md-nav__item--section > .md-nav__link .md-nav__icon {
+  display: none;
+}
+
+/* ── ステップラベル — 見出しセマンティクスなし、H3 相当のビジュアル ──────── */
+.md-typeset strong.step-label {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--di-text-strong);
+}
+
+.md-typeset p:has(> strong.step-label) {
+  margin-top: 20px;
+  margin-bottom: 6px;
+}
+
+/* ── Issue 2 / 3: Quick Start brushup + Overview additions ───────────────── */
+
+:root,
+[data-md-color-scheme="di-light"] {
+  --di-success: #1f7a52;
+  --di-success-soft: rgba(31, 122, 82, 0.10);
+  --di-success-border: rgba(31, 122, 82, 0.20);
+}
+
+[data-md-color-scheme="slate"] {
+  --di-success: #4caf82;
+  --di-success-soft: rgba(76, 175, 130, 0.12);
+  --di-success-border: rgba(76, 175, 130, 0.25);
+}
+
+/* ── Quick Start: sticky progress bar ───────────────────────────────────── */
+.qs-progress {
+  position: sticky;
+  top: 94px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(15, 14, 13, 0.10);
+  padding: 12px 48px;
+  margin: 0 -48px 20px;
+  z-index: 4;
+}
+
+[data-md-color-scheme="slate"] .qs-progress {
+  background: rgba(26, 25, 23, 0.92);
+  border-bottom: 1px solid rgba(255, 248, 235, 0.10);
+}
+
+.qs-progress-rail {
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+}
+
+.qs-progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+
+.qs-progress-dot {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--md-default-bg-color);
+  border: 2px solid rgba(15, 14, 13, 0.16);
+  display: grid;
+  place-items: center;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--md-default-fg-color--light);
+}
+
+[data-md-color-scheme="slate"] .qs-progress-dot {
+  border-color: rgba(255, 248, 235, 0.18);
+}
+
+.qs-progress-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--md-default-fg-color--light);
+  text-align: center;
+}
+
+.qs-progress-step.current .qs-progress-dot {
+  background: var(--di-accent);
+  border-color: var(--di-accent);
+  color: #fff;
+  box-shadow: 0 0 0 4px rgba(46, 110, 224, 0.15);
+}
+
+.qs-progress-step.current .qs-progress-label {
+  color: var(--di-accent);
+  font-weight: 700;
+}
+
+.qs-progress-step.done .qs-progress-dot {
+  background: var(--di-success);
+  border-color: var(--di-success);
+  color: #fff;
+}
+
+.qs-progress-step.done .qs-progress-label {
+  color: var(--di-text-strong);
+}
+
+.qs-progress-bar-line {
+  position: absolute;
+  top: 14px;
+  left: 14%;
+  right: 14%;
+  height: 2px;
+  background: rgba(15, 14, 13, 0.16);
+  z-index: 0;
+}
+
+[data-md-color-scheme="slate"] .qs-progress-bar-line {
+  background: rgba(255, 248, 235, 0.12);
+}
+
+.qs-progress-bar-line::after {
+  content: "";
+  display: block;
+  height: 100%;
+  background: var(--di-success);
+  width: var(--qs-progress-fill, 0%);
+  transition: width 300ms ease;
+}
+
+.qs-progress-eta {
+  margin-top: 8px;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11.5px;
+  color: var(--md-default-fg-color--lighter);
+  text-align: right;
+}
+
+/* ── Quick Start: h2 step badge ─────────────────────────────────────────── */
+.md-content__inner { counter-reset: qs-step; }
+
+.md-typeset h2.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.md-typeset h2.step::before {
+  counter-increment: qs-step;
+  content: counter(qs-step);
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--di-accent);
+  color: #fff;
+  font-family: "JetBrains Mono", monospace;
+  font-size: 11px;
+  font-weight: 700;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+/* ── Quick Start: prereq card ───────────────────────────────────────────── */
+.qs-prereq {
+  background: var(--di-bg-alt);
+  border: var(--di-border);
+  border-radius: 10px;
+  padding: 16px 18px;
+  margin: 0 0 24px;
+}
+
+.qs-prereq-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: "Inter", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--light);
+  margin: 0 0 12px;
+}
+
+.qs-prereq-title::before {
+  content: "";
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--md-default-fg-color--lighter);
+}
+
+.qs-prereq-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+}
+
+.qs-prereq-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13.5px;
+  color: var(--md-typeset-color);
+}
+
+.qs-prereq-check {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--di-success);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.qs-prereq-meta {
+  font-size: 12px;
+  color: var(--md-default-fg-color--light);
+  margin-left: 4px;
+  font-family: "JetBrains Mono", monospace;
+}
+
+.qs-prereq-meta a {
+  color: var(--di-accent);
+}
+
+/* ── Quick Start: completion checklist ──────────────────────────────────── */
+.qs-complete {
+  background: var(--di-success-soft);
+  border: 1px solid var(--di-success-border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin: 28px 0 0;
+}
+
+.qs-complete-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--di-success);
+  margin: 0 0 12px;
+  letter-spacing: 0.01em;
+}
+
+.md-typeset .qs-complete-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.qs-complete-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: var(--md-typeset-color);
+  margin-bottom: 8px;
+}
+
+.qs-complete-list li:last-child { margin-bottom: 0; }
+
+.qs-complete-check {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--di-success);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1px;
+}
+
+/* ── Overview: samples grid — prevent code column from stretching ────────── */
+.ov-sample-col { min-width: 0; }
+/* caption + footer removed: code block fills column height */
+.ov-sample-col .ov-sample-wrap {
+  overflow-x: auto;
+  flex: 1;
+}
+
+/* ── Overview: samples footer link ──────────────────────────────────────── */
+.ov-samples-footer-link {
+  margin-top: 24px;
+  text-align: center;
+}
+
+.ov-samples-footer-link a {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--di-accent);
+  text-decoration: none;
+}
+
+.ov-samples-footer-link a:hover {
+  text-decoration: underline;
+}
+
+/* ── Issue 4: Changelog — release blocks ──────────────────────────────────── */
+.md-typeset h2.release {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  margin-top: 40px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(15, 14, 13, 0.10);
+}
+
+[data-md-color-scheme="slate"] .md-typeset h2.release {
+  border-top-color: rgba(255, 248, 235, 0.10);
+}
+
+.md-typeset h2.release::after {
+  content: attr(data-date);
+  display: inline-block;
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--md-default-fg-color--lighter);
+  margin-left: 12px;
+  vertical-align: middle;
+}
+
+.md-typeset h2.release.release--current::after {
+  content: attr(data-date) " · " attr(data-tag);
+  color: var(--di-accent);
+}
+
+.md-typeset h3.release-group {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-top: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.md-typeset h3.release-group::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+}
+
+:root,
+[data-md-color-scheme="di-light"] {
+  --di-tip:  #1f7a52;
+  --di-note: #2e6ee0;
+  --di-warn: #b45309;
+}
+
+[data-md-color-scheme="slate"] {
+  --di-tip:  #4caf82;
+  --di-note: #6098f5;
+  --di-warn: #f59e0b;
+}
+
+.md-typeset h3.release-group--add    { color: var(--di-tip);  }
+.md-typeset h3.release-group--change { color: var(--di-accent); }
+.md-typeset h3.release-group--fix    { color: var(--di-note); }
+.md-typeset h3.release-group--break  { color: var(--di-warn); }
+
+/* ── Issue 3: 右サイドバー Quick Reference nav ────────────────────────────── */
+.di-qr-nav .md-nav__title {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+  padding: 8px 12px 4px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.di-qr-nav .di-qr {
+  padding: 0 12px 16px;
+}
+
+/* ── dd — p と同サイズに揃える ──────────────────────────────────────────── */
+.md-typeset dd {
+  font-size: 15px;
+}
+
+/* ── ov-feature-desc — feature row の説明段落に下マージン ───────────────── */
+.ov-feature-desc { margin-bottom: 14px !important; }
+
+/* ── ov-section-divider 削除後の代替スペース ────────────────────────────── */
+.ov-concepts-grid + .ov-section-heading { margin-top: 48px; }
+
+/* ── Quick Start: zoom image + lightbox ─────────────────────────────────── */
+img.qs-zoomable {
+  cursor: zoom-in;
+  transition: opacity 120ms;
+}
+img.qs-zoomable:hover { opacity: 0.88; }
+
+.qs-lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-out;
+}
+.qs-lightbox.is-open { display: flex; }
+
+.qs-lightbox-img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 6px;
+  cursor: default;
+}
+
+.qs-lightbox-close {
+  position: absolute;
+  top: 16px;
+  right: 20px;
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 24px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+  opacity: 0.7;
+  transition: opacity 120ms;
+}
+.qs-lightbox-close:hover { opacity: 1; }
+
+/* ── Blueprint function node thumbnail ──────────────────────────────────── */
+img.fn-node {
+  display: block;
+  max-width: 100%;
+  width: auto;
+  height: auto;
+  border-radius: 6px;
+  margin: 14px 0 18px;
+}
+
+/* ── Concepts hub: eyebrow label ─────────────────────────────────────────── */
+.ov-eyebrow {
+  display: flex; align-items: baseline; gap: 0.75rem;
+  font: 700 0.72rem/1 var(--md-code-font, monospace);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--md-accent-fg-color); margin: 0.5rem 0 0.6rem;
+}
+.ov-eyebrow span {
+  color: var(--md-default-fg-color--lighter);
+  font-weight: 500; letter-spacing: 0.04em;
+}
+
+/* ── Mental Model diagram ─────────────────────────────────────────────────── */
+.ov-mm-diagram {
+  display: grid;
+  grid-template-columns: 1fr 3.5rem 1fr 3.5rem 1fr 3.5rem 1fr;
+  align-items: stretch; gap: 0;
+  padding: 1.4rem;
+  margin: 1.5rem 0 0.8rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.75rem;
+  background: linear-gradient(180deg,
+              var(--md-default-bg-color) 0%,
+              var(--md-default-fg-color--lightest) 100%);
+}
+
+.ov-mm-node {
+  display: flex; flex-direction: column;
+  padding: 0.9rem;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0.5rem;
+  background: var(--md-default-bg-color);
+  color: var(--md-typeset-color);
+  text-decoration: none !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
+  position: relative; overflow: hidden;
+  transition: border-color 120ms, background 120ms;
+}
+.ov-mm-node:hover {
+  border-color: var(--md-accent-fg-color);
+  background: var(--md-accent-fg-color--transparent, var(--md-default-fg-color--lightest));
+}
+
+/* accent bar — opacity fades by step */
+.ov-mm-node::before {
+  content: ""; position: absolute; top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: var(--md-accent-fg-color); opacity: 1;
+}
+.ov-mm-node:nth-of-type(2)::before { opacity: 0.78; }
+.ov-mm-node:nth-of-type(3)::before { opacity: 0.56; }
+.ov-mm-node:nth-of-type(4)::before { opacity: 0.34; }
+
+.ov-mm-node-step {
+  font: 700 0.62rem/1 var(--md-code-font, monospace);
+  letter-spacing: 0.04em; text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter); margin-bottom: 0.5rem;
+}
+.ov-mm-node-title {
+  font: 700 0.95rem/1.25 var(--md-text-font);
+  color: var(--md-default-fg-color); letter-spacing: -0.012em;
+}
+.ov-mm-node-code {
+  font: 500 0.66rem/1 var(--md-code-font, monospace);
+  color: var(--md-default-fg-color--light);
+  background: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  padding: 1px 5px; border-radius: 3px;
+  margin: 0.25rem 0 0.1rem; align-self: flex-start;
+}
+.ov-mm-node-text {
+  font: 400 0.78rem/1.5 var(--md-text-font);
+  color: var(--md-typeset-color); margin-top: 0.6rem;
+}
+
+.ov-mm-arrow {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  color: var(--md-default-fg-color--lighter);
+  pointer-events: none; user-select: none;
+}
+.ov-mm-arrow span {
+  font: 600 0.6rem/1 var(--md-code-font, monospace);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--md-default-fg-color--light);
+}
+.ov-mm-arrow::after {
+  content: "→";
+  color: var(--md-accent-fg-color); opacity: 0.6;
+  font-size: 1rem; margin-top: 0.3rem;
+}
+
+.ov-mm-reading {
+  display: flex; align-items: center; flex-wrap: wrap;
+  gap: 0.6rem; font-size: 0.78rem;
+  color: var(--md-default-fg-color--light);
+  margin: 0.9rem 0 2.25rem; padding-left: 0.25rem;
+}
+.ov-mm-reading-label {
+  font: 700 0.66rem/1 var(--md-code-font, monospace);
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--md-default-fg-color--lighter);
+}
+.ov-mm-reading a { font-weight: 600; }
+
+/* ── Chapter list (replaces grid cards on concepts/index) ────────────────── */
+.ov-chapters { display: flex; flex-direction: column; }
+
+.ov-chapter {
+  display: grid; grid-template-columns: 5rem 1fr 2.25rem;
+  gap: 1.5rem;
+  padding: 1.6rem 1.1rem 1.6rem 0;
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+  text-decoration: none !important;
+  color: var(--md-typeset-color);
+  transition: background 120ms;
+}
+.ov-chapter:first-child { border-top: 1px solid var(--md-default-fg-color--lightest); }
+.ov-chapter:hover { background: var(--md-accent-fg-color--transparent, var(--md-default-fg-color--lightest)); }
+
+.ov-chapter-num {
+  width: 2.75rem; height: 2.75rem; border-radius: 50%;
+  border: 1px solid var(--md-default-fg-color--lighter);
+  background: var(--md-default-bg-color);
+  display: grid; place-items: center;
+  font: 700 0.82rem/1 var(--md-code-font, monospace);
+  color: var(--md-default-fg-color);
+  margin-left: 1.1rem; position: relative;
+}
+.ov-chapter:not(:last-child) .ov-chapter-num::after {
+  content: ""; position: absolute;
+  left: 50%; top: calc(100% + 0.45rem);
+  width: 1px; height: calc(3.2rem + 100%);
+  background: var(--md-default-fg-color--lightest);
+}
+
+.ov-chapter-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
+.ov-chapter-head h3 {
+  margin: 0; font-size: 1.3rem; font-weight: 700;
+  letter-spacing: -0.018em; color: var(--md-default-fg-color);
+}
+.ov-chapter-head code {
+  font-size: 0.7rem; padding: 1px 6px;
+  background: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color--light);
+}
+
+.ov-chapter-body p {
+  font-size: 0.88rem; line-height: 1.65;
+  max-width: 40rem; margin: 0 0 0.75rem;
+}
+.ov-chapter-body ul {
+  font-size: 0.81rem; line-height: 1.7;
+  color: var(--md-default-fg-color--light);
+  margin: 0; padding-left: 1.1rem;
+}
+
+.ov-chapter-arrow {
+  display: flex; align-items: center; justify-content: center;
+  color: var(--md-default-fg-color--lighter);
+  font-size: 1.4rem; line-height: 1; transition: color 120ms;
+}
+.ov-chapter:hover .ov-chapter-arrow { color: var(--md-accent-fg-color); }
+
+/* Keep for backward compat (overview.html uses .ov-mm-eyebrow) */
+.ov-mm-eyebrow {
+  font-size: 10px; font-weight: 700; color: var(--md-default-fg-color--lighter);
+  letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;
+  padding-top: 2px;
+}
+
+@media (max-width: 768px) {
+  .ov-mm-diagram {
+    grid-template-columns: 1fr;
+    grid-auto-rows: auto;
+    padding: 1rem;
+  }
+  .ov-mm-arrow {
+    flex-direction: row;
+    justify-content: center;
+    padding: 0.4rem 0;
+    gap: 0.5rem;
+  }
+  .ov-mm-arrow::after {
+    content: "↓";
+    margin-top: 0;
+    font-size: 1.2rem;
+  }
+  .ov-chapter {
+    grid-template-columns: 3.5rem 1fr 1.5rem;
+    gap: 0.9rem;
+    padding: 1.2rem 0;
+  }
+  .ov-chapter-num {
+    margin-left: 0.4rem;
+    width: 2.25rem; height: 2.25rem;
+    font-size: 0.72rem;
+  }
+}
+
+/* ── Concept hub: node & chapter icons (CSS mask) ────────────────────────── */
+.ov-mm-node-icon,
+.ov-chapter-icon {
+  display: inline-block;
+  background: var(--md-accent-fg-color);
+  opacity: 0.85;
+  -webkit-mask: var(--ov-icon) center / contain no-repeat;
+          mask: var(--ov-icon) center / contain no-repeat;
+}
+.ov-mm-node-icon {
+  position: absolute; top: 0.65rem; right: 0.7rem;
+  width: 1.1rem; height: 1.1rem;
+}
+.ov-chapter-icon {
+  width: 1.25rem; height: 1.25rem;
+  flex-shrink: 0;
+}
+.icon-schema     { --ov-icon: url("../icons/icon-schema.svg"); }
+.icon-repository { --ov-icon: url("../icons/icon-repository.svg"); }
+.icon-keys       { --ov-icon: url("../icons/icon-keys.svg"); }
+.icon-indexes    { --ov-icon: url("../icons/icon-indexes.svg"); }
+

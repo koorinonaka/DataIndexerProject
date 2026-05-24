@@ -1,0 +1,727 @@
+/* ─────────────────────────────────────────────────────────────────────────────
+   DataIndexer Docs — design overrides for MkDocs Material
+   Source of truth: tokens.css (loaded before this file)
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── Color system (light) ─────────────────────────────────────────────────── */
+[data-md-color-scheme="default"] {
+  /* Primary — DataIndexer accent blue (tokens --accent) */
+  --md-primary-fg-color:              #2e6ee0;
+  --md-primary-fg-color--light:       #6098f5;
+  --md-primary-fg-color--dark:        #224fb0;
+  --md-accent-fg-color:               #2e6ee0;
+  --md-accent-fg-color--transparent:  rgba(46, 110, 224, 0.08);
+
+  /* On-primary text — dark on white header/tabs */
+  --md-primary-bg-color:              rgba(10, 9, 8, 0.92);
+  --md-primary-bg-color--light:       rgba(10, 9, 8, 0.60);
+
+  /* Warm near-black text */
+  --md-default-fg-color:              rgba(10, 9, 8, 0.96);
+  --md-default-fg-color--light:       #6b6660;
+  --md-default-fg-color--lighter:     #a39e98;
+  --md-default-fg-color--lightest:    rgba(15, 14, 13, 0.10);
+
+  /* Warm white backgrounds (tokens --bg / --bg-alt) */
+  --md-default-bg-color:              #ffffff;
+  --md-default-bg-color--light:       #f7f6f3;
+  --md-default-bg-color--lighter:     #f7f6f3;
+  --md-default-bg-color--lightest:    #f7f6f3;
+
+  /* Code — warm light background (tokens --bg-code) */
+  --md-code-fg-color:                 rgba(10, 9, 8, 0.90);
+  --md-code-bg-color:                 #edeae4;
+
+  /* Syntax highlight line marker color */
+  --md-code-hl-color:                 rgba(46, 110, 224, 0.10);
+  --md-code-hl-color--light:          rgba(46, 110, 224, 0.06);
+
+  /* Syntax highlight (light) */
+  --md-code-hl-keyword-color:         #1e4fb5;
+  --md-code-hl-string-color:          #516500;
+  --md-code-hl-number-color:          #b05010;
+  --md-code-hl-function-color:        #6030a0;
+  --md-code-hl-constant-color:        #0b6080;
+  --md-code-hl-special-color:         #3d6e30;
+  --md-code-hl-comment-color:         #8a8078;
+  --md-code-hl-variable-color:        rgba(10, 9, 8, 0.90);
+  --md-code-hl-name-color:            rgba(10, 9, 8, 0.90);
+  --md-code-hl-operator-color:        rgba(10, 9, 8, 0.45);
+  --md-code-hl-punctuation-color:     rgba(10, 9, 8, 0.45);
+  --md-code-hl-generic-color:         #8a8078;
+
+  /* Whisper border (tokens --border) */
+  --di-border:                        1px solid rgba(15, 14, 13, 0.10);
+
+  /* Card shadow (tokens --sh-card) */
+  --di-shadow-card:
+    rgba(0, 0, 0, 0.04) 0px 4px 18px,
+    rgba(0, 0, 0, 0.027) 0px 2px 7.85px,
+    rgba(0, 0, 0, 0.02) 0px 0.8px 2.93px,
+    rgba(0, 0, 0, 0.01) 0px 0.175px 1.04px;
+
+  /* Design tokens — mirrors tokens.css :root under MkDocs scheme selector so
+     home.html overrides can use --accent, --text-* etc. without [data-theme]. */
+  --bg:               #ffffff;
+  --bg-alt:           #f7f6f3;
+  --bg-sunken:        #f1efeb;
+  --text:             rgba(15, 14, 13, 0.92);
+  --text-strong:      rgba(10, 9, 8, 0.96);
+  --text-muted:       #6b6660;
+  --text-faint:       #a39e98;
+  --border:           rgba(15, 14, 13, 0.10);
+  --border-strong:    rgba(15, 14, 13, 0.16);
+  --border-faint:     rgba(15, 14, 13, 0.06);
+  --accent:           #2e6ee0;
+  --accent-hover:     #224fb0;
+  --accent-soft:      #ecf2ff;
+  --accent-soft-text: #1e4fb5;
+  --r-1: 3px;  --r-2: 5px;  --r-3: 8px;  --r-4: 12px;  --r-pill: 9999px;
+}
+
+/* ── Color system (dark / slate) ──────────────────────────────────────────── */
+[data-md-color-scheme="slate"] {
+  /* Primary — dark accent, softened saturation (tokens dark --accent) */
+  --md-primary-fg-color:              #7aa8ef;
+  --md-primary-fg-color--light:       #96bbf5;
+  --md-primary-fg-color--dark:        #4d7dc7;
+  --md-accent-fg-color:               #7aa8ef;
+  --md-accent-fg-color--transparent:  rgba(122, 168, 239, 0.10);
+
+  /* On-primary text — warm light on dark header/tabs */
+  --md-primary-bg-color:              rgba(245, 240, 232, 0.92);
+  --md-primary-bg-color--light:       rgba(245, 240, 232, 0.60);
+
+  /* Warm dark text (tokens dark text tiers) */
+  --md-default-fg-color:              rgba(245, 240, 232, 0.92);
+  --md-default-fg-color--light:       #9a948a;
+  --md-default-fg-color--lighter:     #6a655d;
+  --md-default-fg-color--lightest:    rgba(255, 248, 235, 0.10);
+
+  /* Warm dark backgrounds (tokens dark --bg / --bg-alt) */
+  --md-default-bg-color:              #1a1917;
+  --md-default-bg-color--light:       #1f1d1a;
+  --md-default-bg-color--lighter:     #1f1d1a;
+  --md-default-bg-color--lightest:    #232120;
+
+  /* Code — even darker fenced blocks in dark mode (tokens dark --bg-pre) */
+  --md-code-fg-color:                 #ebe5d8;
+  --md-code-bg-color:                 #0e0d0c;
+
+  /* Syntax highlighting — dark mode (tokens dark hl-* palette) */
+  --md-code-hl-keyword-color:         #c9b3ff;
+  --md-code-hl-string-color:          #d8c693;
+  --md-code-hl-number-color:          #eb9b80;
+  --md-code-hl-function-color:        #ffd089;
+  --md-code-hl-constant-color:        #84c9e4;
+  --md-code-hl-special-color:         #b4d49b;
+  --md-code-hl-comment-color:         #6e6a60;
+  --md-code-hl-variable-color:        #ebe5d8;
+  --md-code-hl-name-color:            #ebe5d8;
+  --md-code-hl-operator-color:        #6a655d;
+  --md-code-hl-punctuation-color:     #6a655d;
+  --md-code-hl-generic-color:         #6e6a60;
+  --md-code-hl-color:                 #7aa8ef;
+  --md-code-hl-color--light:          rgba(122, 168, 239, 0.12);
+
+  /* Whisper border (tokens dark --border) */
+  --di-border:                        1px solid rgba(255, 248, 235, 0.10);
+
+  /* Card shadow — dark (tokens dark --sh-card) */
+  --di-shadow-card:
+    rgba(0, 0, 0, 0.30) 0px 4px 18px,
+    rgba(0, 0, 0, 0.20) 0px 2px 7.85px,
+    rgba(0, 0, 0, 0.12) 0px 0.8px 2.93px;
+
+  /* Design tokens dark — mirrors tokens.css [data-theme="dark"] */
+  --bg:               #1a1917;
+  --bg-alt:           #1f1d1a;
+  --bg-sunken:        #161513;
+  --text:             rgba(245, 240, 232, 0.92);
+  --text-strong:      rgba(245, 240, 232, 0.96);
+  --text-muted:       #9a948a;
+  --text-faint:       #6a655d;
+  --border:           rgba(255, 248, 235, 0.10);
+  --border-strong:    rgba(255, 248, 235, 0.18);
+  --border-faint:     rgba(255, 248, 235, 0.05);
+  --accent:           #7aa8ef;
+  --accent-hover:     #96bbf5;
+  --accent-soft:      rgba(122, 168, 239, 0.14);
+  --accent-soft-text: #b0ccf8;
+}
+
+/* ── Header — whisper shadow, not heavy ───────────────────────────────────── */
+.md-header {
+  box-shadow: 0 1px 0 var(--md-default-fg-color--lightest);
+}
+
+[data-md-color-scheme="default"] .md-header {
+  background-color: #ffffff;
+  --md-primary-bg-color:        rgba(10, 9, 8, 0.92);
+  --md-primary-bg-color--light: rgba(10, 9, 8, 0.54);
+}
+
+[data-md-color-scheme="slate"] .md-header {
+  background-color: var(--md-default-bg-color);
+}
+
+/* ── Tabs — match header background so no blue band appears ──────────────── */
+[data-md-color-scheme="default"] .md-tabs {
+  background-color: #ffffff;
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background-color: var(--md-default-bg-color);
+}
+
+/* ── Sidebar ──────────────────────────────────────────────────────────────── */
+[data-md-color-scheme="default"] .md-sidebar {
+  background-color: #f7f6f3;
+}
+
+[data-md-color-scheme="slate"] .md-sidebar {
+  background-color: var(--md-default-bg-color);
+}
+
+/* ── Navigation typography ────────────────────────────────────────────────── */
+.md-nav__link {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.md-nav__link--active {
+  font-weight: 600;
+  color: #2e6ee0;
+}
+
+[data-md-color-scheme="slate"] .md-nav__link--active {
+  color: #7aa8ef;
+}
+
+/* ── Content headings ─────────────────────────────────────────────────────── */
+.md-typeset h1 {
+  letter-spacing: -1.0px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.md-typeset h2 {
+  letter-spacing: -0.5px;
+  font-weight: 700;
+  line-height: 1.23;
+}
+
+.md-typeset h3 {
+  letter-spacing: -0.25px;
+  font-weight: 700;
+}
+
+/* ── Body text ────────────────────────────────────────────────────────────── */
+.md-typeset p,
+.md-typeset li {
+  line-height: 1.65;
+}
+
+/* ── Code blocks ──────────────────────────────────────────────────────────── */
+
+/* Inline code */
+.md-typeset :not(pre) > code {
+  border-radius: 4px;
+  background-color: var(--md-code-bg-color);
+  color: var(--md-code-fg-color);
+  font-size: 0.85em;
+  padding: 0.1em 0.35em;
+}
+
+/* Dark mode inline code */
+[data-md-color-scheme="slate"] .md-typeset :not(pre) > code {
+  background-color: #232120;
+  color: #e6deca;
+  border: 1px solid rgba(255, 248, 235, 0.05);
+}
+
+/* Fenced block outer container */
+.md-typeset .highlight {
+  border-radius: 8px;
+  border: var(--di-border);
+  overflow: hidden;
+  margin: 1em 0;
+}
+
+/* Back-to-back code blocks get a little extra gap */
+.md-typeset .highlight + .highlight {
+  margin-top: 0.75em;
+}
+
+/* When filename is present: outer container cedes rounding to children */
+.md-typeset .highlight:has(.filename) {
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+/* Filename label — directly owns top rounded corners */
+.md-typeset .highlight .filename {
+  display: block;
+  background-color: #e3dfd8;
+  color: rgba(10, 9, 8, 0.72);
+  font-family: var(--md-code-font-family);
+  font-size: 0.75em;
+  font-weight: 500;
+  padding: 0.4em 1.2em;
+  letter-spacing: 0.01em;
+  border-radius: 8px 8px 0 0;
+  border: var(--di-border);
+  border-bottom: 1px solid rgba(15, 14, 13, 0.08);
+}
+
+[data-md-color-scheme="slate"] .md-typeset .highlight .filename {
+  background-color: #191816;
+  color: rgba(245, 240, 232, 0.62);
+  border-bottom: 1px solid rgba(255, 248, 235, 0.06);
+}
+
+/* Code area — directly owns bottom rounded corners when filename present */
+.md-typeset .highlight:has(.filename) pre {
+  border: var(--di-border);
+  border-top: none;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Fenced block pre — carries background and padding */
+.md-typeset .highlight pre {
+  background: var(--md-code-bg-color);
+  padding: 1em 1.2em;
+  margin: 0;
+}
+
+/* Code inside fenced block — transparent, inherit color from highlight vars */
+.md-typeset pre > code {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+  font-size: 0.85em;
+}
+
+/* ── Tables — whisper borders ─────────────────────────────────────────────── */
+.md-typeset table:not([class]) {
+  border-radius: 8px;
+  overflow: hidden;
+  border: var(--di-border);
+  box-shadow: var(--di-shadow-card);
+}
+
+.md-typeset table:not([class]) th {
+  background-color: var(--md-default-bg-color--light);
+  font-weight: 600;
+  letter-spacing: 0.025em;
+  font-size: 0.8rem;
+}
+
+.md-typeset table:not([class]) td {
+  border-color: var(--md-default-fg-color--lightest);
+}
+
+/* ── Admonitions — structure ──────────────────────────────────────────────── */
+.md-typeset .admonition {
+  border-radius: 8px;
+  border-width: 1px;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.md-typeset .admonition-title {
+  border-radius: 7px 7px 0 0;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.025em;
+}
+
+/* ── Admonitions — note (tokens --note: #5a4ea3) ──────────────────────────── */
+.md-typeset .admonition.note,
+.md-typeset details.note {
+  border-color: #5a4ea3;
+}
+.md-typeset .admonition.note:focus-within,
+.md-typeset details.note:focus-within {
+  box-shadow: 0 0 0 0.2rem rgba(90, 78, 163, 0.15);
+}
+.md-typeset .note > .admonition-title,
+.md-typeset .note > summary {
+  background-color: #f0eef9;
+}
+.md-typeset .note > .admonition-title::before,
+.md-typeset .note > summary::before {
+  background-color: #5a4ea3;
+}
+
+/* ── Admonitions — tip / success (tokens --tip: #1f7a52) ─────────────────── */
+.md-typeset .admonition.tip,
+.md-typeset details.tip,
+.md-typeset .admonition.success,
+.md-typeset details.success {
+  border-color: #1f7a52;
+}
+.md-typeset .admonition.tip:focus-within,
+.md-typeset details.tip:focus-within,
+.md-typeset .admonition.success:focus-within,
+.md-typeset details.success:focus-within {
+  box-shadow: 0 0 0 0.2rem rgba(31, 122, 82, 0.15);
+}
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary,
+.md-typeset .success > .admonition-title,
+.md-typeset .success > summary {
+  background-color: #ecf6f0;
+}
+.md-typeset .tip > .admonition-title::before,
+.md-typeset .tip > summary::before,
+.md-typeset .success > .admonition-title::before,
+.md-typeset .success > summary::before {
+  background-color: #1f7a52;
+}
+
+/* ── Admonitions — warning (tokens --warn: #b6571a) ──────────────────────── */
+.md-typeset .admonition.warning,
+.md-typeset details.warning {
+  border-color: #b6571a;
+}
+.md-typeset .admonition.warning:focus-within,
+.md-typeset details.warning:focus-within {
+  box-shadow: 0 0 0 0.2rem rgba(182, 87, 26, 0.15);
+}
+.md-typeset .warning > .admonition-title,
+.md-typeset .warning > summary {
+  background-color: #fbf0e6;
+}
+.md-typeset .warning > .admonition-title::before,
+.md-typeset .warning > summary::before {
+  background-color: #b6571a;
+}
+
+/* ── Admonitions — info (accent blue) ────────────────────────────────────── */
+.md-typeset .admonition.info,
+.md-typeset details.info {
+  border-color: #2e6ee0;
+}
+.md-typeset .admonition.info:focus-within,
+.md-typeset details.info:focus-within {
+  box-shadow: 0 0 0 0.2rem rgba(46, 110, 224, 0.15);
+}
+.md-typeset .info > .admonition-title,
+.md-typeset .info > summary {
+  background-color: #ecf2ff;
+}
+.md-typeset .info > .admonition-title::before,
+.md-typeset .info > summary::before {
+  background-color: #2e6ee0;
+}
+
+/* ── Admonitions — dark mode overrides ───────────────────────────────────── */
+[data-md-color-scheme="slate"] .md-typeset .admonition.note,
+[data-md-color-scheme="slate"] .md-typeset details.note {
+  border-color: #b69ce0;
+}
+[data-md-color-scheme="slate"] .md-typeset .note > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .note > summary {
+  background-color: rgba(182, 156, 224, 0.10);
+}
+[data-md-color-scheme="slate"] .md-typeset .note > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .note > summary::before {
+  background-color: #b69ce0;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.tip,
+[data-md-color-scheme="slate"] .md-typeset details.tip,
+[data-md-color-scheme="slate"] .md-typeset .admonition.success,
+[data-md-color-scheme="slate"] .md-typeset details.success {
+  border-color: #6cc89a;
+}
+[data-md-color-scheme="slate"] .md-typeset .tip > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .tip > summary,
+[data-md-color-scheme="slate"] .md-typeset .success > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .success > summary {
+  background-color: rgba(108, 200, 154, 0.10);
+}
+[data-md-color-scheme="slate"] .md-typeset .tip > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .tip > summary::before,
+[data-md-color-scheme="slate"] .md-typeset .success > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .success > summary::before {
+  background-color: #6cc89a;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.warning,
+[data-md-color-scheme="slate"] .md-typeset details.warning {
+  border-color: #e89461;
+}
+[data-md-color-scheme="slate"] .md-typeset .warning > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .warning > summary {
+  background-color: rgba(232, 148, 97, 0.10);
+}
+[data-md-color-scheme="slate"] .md-typeset .warning > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .warning > summary::before {
+  background-color: #e89461;
+}
+
+[data-md-color-scheme="slate"] .md-typeset .admonition.info,
+[data-md-color-scheme="slate"] .md-typeset details.info {
+  border-color: #7aa8ef;
+}
+[data-md-color-scheme="slate"] .md-typeset .info > .admonition-title,
+[data-md-color-scheme="slate"] .md-typeset .info > summary {
+  background-color: rgba(122, 168, 239, 0.10);
+}
+[data-md-color-scheme="slate"] .md-typeset .info > .admonition-title::before,
+[data-md-color-scheme="slate"] .md-typeset .info > summary::before {
+  background-color: #7aa8ef;
+}
+
+/* ── Cards grid ───────────────────────────────────────────────────────────── */
+.md-typeset .grid.cards > ul > li,
+.md-typeset .grid.cards > ol > li {
+  border: var(--di-border);
+  border-radius: 12px;
+  box-shadow: var(--di-shadow-card);
+  transition: box-shadow 0.15s ease;
+}
+
+.md-typeset .grid.cards > ul > li:hover,
+.md-typeset .grid.cards > ol > li:hover {
+  box-shadow:
+    rgba(0, 0, 0, 0.06) 0px 6px 24px,
+    rgba(0, 0, 0, 0.04) 0px 2px 8px,
+    rgba(0, 0, 0, 0.02) 0px 1px 3px;
+}
+
+/* ── Links ────────────────────────────────────────────────────────────────── */
+.md-typeset a {
+  color: #2e6ee0;
+}
+
+.md-typeset a:hover {
+  color: #224fb0;
+  text-decoration: underline;
+}
+
+[data-md-color-scheme="slate"] .md-typeset a {
+  color: #7aa8ef;
+}
+
+[data-md-color-scheme="slate"] .md-typeset a:hover {
+  color: #96bbf5;
+}
+
+/* ── Tags / pill badges ───────────────────────────────────────────────────── */
+.md-tag {
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  background-color: #ecf2ff;
+  color: #1e4fb5;
+  padding: 3px 8px;
+}
+
+/* ── TOC ──────────────────────────────────────────────────────────────────── */
+.md-nav--secondary .md-nav__link {
+  color: var(--md-default-fg-color--light);
+  font-size: 0.8rem;
+}
+
+.md-nav--secondary .md-nav__link:hover,
+.md-nav--secondary .md-nav__link--active {
+  color: #2e6ee0;
+}
+
+[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__link:hover,
+[data-md-color-scheme="slate"] .md-nav--secondary .md-nav__link--active {
+  color: #7aa8ef;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+.md-footer {
+  background-color: #26201a;
+  --md-footer-fg-color:          rgba(245, 240, 232, 0.75);
+  --md-footer-fg-color--light:   rgba(245, 240, 232, 0.55);
+  --md-footer-fg-color--lighter: rgba(245, 240, 232, 0.35);
+}
+.md-footer-meta {
+  background-color: #1e1812;
+}
+[data-md-color-scheme="slate"] .md-footer { background-color: #141210; }
+[data-md-color-scheme="slate"] .md-footer-meta { background-color: #0f0e0c; }
+
+/* ── Search ───────────────────────────────────────────────────────────────── */
+.md-search__form {
+  border-radius: 8px;
+  border: var(--di-border);
+  background-color: var(--md-default-fg-color--lightest);
+}
+
+.md-search__form:focus-within {
+  border-color: #2e6ee0;
+  background-color: var(--md-default-bg-color);
+}
+
+[data-md-color-scheme="slate"] .md-search__form:focus-within {
+  border-color: #7aa8ef;
+}
+
+/* ── Home page sample — Highlight.js theme ────────────────────────────────── */
+.ov-sample-pre .hljs                   { background: transparent; color: var(--md-code-fg-color); }
+.ov-sample-pre .hljs-keyword,
+.ov-sample-pre .hljs-built_in         { color: var(--md-code-hl-keyword-color); font-weight: 600; }
+.ov-sample-pre .hljs-type             { color: var(--md-code-hl-constant-color); }
+.ov-sample-pre .hljs-title            { color: var(--md-code-hl-function-color); }
+.ov-sample-pre .hljs-title.class_     { color: var(--md-code-hl-function-color); font-weight: 700; }
+.ov-sample-pre .hljs-string           { color: var(--md-code-hl-string-color); }
+.ov-sample-pre .hljs-number           { color: var(--md-code-hl-number-color); }
+.ov-sample-pre .hljs-comment          { color: var(--md-code-hl-comment-color); font-style: italic; }
+.ov-sample-pre .hljs-meta             { color: var(--md-code-hl-special-color); }
+.ov-sample-pre .hljs-meta .hljs-keyword { color: var(--md-code-hl-special-color); font-weight: 600; }
+.ov-sample-pre .hljs-operator,
+.ov-sample-pre .hljs-punctuation      { color: var(--md-code-hl-operator-color); }
+.ov-sample-pre .hljs-params           { color: var(--md-code-fg-color); }
+
+/* ── Home page sample — caption ──────────────────────────────────────────── */
+.ov-sample-caption {
+  font-size: 12px; line-height: 1.5;
+  color: var(--md-default-fg-color--light);
+  margin: 8px 0 0; text-align: center;
+}
+
+/* ── Home page — shared card component ───────────────────────────────────── */
+.ov-card {
+  display: block;
+  border: 1px solid var(--border, rgba(15,14,13,0.12));
+  border-radius: 8px; padding: 20px 24px;
+  text-decoration: none !important; color: inherit;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ov-card:hover {
+  background: rgba(15,14,13,0.03);
+  border-color: rgba(15,14,13,0.22);
+}
+[data-md-color-scheme="slate"] .ov-card:hover {
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.20);
+}
+.ov-card--getstarted { padding: 24px 28px; }
+.ov-card-header {
+  display: flex; align-items: baseline;
+  justify-content: space-between; gap: 8px;
+  margin-bottom: 8px;
+}
+.ov-card strong {
+  display: block; font-size: 15px; font-weight: 700;
+  color: var(--text-strong, rgba(10,9,8,0.96)); margin-bottom: 6px;
+}
+.ov-card-header strong { margin-bottom: 0; }
+.ov-card p {
+  font-size: 13px; line-height: 1.6;
+  color: var(--text-muted, #6b6660); margin: 0 0 10px;
+}
+.ov-card-type {
+  font-size: 11px; color: var(--text-faint, #a39e98);
+  font-family: var(--md-code-font, ui-monospace, monospace);
+  background: transparent !important; border: none !important;
+  padding: 0 !important; white-space: nowrap; flex-shrink: 0;
+}
+.ov-card-link {
+  font-size: 12px; font-weight: 600; color: var(--accent, #2e6ee0);
+  display: inline-flex; align-items: center; gap: 4px;
+}
+
+/* ── Home page — section kicker (shared label above headings) ─────────────── */
+.ov-section-heading {
+  font-size: 11px; font-weight: 700;
+  color: var(--text-muted, #6b6660);
+  letter-spacing: 0.12em; text-transform: uppercase;
+  margin: 0 0 12px;
+}
+
+/* ── Home page — feature screenshot placeholder ───────────────────────────── */
+.ov-feature-placeholder {
+  width: 100%; aspect-ratio: 16/9; border-radius: 10px;
+  border: 1px dashed var(--border-strong, rgba(15,14,13,0.16));
+  background: #f7f6f3;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text-faint, #a39e98);
+  font-size: 11px; font-family: var(--md-code-font, ui-monospace, monospace);
+}
+[data-md-color-scheme="slate"] .ov-feature-placeholder {
+  border-color: rgba(255,255,255,0.12);
+  background: rgba(255,255,255,0.03);
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   DataIndexer Docs — Installation / Quick Start 用追加スタイル
+   ───────────────────────────────────────────────────────────────────────────── */
+
+/* ── md-button: ヒーロー直下の CTA ボタンを少し強調 ───────────────────────── */
+.md-typeset .md-button {
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  border-radius: 7px;
+  border-width: 1px;
+}
+
+.md-typeset .md-button + .md-button {
+  margin-left: 8px;
+}
+
+/* ── ステップ概要表 — 1列目を中央寄せ・モノスペース風 ─────────────────────── */
+.md-typeset table:not([class]) td:first-child {
+  font-feature-settings: "tnum";
+}
+
+/* ── タブヘッダのフォント補正 ────────────────────────────────────────────── */
+.md-typeset .tabbed-labels > label {
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: -0.005em;
+}
+
+/* ── タイトル付きコードブロックの見栄え調整 ──────────────────────────────── */
+.md-typeset .highlight > .filename,
+.md-typeset .highlighttable .filename {
+  font-family: "JetBrains Mono", ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background: var(--md-default-bg-color--light);
+  border-bottom: var(--di-border);
+  padding: 6px 14px;
+  color: var(--md-default-fg-color--light);
+}
+
+/* ── タスクリスト（動作確認チェックリスト） — チェック済みの色を統一 ─────── */
+.md-typeset .task-list-item input[type="checkbox"]:checked + .task-list-indicator::before {
+  background-color: #0075de;
+}
+
+/* ── details (トラブルシューティング) のサマリ書体 ───────────────────────── */
+.md-typeset details > summary {
+  font-weight: 600;
+  font-size: 0.95em;
+}
+
+/* ── grid cards 内のアイコンサイズ ────────────────────────────────────────── */
+.md-typeset .grid.cards .lg.middle {
+  font-size: 1.4rem;
+  vertical-align: middle;
+}
+
+/* ── 区切り線 — Notion 風の薄いライン ────────────────────────────────────── */
+.md-typeset hr {
+  border: 0;
+  border-top: var(--di-border);
+  margin: 2.4em 0;
+}
+
+/* ── 見出し直後の admonition 上部余白を詰める ────────────────────────────── */
+.md-typeset h2 + .admonition,
+.md-typeset h2 + details {
+  margin-top: 0.8em;
+}
