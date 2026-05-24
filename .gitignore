@@ -3,7 +3,6 @@
 .vsconfig
 .vscode
 .claude
-.github
 .idea
 *.sln*
 *.suo
