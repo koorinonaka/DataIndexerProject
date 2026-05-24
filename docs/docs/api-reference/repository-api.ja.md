@@ -2,6 +2,9 @@
 
 `UDataIndexerRepository`（`DataIndexerRepository.h`）はランタイムのデータアセットクラスです。すべての行クエリはこのパブリックメソッドを通じて行います。
 
+!!! tip "C++ から使う場合は NativeSchemaInterface を推奨"
+    型安全なクエリには [`TNativeSchemaInterface<T>`](./native-schema-interface.md) を使ってください。`FindRow`・`ForEachPrimaryKeys` など、このページと同等のAPIをコンパイル時型チェック付きで提供します。直接 `UDataIndexerRepository` を操作するのは、`FConstStructView` を扱う低レベルコードや内部実装に限定してください。
+
 ## GetSchema
 
 ```cpp
@@ -39,8 +42,6 @@ if (const FItemRow* Row = View.GetPtr<const FItemRow>())
 }
 ```
 
-よりクリーンな型付き API には `TNativeSchemaInterface<T>::FindRow` を優先して使用してください。
-
 ---
 
 ## ForEachPrimaryKeys（全行）
@@ -62,7 +63,7 @@ Repository->ForEachPrimaryKeys([&](const FDataIndexerPrimaryKey& Key)
 
 ---
 
-## ForEachPrimaryKeys（Index指定）
+## ForEachPrimaryKeys（Index 指定）
 
 ```cpp
 void ForEachPrimaryKeys(
@@ -71,7 +72,7 @@ void ForEachPrimaryKeys(
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback) const;
 ```
 
-セカンダリIndex検索にマッチするPrimaryKeyを走査します。`ReverseLookups` テーブルを直接参照するため O(マッチ数)、全行を走査しません。
+セカンダリ Index 検索にマッチするPrimaryKeyを走査します。`ReverseLookups` テーブルを直接参照するため O(マッチ数)、全行を走査しません。
 
 ```cpp
 FItemRow Query;

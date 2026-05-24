@@ -6,16 +6,17 @@ Indexはセカンダリ検索軸で、カテゴリ・陣営・レアリティな
 
 | 型 | 役割 |
 |----|------|
-| `FDataIndexerIndex` | 検索軸を識別する。決定論的 GUID とエディタ専用の `DevComment` を保持 |
+| `FDataIndexerIndex` | `FDataIndexerIndexKey` とエディタ専用の `DevComment` を保持する軸の定義。`FDataIndexerIndexKey` への暗黙変換あり |
+| `FDataIndexerIndexKey` | `FGuid` のラッパー（USTRUCT）。検索軸の識別子としてマップキーに使用 |
 
-IndexKeyはビルダー関数が返す生の `FGuid` 値です。`FDataIndexerIndexKey` のような独立した型はありません。
+ビルダー関数は `FGuid` を返します。コンパイラが `FDataIndexerIndexKey` に変換して `ReverseLookups` に格納します。
 
 ## Indexの仕組み
 
 保存時にコンパイラが各行に対してすべての **BuildIndex** 関数を呼び出します。ビルダーはIndexKeyとなる `FGuid` を返し、任意でエディタ表示用の `FText` を設定します。結果はRepositoryの `ReverseLookups` テーブルに格納されます。
 
 ```
-ReverseLookups[FDataIndexerIndex] → { TMap<FGuid, TArray<FDataIndexerPrimaryKey>> }
+ReverseLookups[FDataIndexerIndexKey] → { TMap<FGuid, TArray<FDataIndexerPrimaryKey>> }
 ```
 
 実行時の `Repository.ForEachPrimaryKeys(Index, Query, Callback)` はビルダーをクエリ構造体に対して呼び出してルックアップ GUID を導出し、マップを直接引くため高速です。

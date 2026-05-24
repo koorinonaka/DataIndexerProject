@@ -2,6 +2,9 @@
 
 `UDataIndexerRepository` (`DataIndexerRepository.h`) is the runtime data asset class. All row queries go through its public methods.
 
+!!! tip "Prefer NativeSchemaInterface for C++ access"
+    Use [`TNativeSchemaInterface<T>`](./native-schema-interface.md) for type-safe queries from C++. It exposes the same operations as this page — `FindRow`, `ForEachPrimaryKeys`, and more — with compile-time type checking and no manual casts. Reach for `UDataIndexerRepository` directly only in low-level code that works with raw `FConstStructView`.
+
 ## GetSchema
 
 ```cpp
@@ -39,8 +42,6 @@ if (const FMyItemRow* Row = View.GetPtr<const FMyItemRow>())
 }
 ```
 
-Prefer `TNativeSchemaInterface<T>::FindRow` for a cleaner typed API.
-
 ---
 
 ## ForEachPrimaryKeys (all rows)
@@ -66,17 +67,20 @@ Repository->ForEachPrimaryKeys([&](const FDataIndexerPrimaryKey& Key)
 
 ```cpp
 void ForEachPrimaryKeys(
-    const FDataIndexerIndex& Index,
     const FDataIndexerIndexKey& IndexKey,
+    const FConstStructView Query,
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback) const;
 ```
 
 Iterates primary keys matching a secondary index lookup. Consults the `ReverseLookups` table directly — O(matches), not O(all rows).
 
 ```cpp
+FItemRow Query;
+Query.Type = EItemType::Weapon;
+
 Repository->ForEachPrimaryKeys(
-    FDataIndexerIndex(UMyItemSchema::CategoryIndex.Identifier),
-    WeaponIndexKey,
+    UItemSchema::ByTypeIndex(),
+    FConstStructView::Make(Query),
     [&](const FDataIndexerPrimaryKey& Key)
     {
         // only weapon rows
@@ -89,7 +93,6 @@ Repository->ForEachPrimaryKeys(
 
 ```cpp
 FText GetDisplayName(const FDataIndexerPrimaryKey& PrimaryKey) const;
-FText GetDisplayName(const FDataIndexerIndex& Index, const FDataIndexerIndexKey& IndexKey) const;
 ```
 
 Calls the schema's `GetRowDisplayName` and returns a human-readable label. Returns `FText::GetEmpty()` if the schema is null or the row is not found.

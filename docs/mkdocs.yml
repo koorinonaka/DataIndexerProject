@@ -110,10 +110,7 @@ plugins:
             Getting Started: はじめに
             Quick Start: クイックスタート
             Core Concepts: コアコンセプト
-            Repository: リポジトリ
-            Schema: スキーマ
             Keys & Handles: キーとハンドル
-            Indexes: インデックス
             Editor Guide: エディタガイド
             Asset Creation: アセット作成
             Data View: データビュー
@@ -124,13 +121,10 @@ plugins:
             Function Library: 関数ライブラリ
             Custom K2 Nodes: カスタム K2 ノード
             C++ API: C++ API
-            Repository API: リポジトリ API
-            Schema API: スキーマ API
-            Native Schema Interface: ネイティブスキーマインターフェース
             How-to Guides: How-to ガイド
             Migrate from DataTable: DataTable から移行する
-            Repository Metadata: リポジトリメタデータ
-            Parent Hierarchy: 親リポジトリ階層
+            Repository Metadata: Repository メタデータ
+            Parent Hierarchy: 親 Repository 階層
             Changelog: 変更履歴
   - minify:
       minify_html: true

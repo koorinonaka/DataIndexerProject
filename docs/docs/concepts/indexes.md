@@ -6,16 +6,17 @@ Indexes are secondary lookup dimensions that let you retrieve a set of rows by a
 
 | Type | Role |
 |------|------|
-| `FDataIndexerIndex` | Identifies a lookup dimension; holds a deterministic GUID and an optional `DevComment` (editor-only) |
+| `FDataIndexerIndex` | Holds a `FDataIndexerIndexKey` and an editor-only `DevComment`. Implicitly converts to `FDataIndexerIndexKey` |
+| `FDataIndexerIndexKey` | `FGuid` wrapper (USTRUCT) used as the map key that identifies a lookup dimension |
 
-Index keys are raw `FGuid` values computed by the builder function — there is no separate `FDataIndexerIndexKey` type.
+Builder functions return a `FGuid`; the compiler converts it to `FDataIndexerIndexKey` before storing in `ReverseLookups`.
 
 ## How indexes work
 
 At save time, the compiler calls each registered **BuildIndex** function for every row. The builder returns a `FGuid` (the index key) and optionally sets a `FText` display name for editor labelling. The result is stored in the repository's `ReverseLookups` table:
 
 ```
-ReverseLookups[FDataIndexerIndex] → { TMap<FGuid, TArray<FDataIndexerPrimaryKey>> }
+ReverseLookups[FDataIndexerIndexKey] → { TMap<FGuid, TArray<FDataIndexerPrimaryKey>> }
 ```
 
 At runtime, `Repository.ForEachPrimaryKeys(Index, Query, Callback)` calls the builder on the query struct to derive the lookup GUID, then performs a direct map lookup — O(matches), not O(all rows).
@@ -120,7 +121,7 @@ TArray<FDataIndexerPrimaryKey> Characters =
 
 **Blueprint:**
 
-Use a `FDataIndexerKeysHandle` UPROPERTY and the **Get Rows Handle Keys** function library node. The node takes the handle and a **Query** wildcard struct pin — fill in the fields that drive the index (e.g., set `Type = Weapon` for a `ByType` index).
+Use a `FDataIndexerKeysHandle` UPROPERTY and the **Get Rows Handle Value** function library node. The node takes the handle and a **Query** wildcard struct pin — fill in the fields that drive the index (e.g., set `Type = Weapon` for a `ByType` index).
 
 ## Index key stability
 

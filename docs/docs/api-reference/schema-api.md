@@ -24,11 +24,11 @@ FText GetRowDisplayName(
 Returns a human-readable display name for a row. `BlueprintNativeEvent` — override `GetRowDisplayName_Implementation` in C++:
 
 ```cpp
-FText UMyItemSchema::GetRowDisplayName_Implementation(
+FText UItemSchema::GetRowDisplayName_Implementation(
     const FDataIndexerPrimaryKey& PrimaryKey,
     const FInstancedStruct& RowEntity) const
 {
-    if (const FMyItemRow* Row = RowEntity.GetPtr<const FMyItemRow>())
+    if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
     {
         return Row->DisplayName;
     }
@@ -42,54 +42,54 @@ FText UMyItemSchema::GetRowDisplayName_Implementation(
 
 ```cpp
 void ForEachIndex(
-    const TFunctionRef<void(const FDataIndexerImmutableKey&)>& Callback) const;
+    const TFunctionRef<void(const FDataIndexerIndex&)>& Callback) const;
 ```
 
-Iterates all registered index keys (the keys of `BuildIndexKeyFunctions`). Used by the compiler to enumerate indexes when building `ReverseLookups`.
+Iterates all registered index keys (the keys of `BuildIndexFunctions`). Used by the compiler to enumerate indexes when building `ReverseLookups`.
 
 ---
 
-## BuildIndexKeyCall
+## BuildIndexCall
 
 ```cpp
-using FIndexResult = TPair<FDataIndexerIndexKey, FText>;
-TOptional<FIndexResult> BuildIndexKeyCall(
-    const FDataIndexerIndex& Index,
+TOptional<FGuid> BuildIndexCall(
+    const FDataIndexerIndexKey& IndexKey,
     const FConstStructView& RowEntity) const;
 ```
 
-Calls the registered builder function for `Index` with the given row entity. Returns the `(IndexKey, DisplayName)` pair, or `NullOpt` if no builder is registered for this index.
+Calls the registered builder function for `IndexKey` with the given row entity. Returns the computed index key (`FGuid`), or `NullOpt` if no builder is registered for this index.
 
 Called by the compiler at save time. Not typically called directly from game code.
 
 ---
 
-## RegisterFunction_BuildIndexKey
+## RegisterFunction_BuildIndex
 
 ```cpp
-void RegisterFunction_BuildIndexKey(
+void RegisterFunction_BuildIndex(
     const FDataIndexerIndex& Index,
-    FName FunctionName,
-    const FString& Description = FString());
+    FName FunctionName);
 ```
 
 Registers a named function as the index key builder for `Index`. Call this in `PostInitProperties` from the CDO:
 
 ```cpp
-void UMyItemSchema::PostInitProperties()
+void UItemSchema::PostInitProperties()
 {
-    Super::PostInitProperties();
     if (HasAnyFlags(RF_ClassDefaultObject))
     {
-        RegisterFunction_BuildIndexKey(
-            FDataIndexerIndex(CategoryIndex.Identifier),
-            GET_FUNCTION_NAME_CHECKED(UMyItemSchema, BuildCategoryKey));
+        RowStruct = FItemRow::StaticStruct();
+        RegisterFunction_BuildIndex(ByTypeIndex(),
+            GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeIndex));
+        RegisterFunction_BuildIndex(ByRarityIndex(),
+            GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
     }
+    Super::PostInitProperties();
 }
 ```
 
-The function must match the `Prototype_BuildIndexKey` signature:
-`(const FInstancedStruct& RowEntity, FText& OutDisplayName) → FDataIndexerIndexKey`
+The function must match the `Prototype_BuildIndex` signature:
+`(const FInstancedStruct& RowEntity) → FGuid`
 
 ---
 

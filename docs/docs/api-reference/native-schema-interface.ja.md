@@ -141,7 +141,7 @@ static void ForEachPrimaryKeys(
 FItemRow Query;
 Query.Type = EItemType::Weapon;
 
-FItemInterface::ForEachPrimaryKeys(Repository, UItemSchema::ByTypeIndex().IndexKey, Query,
+FItemInterface::ForEachPrimaryKeys(Repository, UItemSchema::ByTypeIndex(), Query,
     [](const FDataIndexerPrimaryKey& Key)
     {
         // ...
