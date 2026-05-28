@@ -14,19 +14,21 @@ The exported file contains a JSON array of row objects:
 [
   {
     "PrimaryKey": "A1B2C3D4-E5F6-7890-ABCD-EF1234567890",
-    "Row": {
+    "RowEntity": {
       "DisplayName": "Iron Sword",
       "MaxStack": 1,
       "Category": "Weapon"
-    }
+    },
+    "EditorFlags": 0
   },
   {
     "PrimaryKey": "B2C3D4E5-F6A7-8901-BCDE-F12345678901",
-    "Row": {
+    "RowEntity": {
       "DisplayName": "Health Potion",
       "MaxStack": 10,
       "Category": "Consumable"
-    }
+    },
+    "EditorFlags": 0
   }
 ]
 ```
@@ -34,7 +36,8 @@ The exported file contains a JSON array of row objects:
 **Key points:**
 
 - `PrimaryKey` is the row's `FDataIndexerPrimaryKey` as a GUID string
-- `Row` is the row struct serialized using UE's JSON property serialization
+- `RowEntity` is the row struct serialized using UE's JSON property serialization
+- `EditorFlags` is a bitmask of editor-only row state (e.g. commented-out, hidden in children); `0` means none
 - The export includes only local rows — parent repository rows are not exported
 
 ## Importing
@@ -44,6 +47,8 @@ The exported file contains a JSON array of row objects:
 3. Select a JSON file
 
 The import performs a **full replacement** — all existing rows are deleted and replaced with the contents of the JSON file.
+
+The format is auto-detected: files with a `RowEntity` field are read as native DataIndexer JSON, while flat row objects are treated as DataTable JSON. See [Migrate from DataTable](../how-to/migrate-from-datatable.md) for the DataTable path.
 
 ## Reimport
 

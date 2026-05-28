@@ -18,6 +18,7 @@ public class DataIndexerProject : ModuleRules
 			PrivateDependencyModuleNames.AddRange([
 				"Json",
 				"JsonUtilities",
+				"DataIndexerEd",
 			]);
 		}
 	}

@@ -4,7 +4,7 @@ title: Migrate from DataTable
 
 # Migrate from DataTable
 
-This guide walks through migrating an existing `UDataTable` to a DataIndexer repository. The struct definition carries over as-is; the main work is converting the JSON format and updating runtime query code.
+This guide walks through migrating an existing `UDataTable` to a DataIndexer repository. The struct definition carries over as-is, and no conversion script is required — DataIndexer imports the JSON you export from a DataTable **directly**, auto-detecting the format.
 
 ## Key differences
 
@@ -13,7 +13,7 @@ This guide walks through migrating an existing `UDataTable` to a DataIndexer rep
 | Row identifier | `FName` (author-chosen string) | `FDataIndexerPrimaryKey` (auto-generated GUID) |
 | Asset type | `UDataTable` | `UDataIndexerRepository` |
 | Schema | Implicit — struct is embedded | Explicit — separate `UDataIndexerSchema` asset |
-| Import format | CSV or JSON with flat row objects | JSON with `PrimaryKey` + `Row` wrapper |
+| Import format | CSV or JSON with flat row objects | Imports DataTable JSON directly; native format uses a `PrimaryKey` + `RowEntity` wrapper |
 | Secondary indexes | Manual code | Declarative `BuildIndex` functions |
 | Hierarchy / inheritance | Not supported | Parent repository composition |
 
@@ -23,18 +23,18 @@ This guide walks through migrating an existing `UDataTable` to a DataIndexer rep
 2. Select **Asset Actions → Export**
 3. Choose **JSON** format and save
 
-The exported file looks like this:
+The exported file looks like this. The `Name` on each row is the DataTable row name:
 
 ```json
 [
   {
-    "---rowName---": "IronSword",
+    "Name": "IronSword",
     "DisplayName": "Iron Sword",
     "MaxStack": 1,
     "Category": "Weapon"
   },
   {
-    "---rowName---": "HealthPotion",
+    "Name": "HealthPotion",
     "DisplayName": "Health Potion",
     "MaxStack": 10,
     "Category": "Consumable"
@@ -51,50 +51,25 @@ If you do not yet have a schema for this data type, create one now. This step is
 
 The row struct itself does **not** need to change.
 
-## Step 3 — Transform the JSON { #transform-the-json }
+## Step 3 — Import { #import }
 
-DataIndexer's import format wraps each row in a `{ "PrimaryKey": "...", "Row": { ... } }` envelope and uses a GUID as the key instead of a string name.
-
-The script below converts the DataTable export to the DataIndexer import format:
-
-```python title="dt_to_di.py"
-import json
-import uuid
-
-with open("datatable_export.json", encoding="utf-8") as f:
-    rows = json.load(f)
-
-out = []
-for row in rows:
-    row.pop("---rowName---", None)
-    out.append({
-        "PrimaryKey": str(uuid.uuid4()),
-        "Row": row
-    })
-
-with open("repository_import.json", "w", encoding="utf-8") as f:
-    json.dump(out, f, indent=2, ensure_ascii=False)
-```
-
-Run it:
-
-```
-python dt_to_di.py
-```
-
-The output `repository_import.json` is ready for import.
-
-!!! note "Row name as display field"
-    DataTable row names often double as human-readable labels. After migration, implement `GetRowDisplayName` in your schema to return a meaningful `FText` from an actual row field (e.g. `DisplayName`). DataIndexer's editor and Blueprint nodes will use this everywhere row names appeared before.
-
-## Step 4 — Import
+DataIndexer imports DataTable-format JSON directly — no conversion script needed.
 
 1. Right-click the repository asset → **Import JSON**
-2. Select `repository_import.json`
+2. Select the JSON you exported in Step 1
 
-The import is a **full replacement** — all existing rows are deleted and replaced. After save, the editor rebuilds secondary indexes automatically.
+The format is detected automatically based on whether the first element has a `RowEntity` field. If it does not, the file is treated as DataTable format and a **dialog asks which property to bind the row name to**:
 
-## Step 5 — Update runtime references
+- The combo box lists the row struct's `FName` / `FString` / `FText` properties.
+- Pick a property if you want to preserve the DataTable `Name` (row name).
+- Choose **(Ignore)** if you don't need it. Rows become anonymous, identified only by `PrimaryKey` (GUID).
+
+A `PrimaryKey` is auto-generated per row (if the JSON contains a `PrimaryKey` field, that GUID is used instead). The import is a **full replacement** — all existing rows are deleted and replaced. After save, the editor rebuilds secondary indexes automatically.
+
+!!! note "Row name as display field"
+    DataTable row names often double as human-readable labels. In most cases, choose **(Ignore)** to drop the row name and instead implement `GetRowDisplayName` in your schema to return a meaningful `FText` from an actual row field (e.g. `DisplayName`). DataIndexer's editor and Blueprint nodes use this everywhere row names appeared before.
+
+## Step 4 — Update runtime references
 
 ### Replace `FindRow` calls
 
@@ -109,15 +84,15 @@ The import is a **full replacement** — all existing rows are deleted and repla
 
 === "After (DataIndexer C++)"
 
-    DataIndexer rows are retrieved by `FDataIndexerPrimaryKey`. Store the key as a handle property and query at runtime:
+    DataIndexer rows are retrieved by `FDataIndexerPrimaryKey`. Store an `FDataIndexerRowHandle` — which bundles the repository and key together — as a property and query at runtime:
 
     ```cpp
     // Store a handle on the component or asset
     UPROPERTY(EditAnywhere)
-    FDataIndexerHandle ItemHandle;
+    FDataIndexerRowHandle ItemHandle;
 
-    // Query
-    if (const FItemRow* Row = FItemInterface::FindRow(Repository, ItemHandle.PrimaryKey))
+    // Query — the handle carries both repository and primary key
+    if (const FItemRow* Row = FItemInterface::FindRow(ItemHandle))
     {
         // use Row
     }
@@ -125,7 +100,7 @@ The import is a **full replacement** — all existing rows are deleted and repla
 
 === "After (Blueprint)"
 
-    Use a **DataIndexer Handle** variable to hold the row reference. In the graph, drag from the handle and call **Get Row**. The combo box in the node's details lets designers pick a specific row by its display name.
+    Use a **DataIndexer Row Handle** variable to hold the row reference. In the graph, drag from the handle and call **Get Row**. The combo box in the node's details lets designers pick a specific row by its display name.
 
 ### Replace full-table iteration
 
@@ -140,9 +115,9 @@ The import is a **full replacement** — all existing rows are deleted and repla
 === "After (DataIndexer)"
 
     ```cpp
-    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetAllPrimaryKeys(Repository))
+    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetPrimaryKeys(*Repository))
     {
-        if (const FItemRow* Row = FItemInterface::FindRow(Repository, Key))
+        if (const FItemRow* Row = FItemInterface::FindRow(*Repository, Key))
         {
             // use Row
         }
@@ -164,4 +139,4 @@ TArray<FDataIndexerPrimaryKey> Keys =
 
 ## Ongoing workflow
 
-Once migrated, use the [JSON Support](../editor-guide/json-support.md) page to manage future exports, reimports, and VCS diffs. The `dt_to_di.py` script is only needed for the initial migration — subsequent round-trips stay within DataIndexer's native JSON format.
+Once migrated, use the [JSON Support](../editor-guide/json-support.md) page to manage future exports, reimports, and VCS diffs. Subsequent round-trips stay within DataIndexer's native JSON format (`PrimaryKey` + `RowEntity`), and the row-name binding dialog no longer appears on reimport.

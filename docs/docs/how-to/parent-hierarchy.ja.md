@@ -58,7 +58,7 @@ Data View に両Repositoryの行が表示されます。親由来の行はエデ
 
 ショップが `DI_AllItems` の*一部*のアイテムのみを扱いたい場合は、親階層を使わないことをお勧めします — 親の行は常に全件含まれます。
 
-この場合は `DI_ShopA` をスタンドアロンのRepositoryとして管理し、`FDataIndexerHandle` の配列やセカンダリIndexでショップの在庫を明示的に定義してください。親階層は、全件の可視性とオプションのフィールドオーバーライドが必要なときに使用するものです。サブセット管理には適していません。
+この場合は `DI_ShopA` をスタンドアロンのRepositoryとして管理し、`FDataIndexerRowHandle` の配列やセカンダリIndexでショップの在庫を明示的に定義してください。親階層は、全件の可視性とオプションのフィールドオーバーライドが必要なときに使用するものです。サブセット管理には適していません。
 
 ## ランタイムクエリ { #runtime-querying }
 
@@ -67,8 +67,8 @@ Data View に両Repositoryの行が表示されます。親由来の行はエデ
 === "C++"
 
     ```cpp
-    // GetAllPrimaryKeys は階層全体を走査する
-    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetAllPrimaryKeys(ShopARepository))
+    // GetPrimaryKeys は階層全体を走査する
+    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetPrimaryKeys(ShopARepository))
     {
         if (const FItemRow* Row = FItemInterface::FindRow(ShopARepository, Key))
         {

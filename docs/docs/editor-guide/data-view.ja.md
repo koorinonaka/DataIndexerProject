@@ -59,12 +59,12 @@ Data View は**行選択モード**と**セル選択モード**の 2 種類を�
 **インライン編集（Data View）**
 : グリッドのセルを**ダブルクリック**します。単純なスカラープロパティ・enum・短い文字列はインライン編集に対応しています。**Escape** を押すと編集を終了し、別のセルをクリックすると確定して移動します。
 
-![インライン編集](../assets/images/feature-05.gif)
+    ![インライン編集](../assets/images/feature-05.gif)
 
 **Selection Details（フルエディタ）**
 : 右クリック → **Select Row** を選ぶか、ドラッグハンドルカラムをクリックして行を選択します。右の **Selection Details** パネルにフルプロパティエディタが表示されます。
 
-![Selection Details パネル](../assets/images/data-view-selection-details.png)
+    ![Selection Details パネル](../assets/images/data-view-selection-details.png)
 
 ## コンテキストメニュー
 

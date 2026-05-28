@@ -4,7 +4,7 @@ title: DataTable から移行する
 
 # DataTable から移行する
 
-既存の `UDataTable` を DataIndexer Repositoryへ移行する手順を説明します。構造体の定義はそのまま流用できます。主な作業は JSON フォーマットの変換と、ランタイムのクエリコードの更新です。
+既存の `UDataTable` を DataIndexer Repository へ移行する手順を説明します。構造体の定義はそのまま流用でき、変換スクリプトも不要です。DataTable から書き出した JSON を Repository に**直接インポート**でき、形式は自動判定されます。
 
 ## 主な違い
 
@@ -13,28 +13,28 @@ title: DataTable から移行する
 | 行の識別子 | `FName`（手動で命名する文字列） | `FDataIndexerPrimaryKey`（自動生成 GUID） |
 | アセット型 | `UDataTable` | `UDataIndexerRepository` |
 | Schema | 暗黙的 — 構造体がアセットに内包 | 明示的 — 別途 `UDataIndexerSchema` アセットを作成 |
-| インポート形式 | CSV または フラットな行オブジェクトの JSON | `PrimaryKey` + `Row` ラッパー付き JSON |
-| セカンダリIndex | 手動コード | 宣言的な `BuildIndex` 関数 |
-| 階層・継承 | 非対応 | 親Repositoryの合成 |
+| インポート形式 | CSV または フラットな行オブジェクトの JSON | DataTable JSON を直接取り込み可。ネイティブ形式は `PrimaryKey` + `RowEntity` ラッパー |
+| セカンダリ Index | 手動コード | 宣言的な `BuildIndex` 関数 |
+| 階層・継承 | 非対応 | 親 Repository の合成 |
 
 ## Step 1 — DataTable の行を JSON でエクスポートする { #export-datatable-rows-as-json }
 
 1. コンテンツブラウザで DataTable アセットを右クリック
-2. **アセット Actions → Export** を選択
+2. **Asset Actions → Export** を選択
 3. **JSON** 形式を選んで保存
 
-エクスポートされたファイルは以下のような形式になります。
+エクスポートされたファイルは以下のような形式になります。各行の `Name` が DataTable の行名です。
 
 ```json
 [
   {
-    "---rowName---": "IronSword",
+    "Name": "IronSword",
     "DisplayName": "Iron Sword",
     "MaxStack": 1,
     "Category": "Weapon"
   },
   {
-    "---rowName---": "HealthPotion",
+    "Name": "HealthPotion",
     "DisplayName": "Health Potion",
     "MaxStack": 10,
     "Category": "Consumable"
@@ -42,59 +42,34 @@ title: DataTable から移行する
 ]
 ```
 
-## Step 2 — SchemaとRepositoryを作成する
+## Step 2 — Schema と Repository を作成する
 
-この型のSchemaがまだない場合は、先に作成してください。手順は [クイックスタート](../quick-start.md) と同じです。
+この型の Schema がまだない場合は、先に作成してください。手順は [クイックスタート](../quick-start.md) と同じです。
 
 1. DataTable と同じ `RowStruct` を持つ **Schema Blueprint**（または C++ サブクラス）を作成する
-2. **DataIndexer Repository** アセットを作成し、Schemaをバインドする
+2. **DataIndexer Repository** アセットを作成し、Schema をバインドする
 
 行構造体自体は変更不要です。
 
-## Step 3 — JSON を変換する { #transform-the-json }
+## Step 3 — インポートする { #import }
 
-DataIndexer のインポート形式は各行を `{ "PrimaryKey": "...", "Row": { ... } }` のエンベロープで包み、文字列名の代わりに GUID をキーとして使用します。
-
-以下のスクリプトで DataTable エクスポートを DataIndexer インポート形式に変換できます。
-
-```python title="dt_to_di.py"
-import json
-import uuid
-
-with open("datatable_export.json", encoding="utf-8") as f:
-    rows = json.load(f)
-
-out = []
-for row in rows:
-    row.pop("---rowName---", None)
-    out.append({
-        "PrimaryKey": str(uuid.uuid4()),
-        "Row": row
-    })
-
-with open("repository_import.json", "w", encoding="utf-8") as f:
-    json.dump(out, f, indent=2, ensure_ascii=False)
-```
-
-実行:
-
-```
-python dt_to_di.py
-```
-
-生成された `repository_import.json` がインポートに使用できます。
-
-!!! note "行名を表示名として使う場合"
-    DataTable の行名は人間可読なラベルとしても機能していることがあります。移行後は、Schemaの `GetRowDisplayName` を実装して、実際の行フィールド（例: `DisplayName`）から意味のある `FText` を返すようにしてください。DataIndexer のエディタや Blueprint ノードは行名が表示されていた場所でこの関数の結果を使用します。
-
-## Step 4 — インポートする
+DataIndexer は DataTable 形式の JSON を直接インポートできます。変換スクリプトは不要です。
 
 1. Repository アセットを右クリック → **Import JSON**
-2. `repository_import.json` を選択
+2. Step 1 で書き出した JSON を選択
 
-インポートは**完全置換**として実行されます — 既存の行はすべて削除され、JSON ファイルの内容で置き換えられます。保存後、エディタがセカンダリIndexを自動再構築します。
+ファイルの先頭要素に `RowEntity` フィールドがあるかどうかで形式が自動判定されます。`RowEntity` がなければ DataTable 形式とみなされ、**行名のバインド先を尋ねるダイアログ**が表示されます。
 
-## Step 5 — ランタイム参照を更新する
+- コンボボックスには行構造体の `FName` / `FString` / `FText` プロパティが列挙されます。
+- DataTable の `Name`（行名）を保持したい場合は、保存先のプロパティを選びます。
+- 行名が不要な場合は **(Ignore)** を選びます。行は匿名となり、`PrimaryKey`（GUID）でのみ識別されます。
+
+`PrimaryKey` は各行に対して自動生成されます（JSON に `PrimaryKey` フィールドがあればその GUID が使われます）。インポートは**完全置換**として実行されます — 既存の行はすべて削除され、JSON の内容で置き換えられます。保存後、エディタがセカンダリ Index を自動再構築します。
+
+!!! note "行名を表示名として使う場合"
+    DataTable の行名は人間可読なラベルとしても機能していることがあります。多くの場合は **(Ignore)** で行名を捨て、代わりに Schema の `GetRowDisplayName` を実装して実際の行フィールド（例: `DisplayName`）から意味のある `FText` を返すのが推奨です。DataIndexer のエディタや Blueprint ノードは、行名が表示されていた場所でこの関数の結果を使用します。
+
+## Step 4 — ランタイム参照を更新する
 
 ### `FindRow` 呼び出しの置き換え
 
@@ -109,15 +84,15 @@ python dt_to_di.py
 
 === "移行後（DataIndexer C++）"
 
-    DataIndexer の行は `FDataIndexerPrimaryKey` で取得します。キーをハンドルプロパティとして保持し、ランタイムにクエリします。
+    DataIndexer の行は `FDataIndexerPrimaryKey` で取得します。Repository と PrimaryKey をまとめて保持する `FDataIndexerRowHandle` をプロパティに持たせ、ランタイムにクエリします。
 
     ```cpp
-    // ComponentやAssetにハンドルを持たせる
+    // Component や Asset にハンドルを持たせる
     UPROPERTY(EditAnywhere)
-    FDataIndexerHandle ItemHandle;
+    FDataIndexerRowHandle ItemHandle;
 
-    // Query
-    if (const FItemRow* Row = FItemInterface::FindRow(Repository, ItemHandle.PrimaryKey))
+    // Query — ハンドルは Repository と PrimaryKey を内包する
+    if (const FItemRow* Row = FItemInterface::FindRow(ItemHandle))
     {
         // Row を使用
     }
@@ -125,7 +100,7 @@ python dt_to_di.py
 
 === "移行後（Blueprint）"
 
-    **DataIndexer Handle** 変数を使って行の参照を保持します。グラフ上でハンドルから **Get Row** を呼び出してください。ノードの詳細パネルにあるコンボボックスで、デザイナーが表示名から特定の行を選択できます。
+    **DataIndexer Row Handle** 変数を使って行の参照を保持します。グラフ上でハンドルから **Get Row** を呼び出してください。ノードの詳細パネルにあるコンボボックスで、デザイナーが表示名から特定の行を選択できます。
 
 ### 全行イテレーションの置き換え
 
@@ -140,18 +115,18 @@ python dt_to_di.py
 === "移行後（DataIndexer）"
 
     ```cpp
-    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetAllPrimaryKeys(Repository))
+    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetPrimaryKeys(*Repository))
     {
-        if (const FItemRow* Row = FItemInterface::FindRow(Repository, Key))
+        if (const FItemRow* Row = FItemInterface::FindRow(*Repository, Key))
         {
             // Row を使用
         }
     }
     ```
 
-### 名前ベースのルックアップをIndexに置き換える
+### 名前ベースのルックアップを Index に置き換える
 
-文字列識別子（アイテム ID など）で行を引いていた既存コードは、全行走査ではなくセカンダリIndexを使うように移行してください。設定手順は [Index](../concepts/indexes.md) を参照してください。
+文字列識別子（アイテム ID など）で行を引いていた既存コードは、全行走査ではなくセカンダリ Index を使うように移行してください。設定手順は [Index](../concepts/indexes.md) を参照してください。
 
 ```cpp
 // 武器タイプのアイテムをすべて取得する
@@ -164,4 +139,4 @@ TArray<FDataIndexerPrimaryKey> Keys =
 
 ## 移行後のワークフロー
 
-移行完了後は [JSON サポート](../editor-guide/json-support.md) で以後のエクスポート・再インポート・VCS Diff を管理してください。`dt_to_di.py` スクリプトが必要なのは初回移行時のみです。以降のやり取りは DataIndexer ネイティブの JSON 形式で完結します。
+移行完了後は [JSON サポート](../editor-guide/json-support.md) で以後のエクスポート・再インポート・VCS Diff を管理してください。以降はネイティブの JSON 形式（`PrimaryKey` + `RowEntity`）で完結し、再インポート時は行名バインドのダイアログも表示されません。

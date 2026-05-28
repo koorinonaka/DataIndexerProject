@@ -1,5 +1,7 @@
 ---
 title: クイックスタート
+hide:
+  - navigation
 ---
 
 # クイックスタート
@@ -251,7 +253,7 @@ Repository アセットをダブルクリックすると Data View が開きま�
     **全行を反復する**{ .step-label }
 
     ```cpp title="例"
-    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetAllPrimaryKeys(Repository))
+    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetPrimaryKeys(Repository))
     {
         if (const FItemRow* Row = FItemInterface::FindRow(Repository, Key))
         {

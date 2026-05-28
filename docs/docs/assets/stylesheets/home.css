@@ -535,10 +535,12 @@
   .ov-hero-inner, .ov-screenshot-wrap { padding: 0 24px; }
   .ov-hero h1 { font-size: 40px; }
   .ov-hero-lead { font-size: 16px; }
-  .ov-features { padding: 64px 24px 28px; }
+  .ov-features { padding: 0 24px; margin: 36px 0 40px; }
+  .ov-features-header { margin-bottom: 28px; }
   .ov-features-header h2 { font-size: 28px; }
+  .ov-section-head h2 { font-size: 26px; }
   .ov-feature-row {
-    grid-template-columns: 1fr; gap: 32px; padding: 40px 0;
+    grid-template-columns: 1fr; gap: 32px; padding: 24px 0;
   }
   .ov-feature-row.is-reversed .ov-feature-text { order: 1; }
   .ov-feature-row.is-reversed .ov-feature-visual { order: 2; }
@@ -552,11 +554,18 @@
   .ov-bottom-sections { padding: 40px 24px 60px; }
   .ov-concepts-grid, .ov-getstarted-grid { grid-template-columns: 1fr; }
   /* BA */
-  .ov-ba { padding: 100px 24px 60px; }
-  .ov-ba-row { grid-template-columns: 1fr; }
-  .ov-ba-cell { border-right: 0; border-bottom: 1px solid var(--border-faint, rgba(15,14,13,0.06)); }
+  .ov-ba { padding: 140px 24px 56px; }
+  .ov-ba-row { grid-template-columns: 1fr 1fr; }
+  .ov-ba-col-h { grid-column: 1 / -1; border-right: 0; }
+  .ov-ba-cell { border-right: 0; border-bottom: 1px solid var(--border-faint, rgba(15,14,13,0.06)); padding: 12px 14px; font-size: 13px; }
+  .ov-ba-header .ov-ba-cell { padding: 10px 14px 8px; }
+  .ov-ba-header .ov-ba-cell:nth-child(2) { border-right: 1px solid var(--border-faint, rgba(15,14,13,0.06)); }
+  .ov-ba-bad, .ov-ba-good { border-bottom: 0; flex-wrap: wrap; align-content: flex-start; }
+  .ov-ba-bad { border-right: 1px solid var(--border-faint, rgba(15,14,13,0.06)); }
+  .ov-ba-bad::before { content: "DataTable"; flex: 0 0 100%; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #a83d1a; }
+  .ov-ba-good::before { content: "DataIndexer"; flex: 0 0 100%; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1f7a52; }
   /* Dual */
-  .ov-dual { padding: 36px 24px 60px; }
+  .ov-dual { padding: 0 24px; margin: 40px 0; }
   .ov-dual-bp-grid { grid-template-columns: 1fr; }
   .ov-dual-callouts { grid-template-columns: 1fr; }
   .ov-dual-tab-trail { display: none; }

@@ -1,5 +1,7 @@
 ---
 title: Quick Start
+hide:
+  - navigation
 ---
 
 # Quick Start
@@ -251,7 +253,7 @@ For a full breakdown of the editor, see the [Editor Guide](editor-guide/index.md
     **Iterate all rows**{ .step-label }
 
     ```cpp title="Example"
-    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetAllPrimaryKeys(Repository))
+    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetPrimaryKeys(Repository))
     {
         if (const FItemRow* Row = FItemInterface::FindRow(Repository, Key))
         {

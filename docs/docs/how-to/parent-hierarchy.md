@@ -58,7 +58,7 @@ If `BaseValue` and `Rarity` should be immutable, mark them `NotOverridable` in t
 
 If the shop should only sell *some* items from `DI_AllItems` rather than all of them, do not use the parent hierarchy for this — parent rows are always included.
 
-Instead, maintain `DI_ShopA` as a standalone repository and use a `FDataIndexerHandle` array or a secondary index to define the shop's inventory explicitly. Use the parent hierarchy when you want *full* visibility plus optional field overrides, not when you want a subset.
+Instead, maintain `DI_ShopA` as a standalone repository and use a `FDataIndexerRowHandle` array or a secondary index to define the shop's inventory explicitly. Use the parent hierarchy when you want *full* visibility plus optional field overrides, not when you want a subset.
 
 ## Runtime Querying { #runtime-querying }
 
@@ -67,8 +67,8 @@ Querying `DI_ShopA` transparently returns rows from both the child and all paren
 === "C++"
 
     ```cpp
-    // GetAllPrimaryKeys walks the entire hierarchy
-    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetAllPrimaryKeys(ShopARepository))
+    // GetPrimaryKeys walks the entire hierarchy
+    for (const FDataIndexerPrimaryKey& Key : FItemInterface::GetPrimaryKeys(ShopARepository))
     {
         if (const FItemRow* Row = FItemInterface::FindRow(ShopARepository, Key))
         {

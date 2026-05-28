@@ -62,6 +62,10 @@
   font-family: "Inter", "Hiragino Sans", "Yu Gothic", "Noto Sans JP", -apple-system, sans-serif;
   letter-spacing: -0.005em;
 }
+.md-typeset {
+  font-size: 15px;
+  line-height: 1.65;
+}
 .md-typeset code,
 .md-typeset pre {
   font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -139,17 +143,6 @@
   -webkit-mask-image: none;
           mask-image: none;
 }
-.md-nav--primary .md-nav__title {
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--md-default-fg-color--lighter);
-  background: transparent;
-  box-shadow: none;
-  padding: 4px 10px;
-}
-
 .md-nav__item .md-nav__link {
   font-size: 13.5px;
   font-weight: 500;
@@ -171,13 +164,20 @@
   font-weight: 600;
 }
 
-/* [fix1] セクション見出しコンテナ垂直ズレ修正 + box-shadow フェード除去 (navigation.indexes あり) */
+/* [fix1] セクション見出しコンテナ垂直ズレ修正 + インデント揃え + box-shadow フェード除去
+   container を direct link と同じ margin/padding に揃え、内側の inner link は
+   その余白を継承するため自前の margin/padding を 0 にする。これでコアコンセプト等
+   セクション項目と概要・はじめに等 direct 項目のインデントが一致する。 */
 .md-nav__link.md-nav__container {
-  padding: 0;
-  margin: 0;
+  margin: 1px 4px;
+  padding: 4px 10px;
   display: flex;
   align-items: center;
   box-shadow: none;
+}
+.md-nav__link.md-nav__container > .md-nav__link {
+  margin: 0;
+  padding: 0;
 }
 
 /* [fix2] lifted active label の box-shadow フェード除去 (navigation.indexes なしセクション用)
@@ -201,7 +201,7 @@
   max-width: none;
 }
 .md-content__inner {
-  max-width: 960px;
+  max-width: 880px;
   margin: 0 auto;
   padding: 28px 48px 64px;
 }
@@ -1103,10 +1103,10 @@ img.fn-node {
 /* ── Mental Model diagram ─────────────────────────────────────────────────── */
 .ov-mm-diagram {
   display: grid;
-  grid-template-columns: 1fr 3.5rem 1fr 3.5rem 1fr 3.5rem 1fr;
+  grid-template-columns: 1fr 2.5rem 1fr 2.5rem 1fr 2.5rem 1fr;
   align-items: stretch; gap: 0;
-  padding: 1.4rem;
-  margin: 1.5rem 0 0.8rem;
+  padding: 1rem;
+  margin: 1.5rem 0 0.75rem;
   border: 1px solid var(--md-default-fg-color--lightest);
   border-radius: 0.75rem;
   background: linear-gradient(180deg,
@@ -1116,7 +1116,7 @@ img.fn-node {
 
 .ov-mm-node {
   display: flex; flex-direction: column;
-  padding: 0.9rem;
+  padding: 0.75rem 0.8rem 0.8rem;
   border: 1px solid var(--md-default-fg-color--lightest);
   border-radius: 0.5rem;
   background: var(--md-default-bg-color);
@@ -1142,25 +1142,30 @@ img.fn-node {
 .ov-mm-node:nth-of-type(4)::before { opacity: 0.34; }
 
 .ov-mm-node-step {
-  font: 700 0.62rem/1 var(--md-code-font, monospace);
+  font: 700 0.68rem/1 var(--md-code-font, monospace);
   letter-spacing: 0.04em; text-transform: uppercase;
   color: var(--md-default-fg-color--lighter); margin-bottom: 0.5rem;
 }
 .ov-mm-node-title {
-  font: 700 0.95rem/1.25 var(--md-text-font);
+  font: 700 0.95rem/1.2 var(--md-text-font);
   color: var(--md-default-fg-color); letter-spacing: -0.012em;
+  display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;
 }
 .ov-mm-node-code {
-  font: 500 0.66rem/1 var(--md-code-font, monospace);
+  font: 500 0.7rem/1.1 var(--md-code-font, monospace);
   color: var(--md-default-fg-color--light);
   background: var(--md-code-bg-color);
   border: 1px solid var(--md-default-fg-color--lightest);
   padding: 1px 5px; border-radius: 3px;
-  margin: 0.25rem 0 0.1rem; align-self: flex-start;
+  margin: 0.3rem 0 0; align-self: flex-start;
 }
 .ov-mm-node-text {
-  font: 400 0.78rem/1.5 var(--md-text-font);
-  color: var(--md-typeset-color); margin-top: 0.6rem;
+  font: 400 0.8rem/1.5 var(--md-text-font);
+  color: var(--md-default-fg-color--light); margin-top: 0.5rem;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .ov-mm-arrow {
@@ -1170,88 +1175,16 @@ img.fn-node {
   pointer-events: none; user-select: none;
 }
 .ov-mm-arrow span {
-  font: 600 0.6rem/1 var(--md-code-font, monospace);
+  font: 600 8px/1 var(--md-code-font, monospace);
   letter-spacing: 0.06em; text-transform: uppercase;
   color: var(--md-default-fg-color--light);
 }
 .ov-mm-arrow::after {
   content: "→";
   color: var(--md-accent-fg-color); opacity: 0.6;
-  font-size: 1rem; margin-top: 0.3rem;
+  font-size: 13px; margin-top: 0.3rem;
 }
 
-.ov-mm-reading {
-  display: flex; align-items: center; flex-wrap: wrap;
-  gap: 0.6rem; font-size: 0.78rem;
-  color: var(--md-default-fg-color--light);
-  margin: 0.9rem 0 2.25rem; padding-left: 0.25rem;
-}
-.ov-mm-reading-label {
-  font: 700 0.66rem/1 var(--md-code-font, monospace);
-  letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--md-default-fg-color--lighter);
-}
-.ov-mm-reading a { font-weight: 600; }
-
-/* ── Chapter list (replaces grid cards on concepts/index) ────────────────── */
-.ov-chapters { display: flex; flex-direction: column; }
-
-.ov-chapter {
-  display: grid; grid-template-columns: 5rem 1fr 2.25rem;
-  gap: 1.5rem;
-  padding: 1.6rem 1.1rem 1.6rem 0;
-  border-bottom: 1px solid var(--md-default-fg-color--lightest);
-  text-decoration: none !important;
-  color: var(--md-typeset-color);
-  transition: background 120ms;
-}
-.ov-chapter:first-child { border-top: 1px solid var(--md-default-fg-color--lightest); }
-.ov-chapter:hover { background: var(--md-accent-fg-color--transparent, var(--md-default-fg-color--lightest)); }
-
-.ov-chapter-num {
-  width: 2.75rem; height: 2.75rem; border-radius: 50%;
-  border: 1px solid var(--md-default-fg-color--lighter);
-  background: var(--md-default-bg-color);
-  display: grid; place-items: center;
-  font: 700 0.82rem/1 var(--md-code-font, monospace);
-  color: var(--md-default-fg-color);
-  margin-left: 1.1rem; position: relative;
-}
-.ov-chapter:not(:last-child) .ov-chapter-num::after {
-  content: ""; position: absolute;
-  left: 50%; top: calc(100% + 0.45rem);
-  width: 1px; height: calc(3.2rem + 100%);
-  background: var(--md-default-fg-color--lightest);
-}
-
-.ov-chapter-head { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 0.4rem; }
-.ov-chapter-head h3 {
-  margin: 0; font-size: 1.3rem; font-weight: 700;
-  letter-spacing: -0.018em; color: var(--md-default-fg-color);
-}
-.ov-chapter-head code {
-  font-size: 0.7rem; padding: 1px 6px;
-  background: var(--md-code-bg-color);
-  border: 1px solid var(--md-default-fg-color--lightest);
-  color: var(--md-default-fg-color--light);
-}
-
-.ov-chapter-body p {
-  font-size: 0.88rem; line-height: 1.65;
-  max-width: 40rem; margin: 0 0 0.75rem;
-}
-.ov-chapter-body ul {
-  font-size: 0.81rem; line-height: 1.7;
-  color: var(--md-default-fg-color--light);
-  margin: 0; padding-left: 1.1rem;
-}
-
-.ov-chapter-arrow {
-  display: flex; align-items: center; justify-content: center;
-  color: var(--md-default-fg-color--lighter);
-  font-size: 1.4rem; line-height: 1; transition: color 120ms;
-}
-.ov-chapter:hover .ov-chapter-arrow { color: var(--md-accent-fg-color); }
 
 /* Keep for backward compat (overview.html uses .ov-mm-eyebrow) */
 .ov-mm-eyebrow {
@@ -1277,19 +1210,199 @@ img.fn-node {
     margin-top: 0;
     font-size: 1.2rem;
   }
-  .ov-chapter {
-    grid-template-columns: 3.5rem 1fr 1.5rem;
-    gap: 0.9rem;
-    padding: 1.2rem 0;
+  .ov-chapters {
+    grid-template-columns: 1fr;
   }
-  .ov-chapter-num {
-    margin-left: 0.4rem;
-    width: 2.25rem; height: 2.25rem;
-    font-size: 0.72rem;
+  .ov-chapter {
+    padding: 14px;
   }
 }
 
-/* ── Concept hub: node & chapter icons (CSS mask) ────────────────────────── */
+/* ─────────────────────────────────────────────────────────────────────────────
+   Hybrid Concepts page — body layout overrides
+   ───────────────────────────────────────────────────────────────────────── */
+
+/* ── mm-diagram: rounded card w/ soft gradient ──────────────────────────── */
+.ov-mm-diagram {
+  padding: 22px;
+  margin: 28px 0 18px;
+  border: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 12px;
+  background: linear-gradient(180deg,
+              var(--md-default-bg-color) 0%,
+              var(--md-code-bg-color) 100%);
+}
+
+/* ── mm-node: tighter padding, precise radius ───────────────────────────── */
+.ov-mm-node {
+  padding: 14px 14px 12px;
+  border-radius: 8px;
+  box-shadow:
+    rgba(0, 0, 0, 0.04) 0 4px 18px,
+    rgba(0, 0, 0, 0.027) 0 2px 7.85px,
+    rgba(0, 0, 0, 0.02) 0 0.8px 2.93px,
+    rgba(0, 0, 0, 0.01) 0 0.175px 1.04px;
+}
+
+/* ── Node header: STEP left, icon right ─────────────────────────────────── */
+.ov-mm-node-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+.ov-mm-node-step { font-size: 10px; margin-bottom: 0; }
+
+/* Node content sizes */
+.ov-mm-node-title { display: block; font-size: 13px; font-weight: 600; margin-bottom: 3px; }
+.ov-mm-node-code  { font-size: 11px; }
+.ov-mm-node-text  { font-size: 12px; line-height: 1.5; margin-top: 4px; }
+
+
+/* ── Chapter list: separator-bordered rows ───────────────────────────────── */
+.ov-chapters {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+/* Vertical connector line through all chapter badges */
+.ov-chapters::before {
+  content: "";
+  position: absolute;
+  left: 40px; /* center of the 80px left column */
+  top: 48px;  /* card padding-top (26) + half badge (22) = align to first badge center */
+  bottom: 48px; /* same for last badge */
+  width: 1px;
+  background: var(--md-default-fg-color--lightest);
+  z-index: 0;
+}
+
+/* Card: top-border separator, transparent bg, 3-col grid */
+.ov-chapter {
+  display: grid;
+  grid-template-columns: 80px 1fr 36px;
+  column-gap: 24px;
+  align-items: start;
+  padding: 26px 18px 26px 0;
+  position: static;
+  border: none;
+  border-top: 1px solid var(--md-default-fg-color--lightest);
+  border-radius: 0;
+  overflow: visible;
+  background: none;
+  box-shadow: none;
+  text-decoration: none !important;
+  color: var(--md-typeset-color);
+  transition: opacity 120ms;
+}
+.ov-chapter:hover { opacity: 0.75; }
+.ov-chapters .ov-chapter:last-child {
+  border-bottom: 1px solid var(--md-default-fg-color--lightest);
+}
+
+/* Left column: center the circle badge above the connector line */
+.ov-chapter-left {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background: none;
+  border-right: none;
+  padding: 0;
+  gap: 0;
+  align-self: auto;
+  position: relative;
+  z-index: 1;
+}
+[data-md-color-scheme="slate"] .ov-chapter-left { background: none; }
+
+/* Circle badge with chapter number */
+.ov-chapter-num {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--md-default-bg-color);
+  border: 1px solid rgba(15, 14, 13, 0.16);
+  font: 700 13px/1 "JetBrains Mono", ui-monospace, monospace;
+  letter-spacing: 0;
+  color: var(--di-text-strong);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+[data-md-color-scheme="slate"] .ov-chapter-num {
+  border-color: rgba(255, 255, 255, 0.16);
+}
+
+/* Original per-card bar element is unused — connector is drawn on .ov-chapters::before */
+.ov-chapter-num-bar { display: none; }
+
+/* Body */
+.ov-chapter-body { padding: 0; }
+
+.ov-chapter-head {
+  display: flex; align-items: center; flex-wrap: wrap;
+  column-gap: 10px; row-gap: 4px;
+  margin-bottom: 10px;
+}
+.ov-chapter-head h3 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  color: var(--di-text-strong);
+  line-height: 1.35;
+}
+.ov-chapter-head code {
+  font-size: 11px;
+  line-height: 1.55;
+  padding: 1px 6px;
+  background: var(--md-code-bg-color);
+  border: 1px solid var(--md-default-fg-color--lightest);
+  color: var(--md-default-fg-color--light);
+  border-radius: 3px;
+}
+.ov-chapter-body p {
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0 0 12px;
+  color: var(--md-typeset-color);
+}
+.ov-chapter-body ul {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--md-default-fg-color--light);
+  margin: 8px 0 0;
+  padding-left: 1.1em;
+  list-style: disc;
+}
+.ov-chapter-body ul li { margin: 0 0 2px; }
+.ov-chapter-body ul li::marker { color: var(--md-default-fg-color--lighter); }
+
+/* Right arrow column */
+.ov-chapter-arrow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8px;
+  position: static;
+  color: var(--md-default-fg-color--lighter);
+  line-height: 1;
+  transition: color 120ms;
+}
+.ov-chapter:hover .ov-chapter-arrow { color: var(--md-accent-fg-color); }
+.ov-chapter-arrow svg { display: block; }
+
+@media (max-width: 768px) {
+  .ov-chapter { grid-template-columns: 56px 1fr 24px; column-gap: 14px; padding: 18px 14px 18px 0; }
+  .ov-chapter-num { width: 36px; height: 36px; }
+}
+
+/* ── Icons (CSS mask) ────────────────────────────────────────────────────── */
 .ov-mm-node-icon,
 .ov-chapter-icon {
   display: inline-block;
@@ -1298,16 +1411,42 @@ img.fn-node {
   -webkit-mask: var(--ov-icon) center / contain no-repeat;
           mask: var(--ov-icon) center / contain no-repeat;
 }
-.ov-mm-node-icon {
-  position: absolute; top: 0.65rem; right: 0.7rem;
-  width: 1.1rem; height: 1.1rem;
-}
-.ov-chapter-icon {
-  width: 1.25rem; height: 1.25rem;
-  flex-shrink: 0;
-}
+.ov-mm-node-icon { position: static; width: 1rem; height: 1rem; flex-shrink: 0; opacity: 0.7; }
+.ov-chapter-icon { width: 1.25rem; height: 1.25rem; flex-shrink: 0; }
 .icon-schema     { --ov-icon: url("../icons/icon-schema.svg"); }
 .icon-repository { --ov-icon: url("../icons/icon-repository.svg"); }
 .icon-keys       { --ov-icon: url("../icons/icon-keys.svg"); }
 .icon-indexes    { --ov-icon: url("../icons/icon-indexes.svg"); }
+
+/* ── モバイル / タブレット（< 76.25em）レイアウト修正 ────────────────────── */
+@media screen and (max-width: 76.234375em) {
+
+  /* [fix-mob1] ドロワーヘッダ — Material 標準を明示的に復元
+     ブラウザキャッシュや他ルールによる干渉から守るため、念のため値を再宣言する。
+     .md-logo は position:absolute; top:0.2rem で上部 3rem 領域を占有する。 */
+  .md-nav--primary .md-nav__title {
+    height: 5.6rem;
+    padding: 3rem .8rem .2rem;
+    line-height: 2.4rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  /* [fix-mob2] ナビインデント統一 — タブレット以下では .md-sidebar--primary が非表示のため
+     デスクトップ用の padding-left:0 ルールが効かない。.md-nav--primary で代替適用。 */
+  .md-nav--primary .md-nav__item .md-nav__item {
+    padding-left: 0;
+  }
+
+  /* [fix-mob3] 検索フォーム — モバイル base height は 2.4rem。
+     32px 固定を戻し、全幅オーバーレイ用に border/radius も除去。
+     アイコン top は fix4 の 50% が 2.4rem で 0.6rem になり正確に中央揃え。 */
+  .md-search__form {
+    height: 2.4rem;
+    border-radius: 0;
+    border: none;
+  }
+}
 

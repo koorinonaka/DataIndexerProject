@@ -1,6 +1,9 @@
 #pragma once
 
 #include "DataIndexerRepository.h"
+#include "DataIndexerTypes.h"
+#include "Engine/DataTable.h"
+#include "Types/CharacterTypes.h"
 
 #include "DataIndexerProjectTestTypes.generated.h"
 
@@ -14,8 +17,28 @@ class UItemSchemaTestRepository final : public UDataIndexerRepository
 	GENERATED_BODY()
 
 public:
-	using UDataIndexerRepository::LocalEntries;
 	using UDataIndexerRepository::EntryOwners;
+	using UDataIndexerRepository::LocalEntries;
 	using UDataIndexerRepository::ReverseLookups;
 	using UDataIndexerRepository::SchemaClass;
+};
+
+/**
+ * DataTable row variant of FCharacterRow used by CharacterDataTableMigrationTests.
+ * Drops DisplayName (FText) — RowName (FName) carries identity via UDataTable RowName
+ * and ImportFromDataTableJSON's RowNameProperty binding.
+ */
+USTRUCT()
+struct FCharacterDataTableTestRow : public FTableRowBase
+{
+	GENERATED_BODY()
+
+	UPROPERTY( EditAnywhere )
+	ECharacterClass Class = ECharacterClass::Warrior;
+
+	UPROPERTY( EditAnywhere )
+	int32 MaxHP = 100;
+
+	UPROPERTY( EditAnywhere )
+	FDataIndexerPrimaryKey DefaultWeapon;
 };

@@ -1,0 +1,14 @@
+[
+  {
+    "Name": "Arthur",
+    "Class": 0,
+    "MaxHP": 200,
+    "DefaultWeapon": "00000001-0000-0000-0000-000000000001"
+  },
+  {
+    "Name": "Merlin",
+    "Class": 1,
+    "MaxHP": 150,
+    "DefaultWeapon": "00000000-0000-0000-0000-000000000000"
+  }
+]
