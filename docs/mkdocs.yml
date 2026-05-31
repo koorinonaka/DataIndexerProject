@@ -13,6 +13,8 @@ edit_uri: ""
 theme:
   name: material
   custom_dir: overrides
+  logo: assets/images/logo-di-light.svg
+  favicon: assets/images/logo-di.svg
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: di-light

@@ -1450,3 +1450,11 @@ img.fn-node {
   }
 }
 
+/* ── Logo: per-scheme swap ──────────────────────────────────────────────────
+   Default (light) header is white → theme.logo points at logo-di-light.svg
+   (light badge, dark bars). In slate the header is dark, so swap to the dark
+   badge (light bars) for contrast. */
+[data-md-color-scheme="slate"] .md-logo img {
+  content: url("../images/logo-di.svg");
+}
+
