@@ -1458,3 +1458,17 @@ img.fn-node {
   content: url("../images/logo-di.svg");
 }
 
+/* [fix-active-pad] container 内 inner active link は padding:0（fix1 由来）のため
+   active 背景がテキストに密着する。背景を container 側へ移し inner は透明化。
+   これで direct active link と同じ 4px 10px の余白で背景が描画される。 */
+.md-sidebar--primary .md-nav__link.md-nav__container:has(> .md-nav__link--active) {
+  background: var(--di-accent-soft);
+  color: var(--di-accent);
+  font-weight: 600;
+}
+.md-sidebar--primary .md-nav__link.md-nav__container > .md-nav__link--active,
+.md-sidebar--primary .md-nav__link.md-nav__container > .md-nav__link--active:focus,
+.md-sidebar--primary .md-nav__link.md-nav__container > .md-nav__link--active:hover {
+  background: transparent;
+}
+
