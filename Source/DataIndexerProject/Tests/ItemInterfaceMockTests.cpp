@@ -118,11 +118,11 @@ bool FItemInterface_GetDisplayName_Test::RunTest( const FString& Parameters )
 		return false;
 	}
 
-	const FText Name = FItemInterfaceMock::GetItemDisplayName( *Repo, IronSwordKey );
+	const FText Name = Repo->GetDisplayName( IronSwordKey );
 	TestTrue( TEXT( "Iron Sword display name" ), Name.ToString() == TEXT( "Iron Sword" ) );
 
 	const FGuid MissingGuid( 0xDEAD, 0, 0, 0 );
-	const FText MissingName = FItemInterfaceMock::GetItemDisplayName( *Repo, FDataIndexerPrimaryKey( MissingGuid ) );
+	const FText MissingName = Repo->GetDisplayName( FDataIndexerPrimaryKey( MissingGuid ) );
 	TestEqual( TEXT( "Missing key falls back to its GUID string" ), MissingName.ToString(),
 		MissingGuid.ToString( EGuidFormats::DigitsWithHyphens ) );
 

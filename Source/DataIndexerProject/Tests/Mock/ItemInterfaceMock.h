@@ -12,10 +12,6 @@ class UDataIndexerRepository;
  */
 struct FItemInterfaceMock
 {
-	// ── GetDisplayName ─────────────────────────────────────────────────────────
-
-	static FText GetItemDisplayName( const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& PrimaryKey );
-
 	// ── FindRow(Repository, PrimaryKey) ───────────────────────────────────────
 
 	static const FItemRow* FindItemRow( const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& PrimaryKey );

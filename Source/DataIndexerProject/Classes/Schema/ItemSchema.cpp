@@ -27,43 +27,28 @@ void UItemSchema::InitializeExpandedStructEntries()
 
 #endif
 
-FText UItemSchema::GetRowDisplayName_Implementation(
-	const FDataIndexerPrimaryKey& PrimaryKey, const FInstancedStruct& RowEntity ) const
+TOptional<FText> UItemSchema::GetRowDisplayName(
+	const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const
 {
 	if ( const FItemRow* Row = RowEntity.GetPtr<const FItemRow>() )
 	{
 		return Row->DisplayName;
 	}
 
-	return Super::GetRowDisplayName_Implementation( PrimaryKey, RowEntity );
+	return Super::GetRowDisplayName( PrimaryKey, RowEntity );
 }
 
-FGuid UItemSchema::BuildTypeIndex( const FInstancedStruct& RowEntity )
+FGuid UItemSchema::BuildTypeIndex( const FItemRow& Row )
 {
-	if ( const FItemRow* Row = RowEntity.GetPtr<const FItemRow>() )
-	{
-		return FGuid( static_cast<uint32>( Row->Type ), 0, 0, 0 );
-	}
-
-	return {};
+	return FGuid( static_cast<uint32>( Row.Type ), 0, 0, 0 );
 }
 
-FGuid UItemSchema::BuildRarityIndex( const FInstancedStruct& RowEntity )
+FGuid UItemSchema::BuildRarityIndex( const FItemRow& Row )
 {
-	if ( const FItemRow* Row = RowEntity.GetPtr<const FItemRow>() )
-	{
-		return FGuid( static_cast<uint32>( Row->Rarity ), 0, 0, 0 );
-	}
-
-	return {};
+	return FGuid( static_cast<uint32>( Row.Rarity ), 0, 0, 0 );
 }
 
-FGuid UItemSchema::BuildTypeAndRarityIndex( const FInstancedStruct& RowEntity )
+FGuid UItemSchema::BuildTypeAndRarityIndex( const FItemRow& Row )
 {
-	if ( const FItemRow* Row = RowEntity.GetPtr<const FItemRow>() )
-	{
-		return FGuid( static_cast<uint32>( Row->Type ), static_cast<uint32>( Row->Rarity ), 0, 0 );
-	}
-
-	return {};
+	return FGuid( static_cast<uint32>( Row.Type ), static_cast<uint32>( Row.Rarity ), 0, 0 );
 }

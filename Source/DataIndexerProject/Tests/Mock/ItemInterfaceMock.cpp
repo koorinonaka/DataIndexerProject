@@ -2,13 +2,6 @@
 
 #include "Schema/ItemSchema.h"
 
-// ── GetDisplayName ────────────────────────────────────────────────────────────
-
-FText FItemInterfaceMock::GetItemDisplayName( const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& PrimaryKey )
-{
-	return FItemInterface::GetDisplayName( Repository, PrimaryKey );
-}
-
 // ── FindRow(Repository, PrimaryKey) ──────────────────────────────────────────
 
 const FItemRow* FItemInterfaceMock::FindItemRow(

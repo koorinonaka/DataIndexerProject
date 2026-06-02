@@ -26,35 +26,27 @@ void UCharacterSchema::InitializeExpandedStructEntries()
 
 #endif
 
-FText UCharacterSchema::GetRowDisplayName_Implementation(
-	const FDataIndexerPrimaryKey& PrimaryKey, const FInstancedStruct& RowEntity ) const
+TOptional<FText> UCharacterSchema::GetRowDisplayName(
+	const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const
 {
 	if ( const FCharacterRow* Row = RowEntity.GetPtr<const FCharacterRow>() )
 	{
 		return Row->DisplayName;
 	}
 
-	return Super::GetRowDisplayName_Implementation( PrimaryKey, RowEntity );
+	return Super::GetRowDisplayName( PrimaryKey, RowEntity );
 }
 
-FGuid UCharacterSchema::BuildClassIndex( const FInstancedStruct& RowEntity )
+FGuid UCharacterSchema::BuildClassIndex( const FCharacterRow& Row )
 {
-	if ( const FCharacterRow* Row = RowEntity.GetPtr<const FCharacterRow>() )
-	{
-		return FGuid( static_cast<uint32>( Row->Class ), 0, 0, 0 );
-	}
-
-	return {};
+	return FGuid( static_cast<uint32>( Row.Class ), 0, 0, 0 );
 }
 
-FGuid UCharacterSchema::BuildDefaultWeaponIndex( const FInstancedStruct& RowEntity )
+FGuid UCharacterSchema::BuildDefaultWeaponIndex( const FCharacterRow& Row )
 {
-	if ( const FCharacterRow* Row = RowEntity.GetPtr<const FCharacterRow>() )
+	if ( Row.DefaultWeapon.IsValid() )
 	{
-		if ( Row->DefaultWeapon.IsValid() )
-		{
-			return FGuid( Row->DefaultWeapon );
-		}
+		return FGuid( Row.DefaultWeapon );
 	}
 
 	return {};

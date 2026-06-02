@@ -2,6 +2,7 @@
 
 #include "DataIndexerKeyHelpers.h"
 #include "DataIndexerSchema.h"
+#include "Types/ItemTypes.h"
 
 #include "ItemSchema.generated.h"
 
@@ -30,15 +31,15 @@ protected:
 	virtual void InitializeExpandedStructEntries() override;
 #endif
 
-	virtual FText GetRowDisplayName_Implementation(
-		const FDataIndexerPrimaryKey& PrimaryKey, const FInstancedStruct& RowEntity ) const override;
+	virtual TOptional<FText> GetRowDisplayName(
+		const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const override;
 
 	UFUNCTION()
-	static FGuid BuildTypeIndex( const FInstancedStruct& RowEntity );
+	static FGuid BuildTypeIndex( const FItemRow& Row );
 
 	UFUNCTION()
-	static FGuid BuildRarityIndex( const FInstancedStruct& RowEntity );
+	static FGuid BuildRarityIndex( const FItemRow& Row );
 
 	UFUNCTION()
-	static FGuid BuildTypeAndRarityIndex( const FInstancedStruct& RowEntity );
+	static FGuid BuildTypeAndRarityIndex( const FItemRow& Row );
 };

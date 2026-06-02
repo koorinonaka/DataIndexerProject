@@ -1,6 +1,5 @@
 #pragma once
 
-#include "CoreMinimal.h"
 #include "DataIndexerSchemaInterface.h"
 #include "GameplayTagContainer.h"
 

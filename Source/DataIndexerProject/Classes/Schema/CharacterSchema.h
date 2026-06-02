@@ -2,6 +2,7 @@
 
 #include "DataIndexerKeyHelpers.h"
 #include "DataIndexerSchema.h"
+#include "Types/CharacterTypes.h"
 
 #include "CharacterSchema.generated.h"
 
@@ -29,14 +30,14 @@ protected:
 	virtual void InitializeExpandedStructEntries() override;
 #endif
 
-	virtual FText GetRowDisplayName_Implementation(
-		const FDataIndexerPrimaryKey& PrimaryKey, const FInstancedStruct& RowEntity ) const override;
+	virtual TOptional<FText> GetRowDisplayName(
+		const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const override;
 
 	UFUNCTION()
-	static FGuid BuildClassIndex( const FInstancedStruct& RowEntity );
+	static FGuid BuildClassIndex( const FCharacterRow& Row );
 
 	UFUNCTION()
-	static FGuid BuildDefaultWeaponIndex( const FInstancedStruct& RowEntity );
+	static FGuid BuildDefaultWeaponIndex( const FCharacterRow& Row );
 
 protected:
 	UPROPERTY( EditDefaultsOnly, Category = DataIndexer, meta = ( Schema = "/Script/DataIndexerProject.ItemSchema" ) )
