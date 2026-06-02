@@ -1,6 +1,8 @@
 #pragma once
 
+#include "CoreMinimal.h"
 #include "DataIndexerSchemaInterface.h"
+#include "GameplayTagContainer.h"
 
 #include "ItemTypes.generated.h"
 
@@ -39,6 +41,9 @@ struct DATAINDEXERPROJECT_API FItemRow
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 BaseValue = 0;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	FGameplayTagContainer MetadataTags;
 };
 
 using FItemInterface = DataIndexer::TNativeSchemaInterface<FItemRow>;
