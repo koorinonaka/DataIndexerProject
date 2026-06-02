@@ -116,8 +116,8 @@ A complete walkthrough — from creating a schema and repository to authoring ro
         UItemSchema();
 
     protected:
-        virtual FText GetRowDisplayName_Implementation(
-            const FDataIndexerPrimaryKey& PrimaryKey, const FInstancedStruct& RowEntity) const override;
+        virtual FText GetRowDisplayName(
+            const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity) const override;
     };
     ```
 
@@ -130,15 +130,15 @@ A complete walkthrough — from creating a schema and repository to authoring ro
         RowStruct = FItemRow::StaticStruct();
     }
 
-    FText UItemSchema::GetRowDisplayName_Implementation(
-        const FDataIndexerPrimaryKey& PrimaryKey, const FInstancedStruct& RowEntity) const
+    FText UItemSchema::GetRowDisplayName(
+        const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity) const
     {
         if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
         {
             return Row->DisplayName;
         }
 
-        return Super::GetRowDisplayName_Implementation(PrimaryKey, RowEntity);
+        return Super::GetRowDisplayName(PrimaryKey, RowEntity);
     }
     ```
 

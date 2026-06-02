@@ -128,15 +128,15 @@ struct DATAINDEXER_API FDataIndexerKeysHandle
     TObjectPtr<UDataIndexerRepository> Repository;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FDataIndexerIndex Index;
+    FDataIndexerIndexKey IndexKey;
     ...
 };
 ```
 
 **主な特性：**
 
-- `IsValid()` — Repository と Index が null/ゼロでないことを確認する。
-- `ForEachPrimaryKeys(Query, Callback)` — `Repository->ForEachPrimaryKeys(Index, Query, Callback)` に委譲する。`Query` は部分的に埋めた行構造体の `FConstStructView`。
+- `IsValid()` — Repository と IndexKey が null/ゼロでないことを確認する。
+- `ForEachPrimaryKeys(Query, Callback)` — `Repository->ForEachPrimaryKeys(IndexKey, Query, Callback)` に委譲する。`Query` は部分的に埋めた行構造体の `FConstStructView`。
 - Blueprint では `GetKeysByIndex` カスタム K2ノード を使って `TArray<FDataIndexerPrimaryKey>` を取得できる。
 
 **使うべき場面：** Blueprint やアセットがIndexを指定しておき、フィルター値（クエリ構造体）は呼び出し時に決める場合。正確なセットはランタイムにRepositoryの逆引きテーブルから解決される。

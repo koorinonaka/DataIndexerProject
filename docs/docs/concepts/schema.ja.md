@@ -31,15 +31,15 @@ Schema は 3 つのことを担当します。
         DI_DEFINE_INDEX(ByRarityIndex);
 
     protected:
-        virtual FText GetRowDisplayName_Implementation(
+        virtual FText GetRowDisplayName(
             const FDataIndexerPrimaryKey& PrimaryKey,
-            const FInstancedStruct& RowEntity) const override;
+            const FConstStructView& RowEntity) const override;
 
         UFUNCTION()
-        static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity);
+        static FGuid BuildTypeIndex(const FItemRow& Row);
 
         UFUNCTION()
-        static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity);
+        static FGuid BuildRarityIndex(const FItemRow& Row);
     };
     ```
 
@@ -55,74 +55,31 @@ Schema は 3 つのことを担当します。
 
     `DI_DEFINE_INDEX` で宣言したIndexごとに `RegisterFunction_BuildIndex` を呼び出し、ビルダー関数を紐付けます。
 
-    ### GetRowDisplayName_Implementation
+    ### GetRowDisplayName
 
-    `GetRowDisplayName_Implementation` をオーバーライドして行の表示名を返します。見つからない場合は `Super` に委譲します。
+    `GetRowDisplayName` の `virtual` をオーバーライドして行の表示名を返します。`RowEntity` は `FConstStructView` なので、1 行で具象 row struct にアンパックします。見つからない場合は `Super` に委譲します。
 
     ```cpp
-    FText UItemSchema::GetRowDisplayName_Implementation(
+    FText UItemSchema::GetRowDisplayName(
         const FDataIndexerPrimaryKey& PrimaryKey,
-        const FInstancedStruct& RowEntity) const
+        const FConstStructView& RowEntity) const
     {
         if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
         {
             return Row->DisplayName;
         }
-        return Super::GetRowDisplayName_Implementation( PrimaryKey, RowEntity );
+        return Super::GetRowDisplayName( PrimaryKey, RowEntity );
     }
     ```
 
     ### Build Index Functions
 
-    `DI_DEFINE_INDEX` でIndexを宣言し、対応する `static UFUNCTION` をビルダーとして実装します（[Index](indexes.md) 参照）。
+    `DI_DEFINE_INDEX` でIndexを宣言し、対応する `static UFUNCTION` をビルダーとして実装します。ビルダーは**具象 row struct** を直接受け取ります（[Index](indexes.md) 参照）。
 
     ```cpp
-    FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
+    FGuid UItemSchema::BuildTypeIndex(const FItemRow& Row)
     {
-        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-        {
-            return FGuid( static_cast<uint32>( Row->Type ), 0, 0, 0 );
-        }
-        return {};
-    }
-    ```
-
-    ### Property Text Customizations
-
-    `PropertyTextCustomizations` マップにプロパティ名と `FText` を返す関数ポインタを登録します。Blueprint の **Property Text Customizations** マップに相当します。
-
-    プロパティごとに `static UFUNCTION` を宣言し、コンストラクタで `RegisterFunction_PropertyTextCustomization` を呼び出します。
-
-    ```cpp
-    // クラス宣言内
-    UFUNCTION()
-    static FText GetTypeDisplayText(const FInstancedStruct& RowEntity);
-    ```
-
-    ```cpp
-    UItemSchema::UItemSchema()
-    {
-        RowStruct = FItemRow::StaticStruct();
-
-        RegisterFunction_PropertyTextCustomization(
-            GET_MEMBER_NAME_CHECKED(FItemRow, Type),
-            GET_FUNCTION_NAME_CHECKED(ThisClass, GetTypeDisplayText));
-    }
-    ```
-
-    ```cpp
-    FText UItemSchema::GetTypeDisplayText(const FInstancedStruct& RowEntity)
-    {
-        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-        {
-            switch (Row->Type)
-            {
-                case EItemType::Weapon: return NSLOCTEXT("Item", "TypeWeapon", "武器");
-                case EItemType::Armor:  return NSLOCTEXT("Item", "TypeArmor",  "防具");
-                default: break;
-            }
-        }
-        return FText::GetEmpty();
+        return FGuid( static_cast<uint32>( Row.Type ), 0, 0, 0 );
     }
     ```
 
@@ -135,23 +92,17 @@ Schema は 3 つのことを担当します。
 
     ### GetRowDisplayName
 
-    **Class Defaults** で `GetRowDisplayName` イベントをオーバーライドし、行構造体のフィールドから意味のある `FText` を返します。このラベルはエディタ UI 全体の行一覧・ピッカーで使用されます。
+    **Class Defaults** で **Row Display Name Function** を、行構造体のフィールドから意味のある `FText` を返す関数にバインドします。関数は**具象 row struct** を直接受け取るため `Get Instanced Struct Value` ノードは不要です。このラベルはエディタ UI 全体の行一覧・ピッカーで使用されます。
 
     ### Build Index Functions
 
-    **Class Defaults** の **Build Index Functions** マップでIndex ビルダーを登録します。キーはIndex名（文字列）、値は `FGuid` を返す関数です（[Index](indexes.md) 参照）。
+    **Class Defaults** の **Build Index Functions** マップでIndex ビルダーを登録します。キーはIndex、値は**具象 row struct** を受け取り `FGuid` を返す関数です。ピッカーは一致する関数のみ絞り込み、「Create matching function」は具象 row 引数のスタブを生成します（[Index](indexes.md) 参照）。
 
-    ### Property Text Customizations
+    ### Property Cell Widget Customizations
 
-    **Class Defaults** の **Property Text Customizations** マップで、プロパティ名をキーに `FText` を返す関数を登録します。Data View グリッドでのプロパティ値の表示テキストを上書きします。
+    **Class Defaults** の **Property Widget Customizations** マップで、プロパティ名をキーに `UUserWidget*` を返す関数を登録します。Data View グリッドのセル表示をカスタマイズできます。
 
-    上書きしたいプロパティごとにエントリを追加します。例えば `Type` を生の列挙値整数ではなくローカライズ済みラベルで表示する場合：
-
-    | キー（プロパティ名） | 値（関数） |
-    |---|---|
-    | `Type` | `GetTypeDisplayText` |
-
-    関数は `FInstancedStruct`（行）を受け取り `FText` を返します。デフォルト表示にフォールバックするには `FText::GetEmpty()` を返します。
+    カスタマイズ関数が `nullptr` を返した場合は、デフォルトのセル表示にフォールバックします。
 
 ## データバリデーション
 

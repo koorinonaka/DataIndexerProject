@@ -31,15 +31,15 @@ A schema does three things:
         DI_DEFINE_INDEX(ByRarityIndex);
 
     protected:
-        virtual FText GetRowDisplayName_Implementation(
+        virtual FText GetRowDisplayName(
             const FDataIndexerPrimaryKey& PrimaryKey,
-            const FInstancedStruct& RowEntity) const override;
+            const FConstStructView& RowEntity) const override;
 
         UFUNCTION()
-        static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity);
+        static FGuid BuildTypeIndex(const FItemRow& Row);
 
         UFUNCTION()
-        static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity);
+        static FGuid BuildRarityIndex(const FItemRow& Row);
     };
     ```
 
@@ -55,74 +55,31 @@ A schema does three things:
 
     Call `RegisterFunction_BuildIndex` once per `DI_DEFINE_INDEX` declaration to bind each builder function.
 
-    ### GetRowDisplayName_Implementation
+    ### GetRowDisplayName
 
-    Override `GetRowDisplayName_Implementation` to return the display name for a row. Fall back to `Super` when the row is not recognized.
+    Override the `GetRowDisplayName` `virtual` to return the display name for a row. `RowEntity` is a `FConstStructView`; unpack it to the concrete row struct in one line. Fall back to `Super` when the row is not recognized.
 
     ```cpp
-    FText UItemSchema::GetRowDisplayName_Implementation(
+    FText UItemSchema::GetRowDisplayName(
         const FDataIndexerPrimaryKey& PrimaryKey,
-        const FInstancedStruct& RowEntity) const
+        const FConstStructView& RowEntity) const
     {
         if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
         {
             return Row->DisplayName;
         }
-        return Super::GetRowDisplayName_Implementation( PrimaryKey, RowEntity );
+        return Super::GetRowDisplayName( PrimaryKey, RowEntity );
     }
     ```
 
     ### Build Index Functions
 
-    Declare indexes with `DI_DEFINE_INDEX` and implement the corresponding `static UFUNCTION` as the builder (see [Indexes](indexes.md)).
+    Declare indexes with `DI_DEFINE_INDEX` and implement the corresponding `static UFUNCTION` as the builder. The builder receives the **concrete row struct** directly (see [Indexes](indexes.md)).
 
     ```cpp
-    FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
+    FGuid UItemSchema::BuildTypeIndex(const FItemRow& Row)
     {
-        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-        {
-            return FGuid( static_cast<uint32>( Row->Type ), 0, 0, 0 );
-        }
-        return {};
-    }
-    ```
-
-    ### Property Text Customizations
-
-    Register property name and function pointer pairs in the `PropertyTextCustomizations` map. Equivalent to the Blueprint **Property Text Customizations** map.
-
-    Declare one `static UFUNCTION` per property and call `RegisterFunction_PropertyTextCustomization` in the constructor.
-
-    ```cpp
-    // In the class declaration
-    UFUNCTION()
-    static FText GetTypeDisplayText(const FInstancedStruct& RowEntity);
-    ```
-
-    ```cpp
-    UItemSchema::UItemSchema()
-    {
-        RowStruct = FItemRow::StaticStruct();
-
-        RegisterFunction_PropertyTextCustomization(
-            GET_MEMBER_NAME_CHECKED(FItemRow, Type),
-            GET_FUNCTION_NAME_CHECKED(ThisClass, GetTypeDisplayText));
-    }
-    ```
-
-    ```cpp
-    FText UItemSchema::GetTypeDisplayText(const FInstancedStruct& RowEntity)
-    {
-        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-        {
-            switch (Row->Type)
-            {
-                case EItemType::Weapon: return NSLOCTEXT("Item", "TypeWeapon", "Weapon");
-                case EItemType::Armor:  return NSLOCTEXT("Item", "TypeArmor",  "Armor");
-                default: break;
-            }
-        }
-        return FText::GetEmpty();
+        return FGuid( static_cast<uint32>( Row.Type ), 0, 0, 0 );
     }
     ```
 
@@ -135,23 +92,17 @@ A schema does three things:
 
     ### GetRowDisplayName
 
-    Override `GetRowDisplayName` in **Class Defaults** and return a meaningful `FText` from the row struct fields. This label is used throughout the editor UI in row lists and pickers.
+    In **Class Defaults**, bind **Row Display Name Function** to a function returning a meaningful `FText` from the row struct fields. The function receives the **concrete row struct** directly — no `Get Instanced Struct Value` node needed. This label is used throughout the editor UI in row lists and pickers.
 
     ### Build Index Functions
 
-    Use the **Build Index Functions** map in **Class Defaults** to register index builders. The key is the index name (string), the value is a function returning `FGuid` (see [Indexes](indexes.md)).
+    Use the **Build Index Functions** map in **Class Defaults** to register index builders. The key is the index, the value is a function taking the **concrete row struct** and returning `FGuid`. The picker filters to matching functions and "Create matching function" generates a stub with the concrete row parameter (see [Indexes](indexes.md)).
 
-    ### Property Text Customizations
+    ### Property Cell Widget Customizations
 
-    Use the **Property Text Customizations** map in **Class Defaults** to register per-property text rendering. The key is the property name, the value is a function returning `FText`. Overrides how property values appear in the Data View grid.
+    Use the **Property Widget Customizations** map in **Class Defaults** to register per-property widget rendering. The key is the property name, the value is a function returning `UUserWidget*`.
 
-    Add an entry for each property you want to override. For example, to render `Type` as a localized label instead of the raw enum integer:
-
-    | Key (property name) | Value (function) |
-    |---|---|
-    | `Type` | `GetTypeDisplayText` |
-
-    The function must accept `FInstancedStruct` (the row) and return `FText`. Return `FText::GetEmpty()` to fall back to the default display.
+    Return `nullptr` from the customization function to fall back to the default cell display.
 
 ## Data validation
 

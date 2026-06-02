@@ -15,26 +15,27 @@ Returns the `UScriptStruct` that defines the row shape. Set automatically from `
 ## GetRowDisplayName
 
 ```cpp
-UFUNCTION(BlueprintNativeEvent)
-FText GetRowDisplayName(
+virtual FText GetRowDisplayName(
     const FDataIndexerPrimaryKey& PrimaryKey,
-    const FInstancedStruct& RowEntity) const;
+    const FConstStructView& RowEntity) const;
 ```
 
-Returns a human-readable display name for a row. `BlueprintNativeEvent` — override `GetRowDisplayName_Implementation` in C++:
+Returns a human-readable display name for a row. The base implementation resolves the `RowDisplayNameFunction` binding (a function that takes the concrete row struct directly). Override the `virtual` in C++ to compute it natively, calling `Super` to fall back to the bound function:
 
 ```cpp
-FText UItemSchema::GetRowDisplayName_Implementation(
+FText UItemSchema::GetRowDisplayName(
     const FDataIndexerPrimaryKey& PrimaryKey,
-    const FInstancedStruct& RowEntity) const
+    const FConstStructView& RowEntity) const
 {
     if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
     {
         return Row->DisplayName;
     }
-    return Super::GetRowDisplayName_Implementation(PrimaryKey, RowEntity);
+    return Super::GetRowDisplayName(PrimaryKey, RowEntity);
 }
 ```
+
+From Blueprint, bind `RowDisplayNameFunction` in the Schema's Class Defaults to a function whose signature is `(const FDataIndexerPrimaryKey&, const FRowStruct&) → FText` — the row arrives as the concrete row struct, so no `Get Instanced Struct Value` unpacking node is needed.
 
 ---
 
@@ -88,23 +89,10 @@ void UItemSchema::PostInitProperties()
 }
 ```
 
-The function must match the `Prototype_BuildIndex` signature:
-`(const FInstancedStruct& RowEntity) → FGuid`
+The function takes the concrete row struct directly and returns the index key:
+`(const FRowStruct& Row) → FGuid`
 
----
-
-## RegisterFunction_CustomizePropertyText
-
-```cpp
-void RegisterFunction_CustomizePropertyText(
-    FName PropertyName,
-    FName FunctionName);
-```
-
-**(Editor-only)** Registers a function that provides custom text rendering for a specific property column in the Data View grid.
-
-The function must match the `Prototype_CustomizePropertyText` signature:
-`(const FInstancedStruct& RowEntity) → FText`
+When binding from Blueprint, the Schema details panel filters candidate functions to this signature and "Create matching function" generates a stub with a `const FRowStruct&` parameter — the row is already the concrete struct, so no `Get Instanced Struct Value` node is needed.
 
 ---
 
@@ -115,7 +103,7 @@ virtual TSharedRef<SWidget> CustomizePropertyCellWidget(
     DataIndexer::IPropertyWidgetContext& Context) const;
 ```
 
-**(Editor-only)** Override to provide a custom Slate widget for a cell in the Data View. The base implementation calls `CustomizePropertyWidgetCall` for registered widget customizations, falling back to the default property widget.
+**(Editor-only)** Override to provide a custom Slate widget for a cell in the Data View. The base implementation calls `CustomizePropertyWidgetCall` for registered Blueprint widget customizations, falling back to a simple text widget. `Context` exposes building blocks an override can reuse: `CreateAsSimpleText()`, `CreateAsEditInline()`, and `WrapUserWidget()`.
 
 ---
 

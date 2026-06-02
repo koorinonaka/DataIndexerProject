@@ -15,26 +15,27 @@ const UScriptStruct& GetRowStruct() const;
 ## GetRowDisplayName
 
 ```cpp
-UFUNCTION(BlueprintNativeEvent)
-FText GetRowDisplayName(
+virtual FText GetRowDisplayName(
     const FDataIndexerPrimaryKey& PrimaryKey,
-    const FInstancedStruct& RowEntity) const;
+    const FConstStructView& RowEntity) const;
 ```
 
-行の人間可読な表示名を返します。`BlueprintNativeEvent` — C++ では `GetRowDisplayName_Implementation` をオーバーライドします。
+行の人間可読な表示名を返します。基底実装は `RowDisplayNameFunction` バインド（具象 row struct を直接受け取る関数）を解決して呼びます。C++ では `virtual` をオーバーライドして表示名を求め、`Super` を呼べばバインドにフォールバックします。
 
 ```cpp
-FText UItemSchema::GetRowDisplayName_Implementation(
+FText UItemSchema::GetRowDisplayName(
     const FDataIndexerPrimaryKey& PrimaryKey,
-    const FInstancedStruct& RowEntity) const
+    const FConstStructView& RowEntity) const
 {
     if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
     {
         return Row->DisplayName;
     }
-    return Super::GetRowDisplayName_Implementation(PrimaryKey, RowEntity);
+    return Super::GetRowDisplayName(PrimaryKey, RowEntity);
 }
 ```
+
+Blueprint からは、Schema の Class Defaults で `RowDisplayNameFunction` を `(const FDataIndexerPrimaryKey&, const FRowStruct&) → FText` のシグネチャを持つ関数にバインドします。row は具象 row struct で渡るため `Get Instanced Struct Value` でアンパックするノードは不要です。
 
 ---
 
@@ -88,23 +89,10 @@ void UItemSchema::PostInitProperties()
 }
 ```
 
-関数は `Prototype_BuildIndex` シグネチャに一致している必要があります：  
-`(const FInstancedStruct& RowEntity) → FGuid`
+関数は具象 row struct を直接受け取り IndexKey を返します：  
+`(const FRowStruct& Row) → FGuid`
 
----
-
-## RegisterFunction_CustomizePropertyText
-
-```cpp
-void RegisterFunction_CustomizePropertyText(
-    FName PropertyName,
-    FName FunctionName);
-```
-
-**（エディタ専用）** Data View グリッドの特定プロパティカラムにカスタムテキストレンダリングを提供する関数を登録します。
-
-関数は `Prototype_CustomizePropertyText` シグネチャに一致している必要があります：  
-`(const FInstancedStruct& RowEntity) → FText`
+Blueprint からバインドする場合、Schema の details パネルが候補関数をこのシグネチャで絞り込み、「Create matching function」が `const FRowStruct&` 引数のスタブを生成します。row は具象 struct なので `Get Instanced Struct Value` ノードは不要です。
 
 ---
 
@@ -115,7 +103,7 @@ virtual TSharedRef<SWidget> CustomizePropertyCellWidget(
     DataIndexer::IPropertyWidgetContext& Context) const;
 ```
 
-**（エディタ専用）** Data View のセルにカスタム Slate ウィジェットを提供するためにオーバーライドします。基底実装は登録されたウィジェットカスタマイズに対して `CustomizePropertyWidgetCall` を呼び出し、なければデフォルトのプロパティウィジェットにフォールバックします。
+**（エディタ専用）** Data View のセルにカスタム Slate ウィジェットを提供するためにオーバーライドします。基底実装は登録された Blueprint ウィジェットカスタマイズに対して `CustomizePropertyWidgetCall` を呼び出し、なければシンプルなテキストウィジェットにフォールバックします。`Context` はオーバーライドが再利用できる部品（`CreateAsSimpleText()`、`CreateAsEditInline()`、`WrapUserWidget()`）を公開します。
 
 ---
 

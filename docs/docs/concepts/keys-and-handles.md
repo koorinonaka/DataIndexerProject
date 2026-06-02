@@ -128,15 +128,15 @@ struct DATAINDEXER_API FDataIndexerKeysHandle
     TObjectPtr<UDataIndexerRepository> Repository;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    FDataIndexerIndex Index;
+    FDataIndexerIndexKey IndexKey;
     ...
 };
 ```
 
 **Key properties:**
 
-- `IsValid()` — checks Repository and Index are non-null/non-zero.
-- `ForEachPrimaryKeys(Query, Callback)` — calls `Repository->ForEachPrimaryKeys(Index, Query, Callback)`, where `Query` is a `FConstStructView` of a partially-filled row struct.
+- `IsValid()` — checks Repository and IndexKey are non-null/non-zero.
+- `ForEachPrimaryKeys(Query, Callback)` — calls `Repository->ForEachPrimaryKeys(IndexKey, Query, Callback)`, where `Query` is a `FConstStructView` of a partially-filled row struct.
 - Use the `GetKeysByIndex` custom K2Node in Blueprint to get a `TArray<FDataIndexerPrimaryKey>`.
 
 **When to use:** When a Blueprint or asset needs to express "look up rows by this index" without fixing the filter value at authoring time. The filter (query struct) is supplied at call time and resolved against the repository's reverse lookup tables.

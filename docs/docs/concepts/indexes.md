@@ -56,10 +56,10 @@ public:
 
 protected:
     UFUNCTION()
-    static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity);
+    static FGuid BuildTypeIndex(const FItemRow& Row);
 
     UFUNCTION()
-    static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity);
+    static FGuid BuildRarityIndex(const FItemRow& Row);
 };
 ```
 
@@ -73,13 +73,9 @@ UItemSchema::UItemSchema()
     RegisterFunction_BuildIndex(ByRarityIndex(), GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
 }
 
-FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
+FGuid UItemSchema::BuildTypeIndex(const FItemRow& Row)
 {
-    if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-    {
-        return FGuid(static_cast<uint32>(Row->Type), 0, 0, 0);
-    }
-    return {};
+    return FGuid(static_cast<uint32>(Row.Type), 0, 0, 0);
 }
 ```
 
@@ -88,7 +84,7 @@ FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
 1. Open the Schema Blueprint → Class Defaults
 2. In **Build Index Functions**, add an entry:
    - **Key**: An `FDataIndexerIndex` variable (set a fixed GUID in the variable defaults)
-   - **Value**: A function reference matching the `Prototype_BuildIndex` signature (`RowEntity → FGuid`)
+   - **Value**: A function reference taking the concrete row struct (`const FRowStruct& → FGuid`). The picker filters to matching functions and can create a stub with the concrete row parameter.
 
 Implementation example (index by class):
 

@@ -56,10 +56,10 @@ public:
 
 protected:
     UFUNCTION()
-    static FGuid BuildTypeIndex(const FInstancedStruct& RowEntity);
+    static FGuid BuildTypeIndex(const FItemRow& Row);
 
     UFUNCTION()
-    static FGuid BuildRarityIndex(const FInstancedStruct& RowEntity);
+    static FGuid BuildRarityIndex(const FItemRow& Row);
 };
 ```
 
@@ -73,13 +73,9 @@ UItemSchema::UItemSchema()
     RegisterFunction_BuildIndex(ByRarityIndex(), GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
 }
 
-FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
+FGuid UItemSchema::BuildTypeIndex(const FItemRow& Row)
 {
-    if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-    {
-        return FGuid(static_cast<uint32>(Row->Type), 0, 0, 0);
-    }
-    return {};
+    return FGuid(static_cast<uint32>(Row.Type), 0, 0, 0);
 }
 ```
 
@@ -88,7 +84,7 @@ FGuid UItemSchema::BuildTypeIndex(const FInstancedStruct& RowEntity)
 1. Schema Blueprint を開いて **Class Defaults** へ
 2. **Build Index Functions** にエントリを追加：
    - **キー**：`FDataIndexerIndex` 変数（固定 GUID を変数デフォルト値に設定）
-   - **Value**：`Prototype_BuildIndex` シグネチャに合った関数参照（`RowEntity → FGuid`）
+   - **Value**：具象 row struct を受け取る関数参照（`const FRowStruct& → FGuid`）。ピッカーは一致する関数のみ絞り込み、具象 row 引数のスタブを生成できます。
 
 実装例（クラス別Index）：
 
