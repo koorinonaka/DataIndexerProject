@@ -34,15 +34,10 @@ TOptional<FText> UCharacterSchema::GetRowDisplayName(
 
 FGuid UCharacterSchema::BuildClassIndex( const FCharacterRow& Row )
 {
-	return FGuid( static_cast<uint32>( Row.Class ), 0, 0, 0 );
+	return static_cast<FGuid>( Row.Class );
 }
 
 FGuid UCharacterSchema::BuildDefaultWeaponIndex( const FCharacterRow& Row )
 {
-	if ( Row.DefaultWeapon.IsValid() )
-	{
-		return FGuid( Row.DefaultWeapon );
-	}
-
-	return {};
+	return static_cast<FGuid>( Row.DefaultWeapon );
 }

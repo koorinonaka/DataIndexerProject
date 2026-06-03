@@ -1,19 +1,19 @@
 [
   {
-    "PrimaryKey": "00000002-0000-0000-0000-000000000001",
+    "PrimaryKey": "E571B30E-AAB8-4482-8BC8-755AF1913D81",
     "RowEntity": {
       "DisplayName": "Arthur",
-      "Class": 0,
+      "Class": "AA0C388D-B4AD-4F77-891C-58A3D30C157C",
       "MaxHP": 200,
-      "DefaultWeapon": "00000001-0000-0000-0000-000000000001"
+      "DefaultWeapon": "43D743EA-4773-4EC4-8DF9-0E68899CFFDD"
     },
     "EditorFlags": 0
   },
   {
-    "PrimaryKey": "00000002-0000-0000-0000-000000000002",
+    "PrimaryKey": "AB274DE6-19D8-4D7B-BB2C-C8203118A2F1",
     "RowEntity": {
       "DisplayName": "Merlin",
-      "Class": 1,
+      "Class": "3BCB7085-C592-49CE-859F-423290F49E1C",
       "MaxHP": 150,
       "DefaultWeapon": "00000000-0000-0000-0000-000000000000"
     },

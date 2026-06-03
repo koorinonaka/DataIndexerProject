@@ -3,7 +3,6 @@
 #include "DataIndexerRepository.h"
 #include "DataIndexerTypes.h"
 #include "Engine/DataTable.h"
-#include "Types/CharacterTypes.h"
 
 #include "DataIndexerProjectTestTypes.generated.h"
 
@@ -34,7 +33,7 @@ struct FCharacterDataTableTestRow : public FTableRowBase
 	GENERATED_BODY()
 
 	UPROPERTY( EditAnywhere )
-	ECharacterClass Class = ECharacterClass::Warrior;
+	FName Class;
 
 	UPROPERTY( EditAnywhere )
 	int32 MaxHP = 100;

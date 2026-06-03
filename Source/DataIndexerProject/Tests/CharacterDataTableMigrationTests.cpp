@@ -44,7 +44,7 @@ struct FRowTuple
 	}
 };
 
-// "Warrior" stays "Warrior"; 0 becomes "Warrior". Returns empty on unrecognized input.
+// Class is a plain FName identifier (e.g. "Warrior") on both sides. Returns empty on unrecognized input.
 static FString NormalizeClassField( const TSharedPtr<FJsonValue>& Value )
 {
 	if ( !Value.IsValid() )
@@ -54,11 +54,6 @@ static FString NormalizeClassField( const TSharedPtr<FJsonValue>& Value )
 	if ( Value->Type == EJson::String )
 	{
 		return Value->AsString();
-	}
-	if ( Value->Type == EJson::Number )
-	{
-		const UEnum* Enum = StaticEnum<ECharacterClass>();
-		return Enum ? Enum->GetNameStringByValue( static_cast<int64>( Value->AsNumber() ) ) : FString();
 	}
 	return FString();
 }

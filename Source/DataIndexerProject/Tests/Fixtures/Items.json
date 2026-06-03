@@ -1,6 +1,6 @@
 [
   {
-    "PrimaryKey": "00000001-0000-0000-0000-000000000001",
+    "PrimaryKey": "43D743EA-4773-4EC4-8DF9-0E68899CFFDD",
     "RowEntity": {
       "DisplayName": "Iron Sword",
       "Type": 0,
@@ -10,7 +10,7 @@
     "EditorFlags": 0
   },
   {
-    "PrimaryKey": "00000001-0000-0000-0000-000000000002",
+    "PrimaryKey": "F1042C38-9D92-4271-B103-A1D48B3CE6FC",
     "RowEntity": {
       "DisplayName": "Steel Sword",
       "Type": 0,
@@ -20,7 +20,7 @@
     "EditorFlags": 0
   },
   {
-    "PrimaryKey": "00000001-0000-0000-0000-000000000003",
+    "PrimaryKey": "D6A40602-596C-4122-BB3F-ECB12BB5692C",
     "RowEntity": {
       "DisplayName": "Iron Shield",
       "Type": 1,
@@ -30,7 +30,7 @@
     "EditorFlags": 0
   },
   {
-    "PrimaryKey": "00000001-0000-0000-0000-000000000004",
+    "PrimaryKey": "5B51B448-3251-4E28-A622-7511982342DE",
     "RowEntity": {
       "DisplayName": "Silver Ring",
       "Type": 2,
@@ -40,7 +40,7 @@
     "EditorFlags": 0
   },
   {
-    "PrimaryKey": "00000001-0000-0000-0000-000000000005",
+    "PrimaryKey": "41E68C56-5809-4CFC-89A9-E426DCD39D02",
     "RowEntity": {
       "DisplayName": "Battle Axe",
       "Type": 0,

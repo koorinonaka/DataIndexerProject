@@ -12,20 +12,22 @@
 #include "StructUtils/InstancedStruct.h"
 
 // ── Fixture GUIDs — must match Tests/Fixtures/Items.json ─────────────────────
-//
-//  FGuid(A, B, C, D).ToString(DigitsWithHyphens) == "AAAAAAAA-BBBB-BBBB-CCCC-CCCCDDDDDDDD"
-//  where B/C are each split at bit 16.
-//
-//  FGuid(0x00000001, 0, 0, N) → "00000001-0000-0000-0000-0000000000NN"
 
 namespace DataIndexerProject::Tests::ItemFixture
 {
 
-static const FDataIndexerPrimaryKey IronSwordKey( FGuid( 0x00000001, 0, 0, 0x00000001 ) );
-static const FDataIndexerPrimaryKey SteelSwordKey( FGuid( 0x00000001, 0, 0, 0x00000002 ) );
-static const FDataIndexerPrimaryKey IronShieldKey( FGuid( 0x00000001, 0, 0, 0x00000003 ) );
-static const FDataIndexerPrimaryKey SilverRingKey( FGuid( 0x00000001, 0, 0, 0x00000004 ) );
-static const FDataIndexerPrimaryKey BattleAxeKey( FGuid( 0x00000001, 0, 0, 0x00000005 ) );
+static FDataIndexerPrimaryKey ParseKey( const TCHAR* InGuid )
+{
+	FGuid Guid;
+	verify( FGuid::Parse( InGuid, Guid ) );
+	return FDataIndexerPrimaryKey( Guid );
+}
+
+static const FDataIndexerPrimaryKey IronSwordKey = ParseKey( TEXT( "43D743EA-4773-4EC4-8DF9-0E68899CFFDD" ) );
+static const FDataIndexerPrimaryKey SteelSwordKey = ParseKey( TEXT( "F1042C38-9D92-4271-B103-A1D48B3CE6FC" ) );
+static const FDataIndexerPrimaryKey IronShieldKey = ParseKey( TEXT( "D6A40602-596C-4122-BB3F-ECB12BB5692C" ) );
+static const FDataIndexerPrimaryKey SilverRingKey = ParseKey( TEXT( "5B51B448-3251-4E28-A622-7511982342DE" ) );
+static const FDataIndexerPrimaryKey BattleAxeKey = ParseKey( TEXT( "41E68C56-5809-4CFC-89A9-E426DCD39D02" ) );
 
 static void AddItem( UItemSchemaTestRepository* Repo, const FDataIndexerPrimaryKey& Key, const FItemRow& Row )
 {

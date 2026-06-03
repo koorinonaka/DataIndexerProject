@@ -1,0 +1,30 @@
+[
+  {
+    "PrimaryKey": "AA0C388D-B4AD-4F77-891C-58A3D30C157C",
+    "RowEntity": {
+      "DisplayName": "Warrior"
+    },
+    "EditorFlags": 0
+  },
+  {
+    "PrimaryKey": "3BCB7085-C592-49CE-859F-423290F49E1C",
+    "RowEntity": {
+      "DisplayName": "Mage"
+    },
+    "EditorFlags": 0
+  },
+  {
+    "PrimaryKey": "B1FEC848-61BD-4A0F-BD7F-F3BD93B5F2A1",
+    "RowEntity": {
+      "DisplayName": "Rogue"
+    },
+    "EditorFlags": 0
+  },
+  {
+    "PrimaryKey": "63FB9F60-8CFA-4336-B0F7-C3A0E0F9D486",
+    "RowEntity": {
+      "DisplayName": "Priest"
+    },
+    "EditorFlags": 0
+  }
+]
