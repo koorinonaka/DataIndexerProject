@@ -1,0 +1,15 @@
+{#-
+  Override of mkdocs-material's source.html.
+  Drops data-md-component="source" so the theme's JS does not fetch and
+  append repository facts (star / fork counts) — the repo now points at a
+  Fab store listing, not a Git host.
+-#}
+<a href="{{ config.repo_url }}" title="{{ lang.t('source') }}" class="md-source" target="_blank" rel="noopener">
+  <div class="md-source__icon md-icon">
+    {% set icon = config.theme.icon.repo or "fontawesome/brands/git-alt" %}
+    {% include ".icons/" ~ icon ~ ".svg" %}
+  </div>
+  <div class="md-source__repository">
+    {{ config.repo_name }}
+  </div>
+</a>

@@ -6,8 +6,8 @@ site_description: >-
 docs_dir: docs
 site_dir: site
 
-repo_name: DataIndexerProject
-repo_url: https://github.com/koorinonaka/DataIndexerProject
+repo_name: Get on Fab
+repo_url: https://www.fab.com/listings/5f3d8032-670b-4536-994b-da1027ed1763
 edit_uri: ""
 
 theme:
@@ -48,7 +48,7 @@ theme:
     - content.code.annotate
     - content.tabs.link
   icon:
-    repo: fontawesome/brands/github
+    repo: custom/fab
 
 extra_css:
   - assets/stylesheets/tokens.css
@@ -165,8 +165,5 @@ nav:
 
 extra:
   generator: false
-  social:
-    - icon: fontawesome/brands/github
-      link: https://github.com/koorinonaka/DataIndexerProject
 
 copyright: Copyright &copy; 2026 Koorinonaka

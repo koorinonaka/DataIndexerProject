@@ -1,6 +1,6 @@
 # DataIndexerProject
 
-Sample project and documentation for the [DataIndexer](https://github.com/koorinonaka/DataIndexer) Unreal Engine plugin.
+Sample project and documentation for the DataIndexer Unreal Engine plugin, available on [Fab](https://www.fab.com/listings/5f3d8032-670b-4536-994b-da1027ed1763).
 
 ## Setup
 
