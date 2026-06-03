@@ -205,7 +205,7 @@
   margin: 0 auto;
   padding: 28px 48px 64px;
 }
-.md-content__inner > h1:first-child {
+.md-content__inner > h1 {
   font-size: 36px;
   line-height: 1.12;
   letter-spacing: -0.03em;
@@ -666,15 +666,30 @@ pre.mermaid {
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(15, 14, 13, 0.10);
   padding: 12px 48px;
   margin: 0 -48px 20px;
-  z-index: 4;
+  /* keep below .md-tabs (z-index 3) so the tabs' border-bottom stays visible */
+  z-index: 2;
+}
+
+/* underline spans full viewport width */
+.qs-progress::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 1px;
+  background: rgba(15, 14, 13, 0.10);
 }
 
 [data-md-color-scheme="slate"] .qs-progress {
   background: rgba(26, 25, 23, 0.92);
-  border-bottom: 1px solid rgba(255, 248, 235, 0.10);
+}
+
+[data-md-color-scheme="slate"] .qs-progress::before {
+  background: rgba(255, 248, 235, 0.10);
 }
 
 .qs-progress-rail {
@@ -1125,10 +1140,6 @@ img.fn-node {
   box-shadow: 0 1px 2px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.03);
   position: relative; overflow: hidden;
   transition: border-color 120ms, background 120ms;
-}
-.ov-mm-node:hover {
-  border-color: var(--md-accent-fg-color);
-  background: var(--md-accent-fg-color--transparent, var(--md-default-fg-color--lightest));
 }
 
 /* accent bar — opacity fades by step */
