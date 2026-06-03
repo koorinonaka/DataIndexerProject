@@ -1,0 +1,30 @@
+{
+	"FileVersion": 3,
+	"Version": 1,
+	"VersionName": "1.0",
+	"FriendlyName": "DataIndexer Toolset",
+	"Description": "Exposes DataIndexer repository create/import/export as AI Toolset Registry (MCP) tools. Editor-only, optional; keeps the shipped DataIndexer plugin free of MCP dependencies.",
+	"Category": "Other",
+	"CreatedBy": "koorinonaka",
+	"EditorOnly": true,
+	"IsExperimentalVersion": true,
+	"EnabledByDefault": false,
+	"Modules": [
+		{
+			"Name": "DataIndexerToolset",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit",
+			"TargetAllowList": [ "Editor" ]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ToolsetRegistry",
+			"Enabled": true
+		},
+		{
+			"Name": "DataIndexer",
+			"Enabled": true
+		}
+	]
+}
