@@ -65,6 +65,8 @@ Repositoryは 1 つ以上の親Repositoryを参照できます。走査・クエ
 === "Blueprint"
 
     Blueprint 変数の **Details** パネルを開きます。`UDataIndexerRepository` 変数を選択すると **Schema** ピッカーが表示されます。Schema アセットを選択すると、アセットピッカーが一致するRepositoryのみに絞り込まれます。ピッカーをクリアするとすべてのRepositoryが表示されます。
+
+![Schema Filter ピッカーでスキーマを選択してアセットピッカーを絞り込む](../assets/images/schema-filter-picker.png)
 ## シリアライズ
 
 バイナリアセット形式はカスタムの `Serialize` オーバーライドで `LocalEntries`・`EntryOwners`・`ReverseLookups` をシリアライズします。`ReverseLookups` は保存時にSchemaの `BuildIndexFunctions` から再構築されます。

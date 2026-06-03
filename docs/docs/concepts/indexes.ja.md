@@ -84,13 +84,13 @@ FGuid UItemSchema::BuildTypeIndex(const FItemRow& Row)
 1. Schema Blueprint を開いて **Class Defaults** へ
 2. **Build Index Functions** にエントリを追加：
    - **キー**：`FDataIndexerIndex` 変数（固定 GUID を変数デフォルト値に設定）
-   - **Value**：具象 row struct を受け取る関数参照（`const FRowStruct& → FGuid`）。ピッカーは一致する関数のみ絞り込み、具象 row 引数のスタブを生成できます。
+   - **Value**：実際の row struct を受け取る関数参照（`const FRowStruct& → FGuid`）。ピッカーは一致する関数のみ絞り込み、実際の row 引数のスタブを生成できます。
 
 実装例（クラス別Index）：
 
 ![BuildIndexByClass の実装例](../assets/images/build-index-by-class.png)
 
-`Get Instanced Struct Value` で行データを取り出し、`Enum to String` → `Parse String to Guid` でクラス Enum から決定論的 GUID を生成して返します。
+バインドした関数は実際の row struct を直接受け取り、`Enum to String` → `Parse String to Guid` でクラス Enum から決定論的 GUID を生成して返します。
 
 ## Indexによるクエリ
 

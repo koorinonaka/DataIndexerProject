@@ -15,23 +15,19 @@ Returns the `UScriptStruct` that defines the row shape. Set automatically from `
 ## GetRowDisplayName
 
 ```cpp
-virtual FText GetRowDisplayName(
+virtual TOptional<FText> GetRowDisplayName(
     const FDataIndexerPrimaryKey& PrimaryKey,
     const FConstStructView& RowEntity) const;
 ```
 
-Returns a human-readable display name for a row. The base implementation resolves the `RowDisplayNameFunction` binding (a function that takes the concrete row struct directly). Override the `virtual` in C++ to compute it natively, calling `Super` to fall back to the bound function:
+Returns a human-readable display name for a row, or `NullOpt` when none is available. The base implementation resolves the `RowDisplayNameFunction` binding (a function that takes the concrete row struct directly). Override the `virtual` in C++ to compute it natively — unpack `RowEntity` to the concrete row struct and return the field:
 
 ```cpp
-FText UItemSchema::GetRowDisplayName(
+TOptional<FText> UItemSchema::GetRowDisplayName(
     const FDataIndexerPrimaryKey& PrimaryKey,
     const FConstStructView& RowEntity) const
 {
-    if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-    {
-        return Row->DisplayName;
-    }
-    return Super::GetRowDisplayName(PrimaryKey, RowEntity);
+    return RowEntity.Get<const FItemRow>().DisplayName;
 }
 ```
 

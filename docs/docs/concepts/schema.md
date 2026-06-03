@@ -7,8 +7,8 @@
 A schema does three things:
 
 1. **Declares the row struct** — `RowStruct` is a `TObjectPtr<const UScriptStruct>` that identifies the struct type stored in the repository's `LocalEntries`.
-2. **Provides display logic** — `GetRowDisplayName` is a `BlueprintNativeEvent` that returns a human-readable label for any row, used throughout the editor UI.
-3. **Registers extension functions** — functions that generate index keys, customize property display text, and replace editor widgets are registered as named Blueprint or C++ functions.
+2. **Provides display logic** — `GetRowDisplayName` resolves the bound **Row Display Name Function** (or a C++ override) to return a human-readable label for any row, used throughout the editor UI.
+3. **Registers extension functions** — functions that generate index keys and customize property cell widgets are bound as named Blueprint or C++ functions that take the concrete row struct directly.
 
 ## Subclassing
 
@@ -31,7 +31,7 @@ A schema does three things:
         DI_DEFINE_INDEX(ByRarityIndex);
 
     protected:
-        virtual FText GetRowDisplayName(
+        virtual TOptional<FText> GetRowDisplayName(
             const FDataIndexerPrimaryKey& PrimaryKey,
             const FConstStructView& RowEntity) const override;
 
@@ -57,18 +57,14 @@ A schema does three things:
 
     ### GetRowDisplayName
 
-    Override the `GetRowDisplayName` `virtual` to return the display name for a row. `RowEntity` is a `FConstStructView`; unpack it to the concrete row struct in one line. Fall back to `Super` when the row is not recognized.
+    Override the `GetRowDisplayName` `virtual` to return the display name for a row. `RowEntity` is a `FConstStructView`; unpack it to the concrete row struct and return the field in one line.
 
     ```cpp
-    FText UItemSchema::GetRowDisplayName(
+    TOptional<FText> UItemSchema::GetRowDisplayName(
         const FDataIndexerPrimaryKey& PrimaryKey,
         const FConstStructView& RowEntity) const
     {
-        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-        {
-            return Row->DisplayName;
-        }
-        return Super::GetRowDisplayName( PrimaryKey, RowEntity );
+        return RowEntity.Get<const FItemRow>().DisplayName;
     }
     ```
 

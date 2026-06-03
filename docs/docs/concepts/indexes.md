@@ -90,7 +90,7 @@ Implementation example (index by class):
 
 ![BuildIndexByClass implementation example](../assets/images/build-index-by-class.png)
 
-`Get Instanced Struct Value` unpacks the row; `Enum to String` → `Parse String to Guid` derives a deterministic GUID from the class enum value.
+The bound function receives the concrete row struct directly; `Enum to String` → `Parse String to Guid` derives a deterministic GUID from the class enum value.
 
 ## Querying by index
 

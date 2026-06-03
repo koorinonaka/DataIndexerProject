@@ -7,8 +7,8 @@
 Schema は 3 つのことを担当します。
 
 1. **行構造体の宣言** — `RowStruct` は Repository の `LocalEntries` に格納される構造体型を識別する `TObjectPtr<const UScriptStruct>` です。
-2. **表示ロジックの提供** — `GetRowDisplayName` は任意の行に対して人間可読なラベルを返す `BlueprintNativeEvent` で、エディタ UI 全体で使用されます。
-3. **拡張関数の登録** — 行の検索キー生成・プロパティの表示テキスト・エディタウィジェットをカスタマイズする関数を、Blueprint または C++ の名前付き関数として登録します。
+2. **表示ロジックの提供** — `GetRowDisplayName` はバインドされた **Row Display Name Function**（または C++ オーバーライド）を解決し、任意の行に対して人間可読なラベルを返します。エディタ UI 全体で使用されます。
+3. **拡張関数の登録** — Index キー生成・プロパティのセルウィジェットをカスタマイズする関数を、実際の row struct を直接受け取る Blueprint または C++ の名前付き関数としてバインドします。
 
 ## サブクラス化
 
@@ -31,7 +31,7 @@ Schema は 3 つのことを担当します。
         DI_DEFINE_INDEX(ByRarityIndex);
 
     protected:
-        virtual FText GetRowDisplayName(
+        virtual TOptional<FText> GetRowDisplayName(
             const FDataIndexerPrimaryKey& PrimaryKey,
             const FConstStructView& RowEntity) const override;
 
@@ -57,24 +57,20 @@ Schema は 3 つのことを担当します。
 
     ### GetRowDisplayName
 
-    `GetRowDisplayName` の `virtual` をオーバーライドして行の表示名を返します。`RowEntity` は `FConstStructView` なので、1 行で具象 row struct にアンパックします。見つからない場合は `Super` に委譲します。
+    `GetRowDisplayName` の `virtual` をオーバーライドして行の表示名を返します。`RowEntity` は `FConstStructView` なので、1 行で実際の row struct にアンパックしてフィールドを返します。
 
     ```cpp
-    FText UItemSchema::GetRowDisplayName(
+    TOptional<FText> UItemSchema::GetRowDisplayName(
         const FDataIndexerPrimaryKey& PrimaryKey,
         const FConstStructView& RowEntity) const
     {
-        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-        {
-            return Row->DisplayName;
-        }
-        return Super::GetRowDisplayName( PrimaryKey, RowEntity );
+        return RowEntity.Get<const FItemRow>().DisplayName;
     }
     ```
 
     ### Build Index Functions
 
-    `DI_DEFINE_INDEX` でIndexを宣言し、対応する `static UFUNCTION` をビルダーとして実装します。ビルダーは**具象 row struct** を直接受け取ります（[Index](indexes.md) 参照）。
+    `DI_DEFINE_INDEX` でIndexを宣言し、対応する `static UFUNCTION` をビルダーとして実装します。ビルダーは**実際の row struct** を直接受け取ります（[Index](indexes.md) 参照）。
 
     ```cpp
     FGuid UItemSchema::BuildTypeIndex(const FItemRow& Row)
@@ -92,11 +88,11 @@ Schema は 3 つのことを担当します。
 
     ### GetRowDisplayName
 
-    **Class Defaults** で **Row Display Name Function** を、行構造体のフィールドから意味のある `FText` を返す関数にバインドします。関数は**具象 row struct** を直接受け取るため `Get Instanced Struct Value` ノードは不要です。このラベルはエディタ UI 全体の行一覧・ピッカーで使用されます。
+    **Class Defaults** で **Row Display Name Function** を、行構造体のフィールドから意味のある `FText` を返す関数にバインドします。関数は**実際の row struct** を直接受け取るため `Get Instanced Struct Value` ノードは不要です。このラベルはエディタ UI 全体の行一覧・ピッカーで使用されます。
 
     ### Build Index Functions
 
-    **Class Defaults** の **Build Index Functions** マップでIndex ビルダーを登録します。キーはIndex、値は**具象 row struct** を受け取り `FGuid` を返す関数です。ピッカーは一致する関数のみ絞り込み、「Create matching function」は具象 row 引数のスタブを生成します（[Index](indexes.md) 参照）。
+    **Class Defaults** の **Build Index Functions** マップでIndex ビルダーを登録します。キーはIndex、値は**実際の row struct** を受け取り `FGuid` を返す関数です。ピッカーは一致する関数のみ絞り込み、「Create matching function」は実際の row 引数のスタブを生成します（[Index](indexes.md) 参照）。
 
     ### Property Cell Widget Customizations
 

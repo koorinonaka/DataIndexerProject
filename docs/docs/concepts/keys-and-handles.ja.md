@@ -45,6 +45,14 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
 === "Blueprint"
 
     Blueprint 変数の **Details** パネルを開きます。`FDataIndexerPrimaryKey` 変数を選択すると **Repository** ドロップダウンが表示されます。行ピッカーに使用するプロパティ名または関数名を選択してください。
+
+    ![Repository ドロップダウン](../assets/images/repository-metadata-picker.png)
+
+    ドロップダウンには既存の `UDataIndexerRepository*` 変数（**Variables**）と引数なしリゾルバ関数（**Functions**）が一覧表示されます。該当する変数・関数がまだ無い場合は、その場で作成できる 2 つのショートカットも用意されています。
+
+    - **Create Repository Variable** — `UDataIndexerRepository*` 型のメンバー変数（既定名 `Repository`）を新規追加し、それを Repository ソースとして選択します。最も手軽な方法で、参照する Repository を変数として外部から差し込めます。
+    - **Create Matching Function** — `UDataIndexerRepository*` を返す BlueprintPure 関数（名前は `Get<変数名>Repository`）を生成し、グラフを開いて選択状態にします。Repository を動的に決定したい場合（条件分岐・別アセットからの取得など）に使用し、関数本体で解決ロジックを実装します。
+
 ### `ReadOnlyKeys` メタデータ
 
 `FDataIndexerPrimaryKey` Blueprint 変数を読み取り専用にします。行ピッカーが非表示になり、値はプログラムからのみ設定できます。

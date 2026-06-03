@@ -67,7 +67,7 @@ DataIndexer は DataTable 形式の JSON を直接インポートできます。
 `PrimaryKey` は各行に対して自動生成されます（JSON に `PrimaryKey` フィールドがあればその GUID が使われます）。インポートは**完全置換**として実行されます — 既存の行はすべて削除され、JSON の内容で置き換えられます。保存後、エディタがセカンダリ Index を自動再構築します。
 
 !!! note "行名を表示名として使う場合"
-    DataTable の行名は人間可読なラベルとしても機能していることがあります。多くの場合は **(Ignore)** で行名を捨て、代わりに Schema の `GetRowDisplayName` を実装して実際の行フィールド（例: `DisplayName`）から意味のある `FText` を返すのが推奨です。DataIndexer のエディタや Blueprint ノードは、行名が表示されていた場所でこの関数の結果を使用します。
+    DataTable の行名は人間可読なラベルとしても機能していることがあります。多くの場合は **(Ignore)** で行名を捨て、代わりに Schema の **Row Display Name Function** をバインド（または C++ で `GetRowDisplayName` をオーバーライド）して実際の行フィールド（例: `DisplayName`）から意味のある `FText` を返すのが推奨です。DataIndexer のエディタや Blueprint ノードは、行名が表示されていた場所でこの関数の結果を使用します。
 
 ## Step 4 — ランタイム参照を更新する
 
@@ -123,6 +123,10 @@ DataIndexer は DataTable 形式の JSON を直接インポートできます。
         }
     }
     ```
+
+=== "移行後（Blueprint）"
+
+    **Get All Primary Keys** に Repository を渡して全 PrimaryKey を取得し、**For Each Loop** で各キーに **Get Row** を呼び出します。
 
 ### 名前ベースのルックアップを Index に置き換える
 

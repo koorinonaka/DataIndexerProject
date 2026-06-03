@@ -30,12 +30,7 @@ void UItemSchema::InitializeExpandedStructEntries()
 TOptional<FText> UItemSchema::GetRowDisplayName(
 	const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const
 {
-	if ( const FItemRow* Row = RowEntity.GetPtr<const FItemRow>() )
-	{
-		return Row->DisplayName;
-	}
-
-	return Super::GetRowDisplayName( PrimaryKey, RowEntity );
+	return RowEntity.Get<const FItemRow>().DisplayName;
 }
 
 FGuid UItemSchema::BuildTypeIndex( const FItemRow& Row )

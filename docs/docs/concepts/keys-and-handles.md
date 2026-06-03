@@ -45,6 +45,14 @@ The value is the **name of a property or function** on the same class that retur
 === "Blueprint"
 
     Open the Blueprint variable's **Details** panel. With a `FDataIndexerPrimaryKey` variable selected, a **Repository** dropdown appears. Choose the property or function that supplies the row set.
+
+    ![Repository dropdown](../assets/images/repository-metadata-picker.png)
+
+    The dropdown lists existing `UDataIndexerRepository*` variables (**Variables**) and no-arg resolver functions (**Functions**). When none exists yet, two shortcuts let you create one in place:
+
+    - **Create Repository Variable** — adds a new `UDataIndexerRepository*` member variable (default name `Repository`) and selects it as the source. The simplest option: the repository to reference is injected as a variable from outside.
+    - **Create Matching Function** — generates a BlueprintPure function returning `UDataIndexerRepository*` (named `Get<VarName>Repository`), opens its graph, and selects it. Use this when the repository must be resolved dynamically (branching, fetching from another asset); implement the resolver logic in the function body.
+
 ### `ReadOnlyKeys` metadata
 
 Marks a `FDataIndexerPrimaryKey` Blueprint variable as read-only. The row-picker is hidden; the stored value can only be set programmatically.

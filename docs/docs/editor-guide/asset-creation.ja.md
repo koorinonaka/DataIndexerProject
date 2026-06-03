@@ -11,22 +11,24 @@ Schema Blueprint を作成する前に、使用する行構造体を定義しま
 1. **Content Browser** で右クリック → **Blueprint Class**
 2. クラスピッカーで `DataIndexerSchema` を検索する
 3. 選択して **Select** をクリックする
-4. アセット名を付けて（例：`BP_ItemSchema`）ダブルクリックして開く
+4. アセット名を付けて（例：`BP_AbilitySchema`）ダブルクリックして開く
 5. **Class Defaults** パネルで：
    - **Row Struct** を行データを定義する `USTRUCT` 型に設定する
-   - 必要に応じて **Get Row Display Name**（Blueprint イベント）をオーバーライドして人間可読なラベルを返す
+   - 必要に応じて **Row Display Name Function** を人間可読なラベルを返す関数にバインドする
 
-**Get Row Display Name** を実装すると、各行に人間可読なラベルを付けられます。以下の例では `AbilityClass` をそのまま表示名として使用しています。
+![Class Defaults パネルで Row Display Name Function をバインド](../assets/images/schema-row-display-name-binding.png)
 
-![AbilityClass を表示名として返す GetRowDisplayName の実装](../assets/images/schema-get-row-display-name.png)
+**Row Display Name Function** をバインドすると、各行に人間可読なラベルを付けられます。バインドした関数は実際の row struct を直接受け取るので、Break して返したいフィールドを取り出します。以下の例では行の `DisplayName` フィールドを返しています。
+
+![DisplayName フィールドを返す GetRowDisplayName の実装](../assets/images/schema-get-row-display-name.png)
 
 !!! tip "命名規則（推奨）"
-    Schema Blueprint には `BP_` プレフィックスと `Schema` サフィックスを付けることを推奨します — 例：`BP_ItemSchema`、`BP_QuestSchema`。
+    Schema Blueprint には `BP_` プレフィックスと `Schema` サフィックスを付けることを推奨します — 例：`BP_AbilitySchema`、`BP_QuestSchema`。
 
 ## Repository アセットの作成
 
 1. **Content Browser** で右クリック → **Miscellaneous → DataIndexer**
-2. **Pick Class** ダイアログで使用するSchema（例：`BP_ItemSchema`）を選択する
+2. **Pick Class** ダイアログで使用するSchema（例：`BP_AbilitySchema`）を選択する
 3. 名前を付けてアセットを開く
 
 !!! note "Schemaの変更"

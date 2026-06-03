@@ -100,7 +100,7 @@ A complete walkthrough — from creating a schema and repository to authoring ro
 
     **Implement a C++ Schema**{ .step-label }
 
-    Set `RowStruct` and implement `GetRowDisplayName`:
+    Set `RowStruct` and override `GetRowDisplayName`:
 
     ```cpp title="ItemSchema.h"
     #pragma once
@@ -116,7 +116,7 @@ A complete walkthrough — from creating a schema and repository to authoring ro
         UItemSchema();
 
     protected:
-        virtual FText GetRowDisplayName(
+        virtual TOptional<FText> GetRowDisplayName(
             const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity) const override;
     };
     ```
@@ -130,15 +130,10 @@ A complete walkthrough — from creating a schema and repository to authoring ro
         RowStruct = FItemRow::StaticStruct();
     }
 
-    FText UItemSchema::GetRowDisplayName(
+    TOptional<FText> UItemSchema::GetRowDisplayName(
         const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity) const
     {
-        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-        {
-            return Row->DisplayName;
-        }
-
-        return Super::GetRowDisplayName(PrimaryKey, RowEntity);
+        return RowEntity.Get<const FItemRow>().DisplayName;
     }
     ```
 
@@ -152,20 +147,24 @@ A complete walkthrough — from creating a schema and repository to authoring ro
     ![Creating a Blueprint struct for row data](assets/images/bp-struct-creation.png)
 
     1. Right-click in the **Content Browser** → **Blueprints → Structure**
-    2. Name it (e.g., `S_ItemRow`) and double-click to open
-    3. Add a variable for each data field — `DisplayName` (Text), `Type` (Enum), `BaseValue` (Integer), etc.
+    2. Name it (e.g., `S_Ability`) and double-click to open
+    3. Add a variable for each data field — `DisplayName` (Text), `Description` (Text), `AbilityType` (Enum), `TargetType` (Enum), `LevelData` (struct array), etc.
 
     **Create a Schema Blueprint**{ .step-label }
 
     A Schema Blueprint links your struct to a repository and controls editor behavior.
 
     1. Right-click → **Blueprint Class**, search for `DataIndexerSchema`, select it
-    2. Name it (e.g., `BP_ItemSchema`) and open it
-    3. In **Class Defaults → Row Struct**, select your struct (`S_ItemRow`)
+    2. Name it (e.g., `BP_AbilitySchema`) and open it
+    3. In **Class Defaults → Row Struct**, select your struct (`S_Ability`)
 
-    Optionally implement **Get Row Display Name** to show a readable label per row in the Data View:
+    Optionally bind the **Row Display Name Function** to show a readable label per row in the Data View. In **Class Defaults**, open the binding picker:
 
-    ![GetRowDisplayName implementation](assets/images/schema-get-row-display-name.png)
+    ![Binding the Row Display Name Function in Class Defaults](assets/images/schema-row-display-name-binding.png)
+
+    The bound function receives the concrete row struct directly — break it and return the field to use as the label:
+
+    ![GetRowDisplayName implementation returning the DisplayName field](assets/images/schema-get-row-display-name.png)
 
     !!! note
         This logic handles the per-row display equivalent of DataTable's RowName. Rows are automatically renamed by referencing this function, keeping labels always in sync.
@@ -185,7 +184,7 @@ A complete walkthrough — from creating a schema and repository to authoring ro
     </li>
     <li>
       <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
-      <span><strong>Display name logic</strong> — <code>GetRowDisplayName</code> is implemented (optional)</span>
+      <span><strong>Display name logic</strong> — <strong>Row Display Name Function</strong> is bound (optional)</span>
     </li>
   </ul>
 </div>
@@ -197,8 +196,8 @@ A complete walkthrough — from creating a schema and repository to authoring ro
 **Create a Repository**{ .step-label }
 
 1. Right-click → **Miscellaneous → DataIndexer** and select the Repository asset type
-2. In the Pick Class Dialog, select your schema (e.g., `BP_ItemSchema` or `UItemSchema`)
-3. Name it (e.g., `DI_Items`) and open it
+2. In the Pick Class Dialog, select your schema (e.g., `BP_AbilitySchema` or `UItemSchema`)
+3. Name it (e.g., `DI_Abilities`) and open it
 
 !!! note "Changing the schema"
     The bound schema **can be changed** as long as the Row Struct matches. If the Row Struct differs, migrate via JSON Export / Import.

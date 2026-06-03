@@ -15,27 +15,23 @@ const UScriptStruct& GetRowStruct() const;
 ## GetRowDisplayName
 
 ```cpp
-virtual FText GetRowDisplayName(
+virtual TOptional<FText> GetRowDisplayName(
     const FDataIndexerPrimaryKey& PrimaryKey,
     const FConstStructView& RowEntity) const;
 ```
 
-行の人間可読な表示名を返します。基底実装は `RowDisplayNameFunction` バインド（具象 row struct を直接受け取る関数）を解決して呼びます。C++ では `virtual` をオーバーライドして表示名を求め、`Super` を呼べばバインドにフォールバックします。
+行の人間可読な表示名を返します。利用できなければ `NullOpt` を返します。基底実装は `RowDisplayNameFunction` バインド（実際の row struct を直接受け取る関数）を解決して呼びます。C++ では `virtual` をオーバーライドして表示名を求めます — `RowEntity` を concrete row struct に unpack してフィールドを返します。
 
 ```cpp
-FText UItemSchema::GetRowDisplayName(
+TOptional<FText> UItemSchema::GetRowDisplayName(
     const FDataIndexerPrimaryKey& PrimaryKey,
     const FConstStructView& RowEntity) const
 {
-    if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-    {
-        return Row->DisplayName;
-    }
-    return Super::GetRowDisplayName(PrimaryKey, RowEntity);
+    return RowEntity.Get<const FItemRow>().DisplayName;
 }
 ```
 
-Blueprint からは、Schema の Class Defaults で `RowDisplayNameFunction` を `(const FDataIndexerPrimaryKey&, const FRowStruct&) → FText` のシグネチャを持つ関数にバインドします。row は具象 row struct で渡るため `Get Instanced Struct Value` でアンパックするノードは不要です。
+Blueprint からは、Schema の Class Defaults で `RowDisplayNameFunction` を `(const FDataIndexerPrimaryKey&, const FRowStruct&) → FText` のシグネチャを持つ関数にバインドします。row は実際の row struct で渡るため `Get Instanced Struct Value` でアンパックするノードは不要です。
 
 ---
 
@@ -89,10 +85,10 @@ void UItemSchema::PostInitProperties()
 }
 ```
 
-関数は具象 row struct を直接受け取り IndexKey を返します：  
+関数は実際の row struct を直接受け取り IndexKey を返します：  
 `(const FRowStruct& Row) → FGuid`
 
-Blueprint からバインドする場合、Schema の details パネルが候補関数をこのシグネチャで絞り込み、「Create matching function」が `const FRowStruct&` 引数のスタブを生成します。row は具象 struct なので `Get Instanced Struct Value` ノードは不要です。
+Blueprint からバインドする場合、Schema の details パネルが候補関数をこのシグネチャで絞り込み、「Create matching function」が `const FRowStruct&` 引数のスタブを生成します。row は実際の struct なので `Get Instanced Struct Value` ノードは不要です。
 
 ---
 

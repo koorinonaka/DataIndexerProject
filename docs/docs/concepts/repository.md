@@ -13,7 +13,7 @@ title: Repository
 | `SchemaClass` | `TSubclassOf<UDataIndexerSchema>` | Determines the row struct and editor behavior |
 | `LocalEntries` | `TMap<FDataIndexerPrimaryKey, FInstancedStruct>` | The rows owned directly by this repository |
 | `EntryOwners` | `TMap<FDataIndexerPrimaryKey, TObjectPtr<UDataIndexerRepository>>` | Tracks which repository in the hierarchy owns each key |
-| `ReverseLookups` | `TMap<FDataIndexerIndex, FLookupIndex>` | Secondary index tables built at save time |
+| `ReverseLookups` | `TMap<FDataIndexerIndexKey, FLookupIndex>` | Secondary index tables built at save time |
 | `ParentRepositories` | `TArray<TObjectPtr<UDataIndexerRepository>>` | Inherited repositories (editor-only authoring) |
 
 ## Parent repository composition
@@ -80,7 +80,7 @@ Iterates all primary keys visible through this repository (including parents). O
 
 ```cpp
 void ForEachPrimaryKeys(
-    const FDataIndexerIndex& Index,
+    const FDataIndexerIndexKey& IndexKey,
     const FConstStructView Query,
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback) const;
 ```
@@ -111,6 +111,8 @@ When a class owns a `UDataIndexerRepository` UPROPERTY and should be constrained
 === "Blueprint"
 
     Open the Blueprint variable's **Details** panel. With a `UDataIndexerRepository` variable selected, a **Schema** picker appears. Selecting a schema restricts the asset picker to only matching repositories. Clear the picker to show all repositories.
+
+![Schema Filter picker selecting a schema to filter the asset picker](../assets/images/schema-filter-picker.png)
 ## Serialization
 
 The binary asset format serializes `LocalEntries`, `EntryOwners`, and `ReverseLookups` via a custom `Serialize` override. `ReverseLookups` are rebuilt at save time from `BuildIndexFunctions` on the schema.

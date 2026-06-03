@@ -67,7 +67,7 @@ The format is detected automatically based on whether the first element has a `R
 A `PrimaryKey` is auto-generated per row (if the JSON contains a `PrimaryKey` field, that GUID is used instead). The import is a **full replacement** — all existing rows are deleted and replaced. After save, the editor rebuilds secondary indexes automatically.
 
 !!! note "Row name as display field"
-    DataTable row names often double as human-readable labels. In most cases, choose **(Ignore)** to drop the row name and instead implement `GetRowDisplayName` in your schema to return a meaningful `FText` from an actual row field (e.g. `DisplayName`). DataIndexer's editor and Blueprint nodes use this everywhere row names appeared before.
+    DataTable row names often double as human-readable labels. In most cases, choose **(Ignore)** to drop the row name and instead bind the schema's **Row Display Name Function** (or override `GetRowDisplayName` in C++) to return a meaningful `FText` from an actual row field (e.g. `DisplayName`). DataIndexer's editor and Blueprint nodes use this everywhere row names appeared before.
 
 ## Step 4 — Update runtime references
 
@@ -123,6 +123,10 @@ A `PrimaryKey` is auto-generated per row (if the JSON contains a `PrimaryKey` fi
         }
     }
     ```
+
+=== "After (Blueprint)"
+
+    Pass a repository to **Get All Primary Keys** to retrieve all primary keys, then loop with **For Each Loop** and call **Get Row** for each key.
 
 ### Replace name-based lookup with an index
 

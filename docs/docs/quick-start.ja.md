@@ -100,7 +100,7 @@ Schemaと Repository の作成から行のオーサリング、ランタイム�
 
     **C++ Schemaを実装**{ .step-label }
 
-    `RowStruct` を設定し、`GetRowDisplayName` を実装します：
+    `RowStruct` を設定し、`GetRowDisplayName` をオーバーライドします：
 
     ```cpp title="ItemSchema.h"
     #pragma once
@@ -116,7 +116,7 @@ Schemaと Repository の作成から行のオーサリング、ランタイム�
         UItemSchema();
 
     protected:
-        virtual FText GetRowDisplayName(
+        virtual TOptional<FText> GetRowDisplayName(
             const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity) const override;
     };
     ```
@@ -130,15 +130,10 @@ Schemaと Repository の作成から行のオーサリング、ランタイム�
         RowStruct = FItemRow::StaticStruct();
     }
 
-    FText UItemSchema::GetRowDisplayName(
+    TOptional<FText> UItemSchema::GetRowDisplayName(
         const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity) const
     {
-        if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
-        {
-            return Row->DisplayName;
-        }
-
-        return Super::GetRowDisplayName(PrimaryKey, RowEntity);
+        return RowEntity.Get<const FItemRow>().DisplayName;
     }
     ```
 
@@ -152,20 +147,24 @@ Schemaと Repository の作成から行のオーサリング、ランタイム�
     ![行データ用の Blueprint 構造体を作成](assets/images/bp-struct-creation.png)
 
     1. **Content Browser** で右クリック → **Blueprints → Structure**
-    2. 名前を付け（例：`S_ItemRow`）、ダブルクリックで開く
-    3. データフィールドごとに変数を追加 — `DisplayName`（Text）、`Type`（列挙型）、`BaseValue`（Integer）など
+    2. 名前を付け（例：`S_Ability`）、ダブルクリックで開く
+    3. データフィールドごとに変数を追加 — `DisplayName`（Text）、`Description`（Text）、`AbilityType`（列挙型）、`TargetType`（列挙型）、`LevelData`（構造体配列）など
 
     **Schema Blueprint を作成**{ .step-label }
 
     Schema Blueprint は構造体を Repository に紐付け、エディタの動作を制御します。
 
     1. 右クリック → **Blueprint Class**、`DataIndexerSchema` を検索して選択
-    2. 名前を付け（例：`BP_ItemSchema`）、ダブルクリックで開く
-    3. **Class Defaults → Row Struct** に作成した構造体（`S_ItemRow`）を設定
+    2. 名前を付け（例：`BP_AbilitySchema`）、ダブルクリックで開く
+    3. **Class Defaults → Row Struct** に作成した構造体（`S_Ability`）を設定
 
-    **Get Row Display Name** を実装すると、Data View に各行の読みやすいラベルを表示できます：
+    **Row Display Name Function** をバインドすると、Data View に各行の読みやすいラベルを表示できます。**Class Defaults** でバインドピッカーを開きます：
 
-    ![GetRowDisplayName の実装例](assets/images/schema-get-row-display-name.png)
+    ![Class Defaults で Row Display Name Function をバインド](assets/images/schema-row-display-name-binding.png)
+
+    バインドした関数は実際の row struct を直接受け取るので、Break してラベルに使うフィールドを返します：
+
+    ![DisplayName フィールドを返す GetRowDisplayName の実装例](assets/images/schema-get-row-display-name.png)
 
     !!! note
         DataTable の RowName に相当する表示はこのロジックが担当します。関数を参照して自動でリネームされるため、常に最新の表示名が維持されます。
@@ -185,7 +184,7 @@ Schemaと Repository の作成から行のオーサリング、ランタイム�
     </li>
     <li>
       <span class="qs-complete-check"><svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m3 8 3 3 7-7"/></svg></span>
-      <span><strong>表示名ロジック</strong> — <code>GetRowDisplayName</code> が実装されている（任意）</span>
+      <span><strong>表示名ロジック</strong> — <strong>Row Display Name Function</strong> がバインドされている（任意）</span>
     </li>
   </ul>
 </div>
@@ -197,7 +196,7 @@ Schemaと Repository の作成から行のオーサリング、ランタイム�
 **Repository を作成**{ .step-label }
 
 1. 右クリック → **Miscellaneous → DataIndexer** アセットを選択
-2. Pick Class Dialog でSchema（例：`BP_ItemSchema` または `UItemSchema`）を選択
+2. Pick Class Dialog でSchema（例：`BP_AbilitySchema` または `UItemSchema`）を選択
 3. 名前を付けてアセットを開く
 
 !!! note "Schemaの変更"
