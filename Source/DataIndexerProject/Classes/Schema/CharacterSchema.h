@@ -10,7 +10,7 @@
  * Schema for CharacterRepository.
  *
  * Indexes:
- *   ByClassIndex         — group characters by ECharacterClass
+ *   ByClassIndex         — group characters by their CharacterClass row (CharacterClassRepository key)
  *   ByDefaultWeaponIndex — reverse lookup: given an Item PrimaryKey, find all characters
  *                          whose DefaultWeapon points to that item
  */
@@ -42,4 +42,7 @@ protected:
 protected:
 	UPROPERTY( EditDefaultsOnly, Category = DataIndexer, meta = ( Schema = "/Script/DataIndexerProject.ItemSchema" ) )
 	TObjectPtr<UDataIndexerRepository> ItemRepository;
+
+	UPROPERTY( EditDefaultsOnly, Category = DataIndexer, meta = ( Schema = "/Script/DataIndexerProject.CharacterClassSchema" ) )
+	TObjectPtr<UDataIndexerRepository> CharacterClassRepository;
 };

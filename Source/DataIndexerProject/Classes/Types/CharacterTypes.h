@@ -6,15 +6,6 @@
 
 #include "CharacterTypes.generated.h"
 
-UENUM( BlueprintType )
-enum class ECharacterClass : uint8
-{
-	Warrior UMETA( DisplayName = "Warrior" ),
-	Mage UMETA( DisplayName = "Mage" ),
-	Rogue UMETA( DisplayName = "Rogue" ),
-	Priest UMETA( DisplayName = "Priest" ),
-};
-
 USTRUCT( BlueprintType )
 struct DATAINDEXERPROJECT_API FCharacterRow
 {
@@ -23,8 +14,8 @@ struct DATAINDEXERPROJECT_API FCharacterRow
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FText DisplayName;
 
-	UPROPERTY( EditAnywhere, BlueprintReadWrite )
-	ECharacterClass Class = ECharacterClass::Warrior;
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, meta = ( Repository = "CharacterClassRepository" ) )
+	FDataIndexerPrimaryKey Class;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 MaxHP = 100;
