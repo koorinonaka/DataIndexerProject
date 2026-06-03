@@ -54,6 +54,9 @@ Plugins/**/Intermediate/
 DerivedDataCache/
 *_BuiltData.uasset
 
+# UE5 per-project user settings (editor UI state, local MCP server config)
+Config/DefaultEditorPerProjectUserSettings.ini
+
 # MkDocs
 docs/site/
 docs/.venv/
