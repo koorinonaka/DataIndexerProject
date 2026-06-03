@@ -40,7 +40,8 @@ class UMyDrivenCollection : public UDataIndexerDrivenCollection
 public:
     UMyDrivenCollection();
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly, EditFixedSize,
+        meta = (ReadOnlyKeys, Repository = "SourceRepository"))
     TMap<FDataIndexerPrimaryKey, FMyCurveData> Entries;
 
 #if WITH_EDITOR
@@ -74,6 +75,17 @@ UMyDrivenCollection::UMyDrivenCollection()
 }
 ```
 
+!!! warning "エントリ TMap に必須のメタデータ"
+    エントリ `TMap` には次の指定子が**必須**です。欠けると Details パネルが正しく動作しません。
+
+    | 指定子 | 欠けた場合の挙動 |
+    | --- | --- |
+    | `meta = (Repository = "SourceRepository")` | キーセルが所属Repositoryを解決できず、表示名の代わりに空欄 / `None` が表示される。 |
+    | `meta = (ReadOnlyKeys)` | キーが読み取り専用ラベルではなく編集可能なセレクタになり、Repository駆動のキーセットと不整合を起こせてしまう。 |
+    | `EditFixedSize` | ユーザーが手動でマップエントリを追加・削除でき、エントリセットを所有する `Rebuild()` と競合する。 |
+
+    `Repository` の値はアセットに対して解決されるプロパティパスです。基底クラスで宣言された `SourceRepository` プロパティを指すように指定します。
+
 ## 再構築の動作
 
 `TEntryBuilder<TValue>::Rebuild()` は安定したマージを実行します。
@@ -84,3 +96,30 @@ UMyDrivenCollection::UMyDrivenCollection()
 4. Repositoryの行順にマッチするようエントリを安定ソートする
 
 キーが引き続き存在する既存エントリはそのまま残ります — 値は再構築後も保持されます。
+
+## ランタイムアクセス
+
+コレクションのエントリマップはアセットにベイクされ、他の UPROPERTY と同様にシリアライズされるため、ソース Repository なしでランタイムから読み取れます。`FDataIndexerPrimaryKey` で値を引く `BlueprintCallable` の getter を公開し、Blueprint からアセットを参照できるようクラスに `BlueprintType` を付けます。
+
+```cpp
+UCLASS(BlueprintType)
+class UMyDrivenCollection : public UDataIndexerDrivenCollection
+{
+    GENERATED_BODY()
+
+public:
+    UFUNCTION(BlueprintCallable, Category = UI)
+    TSoftObjectPtr<UTexture2D> GetIcon(const FDataIndexerPrimaryKey& Key) const;
+
+    // ... エントリマップとエディタ用 builder は上記と同じ ...
+};
+
+// .cpp
+TSoftObjectPtr<UTexture2D> UMyDrivenCollection::GetIcon(const FDataIndexerPrimaryKey& Key) const
+{
+    return Entries.FindRef(Key); // Key が無ければ空の soft ptr
+}
+```
+
+!!! tip "ソフト参照"
+    loaded な `UTexture2D*` ではなく `TSoftObjectPtr` を返すことで、ロードのタイミングを呼び出し側に委ねられます — アセット参照を行データの外に置く本来の目的です。呼び出し側は必要に応じて `LoadSynchronous()` や非同期ロードを行えます。

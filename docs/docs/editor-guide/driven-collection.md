@@ -40,7 +40,8 @@ class UMyDrivenCollection : public UDataIndexerDrivenCollection
 public:
     UMyDrivenCollection();
 
-    UPROPERTY(EditDefaultsOnly)
+    UPROPERTY(EditDefaultsOnly, EditFixedSize,
+        meta = (ReadOnlyKeys, Repository = "SourceRepository"))
     TMap<FDataIndexerPrimaryKey, FMyCurveData> Entries;
 
 #if WITH_EDITOR
@@ -74,6 +75,17 @@ UMyDrivenCollection::UMyDrivenCollection()
 }
 ```
 
+!!! warning "Required entry-map metadata"
+    The entry `TMap` **must** carry these specifiers, or the details panel will not work correctly:
+
+    | Specifier | Effect if missing |
+    | --- | --- |
+    | `meta = (Repository = "SourceRepository")` | Key cells cannot resolve the owning repository, so keys render blank / `None` instead of their display names. |
+    | `meta = (ReadOnlyKeys)` | Keys become editable selectors instead of read-only labels, letting users desync the map from the repository-driven key set. |
+    | `EditFixedSize` | Users can manually add/remove map entries, which conflicts with `Rebuild()` owning the entry set. |
+
+    The `Repository` value is a property path resolved against the asset — point it at the `SourceRepository` property declared in the base class.
+
 ## Rebuild behavior
 
 `TEntryBuilder<TValue>::Rebuild()` performs a stable merge:
@@ -84,3 +96,30 @@ UMyDrivenCollection::UMyDrivenCollection()
 4. Stable-sorts entries to match the repository's row order
 
 Existing entries whose keys are still present are left untouched — their values survive the rebuild.
+
+## Runtime access
+
+The collection's entry map is baked into the asset and serialized like any other UPROPERTY, so it can be read at runtime without the source repository. Expose a `BlueprintCallable` getter that looks up a value by `FDataIndexerPrimaryKey`, and mark the class `BlueprintType` so Blueprints can hold a reference to the asset:
+
+```cpp
+UCLASS(BlueprintType)
+class UMyDrivenCollection : public UDataIndexerDrivenCollection
+{
+    GENERATED_BODY()
+
+public:
+    UFUNCTION(BlueprintCallable, Category = UI)
+    TSoftObjectPtr<UTexture2D> GetIcon(const FDataIndexerPrimaryKey& Key) const;
+
+    // ... entry map and editor builder as above ...
+};
+
+// .cpp
+TSoftObjectPtr<UTexture2D> UMyDrivenCollection::GetIcon(const FDataIndexerPrimaryKey& Key) const
+{
+    return Entries.FindRef(Key); // empty soft pointer when Key has no entry
+}
+```
+
+!!! tip "Soft references"
+    Returning the `TSoftObjectPtr` rather than a loaded `UTexture2D*` keeps load timing in the caller's hands — the whole point of storing asset references outside the row data. Callers can `LoadSynchronous()` or async-load as needed.
