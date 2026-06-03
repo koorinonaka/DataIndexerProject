@@ -13,7 +13,8 @@
 	"Plugins": [
 		{
 			"Name": "DataIndexer",
-			"Enabled": true
+			"Enabled": true,
+			"MarketplaceURL": "https://www.fab.com/listings/5f3d8032-670b-4536-994b-da1027ed1763"
 		},
 		{
 			"Name": "ModelContextProtocol",
