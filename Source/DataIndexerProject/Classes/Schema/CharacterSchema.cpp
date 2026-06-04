@@ -6,8 +6,8 @@ UCharacterSchema::UCharacterSchema()
 {
 	RowStruct = FCharacterRow::StaticStruct();
 
-	RegisterFunction_BuildIndex( ByClassIndex(), GET_FUNCTION_NAME_CHECKED( ThisClass, BuildClassIndex ) );
-	RegisterFunction_BuildIndex( ByDefaultWeaponIndex(), GET_FUNCTION_NAME_CHECKED( ThisClass, BuildDefaultWeaponIndex ) );
+	DI_REGISTER_BUILD_INDEX( ByClassIndex(), FCharacterRow, BuildClassIndex );
+	DI_REGISTER_BUILD_INDEX( ByDefaultWeaponIndex(), FCharacterRow, BuildDefaultWeaponIndex );
 }
 
 #if WITH_EDITOR
