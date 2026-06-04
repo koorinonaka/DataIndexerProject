@@ -48,12 +48,12 @@ Schema は 3 つのことを担当します。
     {
         RowStruct = FItemRow::StaticStruct();
 
-        RegisterFunction_BuildIndex( ByTypeIndex(),    GET_FUNCTION_NAME_CHECKED( ThisClass, BuildTypeIndex ) );
-        RegisterFunction_BuildIndex( ByRarityIndex(),  GET_FUNCTION_NAME_CHECKED( ThisClass, BuildRarityIndex ) );
+        DI_REGISTER_BUILD_INDEX( ByTypeIndex(),   FItemRow, BuildTypeIndex );
+        DI_REGISTER_BUILD_INDEX( ByRarityIndex(), FItemRow, BuildRarityIndex );
     }
     ```
 
-    `DI_DEFINE_INDEX` で宣言したIndexごとに `RegisterFunction_BuildIndex` を呼び出し、ビルダー関数を紐付けます。
+    `DI_DEFINE_INDEX` で宣言したIndexごとに `DI_REGISTER_BUILD_INDEX` を呼び出し、ビルダー関数を紐付けます。マクロはビルダーのシグネチャ（`FGuid( const RowType& )`）をコンパイル時に検証します。
 
     ### GetRowDisplayName
 

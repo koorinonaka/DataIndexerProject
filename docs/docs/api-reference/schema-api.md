@@ -60,33 +60,30 @@ Called by the compiler at save time. Not typically called directly from game cod
 
 ---
 
-## RegisterFunction_BuildIndex
+## DI_REGISTER_BUILD_INDEX
 
 ```cpp
-void RegisterFunction_BuildIndex(
-    const FDataIndexerIndex& Index,
-    FName FunctionName);
+DI_REGISTER_BUILD_INDEX(Index, RowType, Func);
 ```
 
-Registers a named function as the index key builder for `Index`. Call this in `PostInitProperties` from the CDO:
+Registers `Func` as the index key builder for `Index`. The macro is provided by `DataIndexerSchema.h`. Call it in the schema constructor, once per index:
 
 ```cpp
-void UItemSchema::PostInitProperties()
+UItemSchema::UItemSchema()
 {
-    if (HasAnyFlags(RF_ClassDefaultObject))
-    {
-        RowStruct = FItemRow::StaticStruct();
-        RegisterFunction_BuildIndex(ByTypeIndex(),
-            GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeIndex));
-        RegisterFunction_BuildIndex(ByRarityIndex(),
-            GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
-    }
-    Super::PostInitProperties();
+    RowStruct = FItemRow::StaticStruct();
+    DI_REGISTER_BUILD_INDEX(ByTypeIndex(),   FItemRow, BuildTypeIndex);
+    DI_REGISTER_BUILD_INDEX(ByRarityIndex(), FItemRow, BuildRarityIndex);
 }
 ```
 
-The function takes the concrete row struct directly and returns the index key:
+`Func` must be a `static UFUNCTION` on the schema class whose signature takes the concrete row struct directly and returns the index key:
 `(const FRowStruct& Row) → FGuid`
+
+The macro validates this signature at **compile time** via `static_assert`: the return type must be `FGuid`, the row must be passed by `const` reference, and the function's row type must match the `RowType` argument. A mismatch is a compile error, not a deferred editor-validation warning.
+
+!!! warning "Deprecated overload"
+    The earlier `void RegisterFunction_BuildIndex(const FDataIndexerIndex&, FName)` overload is deprecated. It still binds by name but performs no compile-time signature checking. Migrate to `DI_REGISTER_BUILD_INDEX`.
 
 When binding from Blueprint, the Schema details panel filters candidate functions to this signature and "Create matching function" generates a stub with a `const FRowStruct&` parameter — the row is already the concrete struct, so no `Get Instanced Struct Value` node is needed.
 

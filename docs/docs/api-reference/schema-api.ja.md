@@ -60,33 +60,30 @@ TOptional<FGuid> BuildIndexCall(
 
 ---
 
-## RegisterFunction_BuildIndex
+## DI_REGISTER_BUILD_INDEX
 
 ```cpp
-void RegisterFunction_BuildIndex(
-    const FDataIndexerIndex& Index,
-    FName FunctionName);
+DI_REGISTER_BUILD_INDEX(Index, RowType, Func);
 ```
 
-`Index` のIndexKey ビルダーとして名前付き関数を登録します。CDO から `PostInitProperties` で呼び出してください。
+`Index` のIndexKey ビルダーとして `Func` を登録します。マクロは `DataIndexerSchema.h` で提供されます。Schema のコンストラクタで、Indexごとに呼び出してください。
 
 ```cpp
-void UItemSchema::PostInitProperties()
+UItemSchema::UItemSchema()
 {
-    if (HasAnyFlags(RF_ClassDefaultObject))
-    {
-        RowStruct = FItemRow::StaticStruct();
-        RegisterFunction_BuildIndex(ByTypeIndex(),
-            GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeIndex));
-        RegisterFunction_BuildIndex(ByRarityIndex(),
-            GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
-    }
-    Super::PostInitProperties();
+    RowStruct = FItemRow::StaticStruct();
+    DI_REGISTER_BUILD_INDEX(ByTypeIndex(),   FItemRow, BuildTypeIndex);
+    DI_REGISTER_BUILD_INDEX(ByRarityIndex(), FItemRow, BuildRarityIndex);
 }
 ```
 
-関数は実際の row struct を直接受け取り IndexKey を返します：  
+`Func` は Schema クラスの `static UFUNCTION` で、実際の row struct を直接受け取り IndexKey を返すシグネチャである必要があります：  
 `(const FRowStruct& Row) → FGuid`
+
+マクロはこのシグネチャを **コンパイル時** に `static_assert` で検証します。戻り値は `FGuid`、row は `const` 参照渡し、関数の row 型は `RowType` 引数と一致している必要があります。不整合はエディタ検証の警告ではなくコンパイルエラーになります。
+
+!!! warning "非推奨オーバーロード"
+    旧来の `void RegisterFunction_BuildIndex(const FDataIndexerIndex&, FName)` オーバーロードは非推奨です。名前でのバインドは行いますが、コンパイル時のシグネチャ検証はありません。`DI_REGISTER_BUILD_INDEX` へ移行してください。
 
 Blueprint からバインドする場合、Schema の details パネルが候補関数をこのシグネチャで絞り込み、「Create matching function」が `const FRowStruct&` 引数のスタブを生成します。row は実際の struct なので `Get Instanced Struct Value` ノードは不要です。
 

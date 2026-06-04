@@ -69,8 +69,8 @@ protected:
 UItemSchema::UItemSchema()
 {
     RowStruct = FItemRow::StaticStruct();
-    RegisterFunction_BuildIndex(ByTypeIndex(),   GET_FUNCTION_NAME_CHECKED(ThisClass, BuildTypeIndex));
-    RegisterFunction_BuildIndex(ByRarityIndex(), GET_FUNCTION_NAME_CHECKED(ThisClass, BuildRarityIndex));
+    DI_REGISTER_BUILD_INDEX(ByTypeIndex(),   FItemRow, BuildTypeIndex);
+    DI_REGISTER_BUILD_INDEX(ByRarityIndex(), FItemRow, BuildRarityIndex);
 }
 
 FGuid UItemSchema::BuildTypeIndex(const FItemRow& Row)

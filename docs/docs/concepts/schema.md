@@ -48,12 +48,12 @@ A schema does three things:
     {
         RowStruct = FItemRow::StaticStruct();
 
-        RegisterFunction_BuildIndex( ByTypeIndex(),    GET_FUNCTION_NAME_CHECKED( ThisClass, BuildTypeIndex ) );
-        RegisterFunction_BuildIndex( ByRarityIndex(),  GET_FUNCTION_NAME_CHECKED( ThisClass, BuildRarityIndex ) );
+        DI_REGISTER_BUILD_INDEX( ByTypeIndex(),   FItemRow, BuildTypeIndex );
+        DI_REGISTER_BUILD_INDEX( ByRarityIndex(), FItemRow, BuildRarityIndex );
     }
     ```
 
-    Call `RegisterFunction_BuildIndex` once per `DI_DEFINE_INDEX` declaration to bind each builder function.
+    Call `DI_REGISTER_BUILD_INDEX` once per `DI_DEFINE_INDEX` declaration to bind each builder function. The macro checks the builder's signature (`FGuid( const RowType& )`) at compile time.
 
     ### GetRowDisplayName
 
