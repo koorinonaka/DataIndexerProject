@@ -112,7 +112,8 @@ When a class owns a `UDataIndexerRepository` UPROPERTY and should be constrained
 
     Open the Blueprint variable's **Details** panel. With a `UDataIndexerRepository` variable selected, a **Schema** picker appears. Selecting a schema restricts the asset picker to only matching repositories. Clear the picker to show all repositories.
 
-![Schema Filter picker selecting a schema to filter the asset picker](../assets/images/schema-filter-picker.png)
+    ![Schema Filter picker selecting a schema to filter the asset picker](../assets/images/schema-filter-picker.png)
+
 ## Serialization
 
 The binary asset format serializes `LocalEntries`, `EntryOwners`, and `ReverseLookups` via a custom `Serialize` override. `ReverseLookups` are rebuilt at save time from `BuildIndexFunctions` on the schema.
