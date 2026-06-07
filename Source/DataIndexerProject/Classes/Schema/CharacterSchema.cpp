@@ -1,5 +1,6 @@
 #include "Schema/CharacterSchema.h"
 
+#include "ItemSchema.h"
 #include "Types/CharacterTypes.h"
 
 UCharacterSchema::UCharacterSchema()
@@ -22,6 +23,19 @@ void UCharacterSchema::InitializeExpandedStructEntries()
 			GET_MEMBER_NAME_CHECKED( FCharacterRow, DisplayName ),
 		};
 	}
+}
+
+TSharedRef<SWidget> UCharacterSchema::CustomizePropertyCellWidget( DataIndexer::IPropertyWidgetContext& Context ) const
+{
+	if ( const FName ColumnName = GET_MEMBER_NAME_CHECKED( FCharacterRow, DefaultWeapon ); Context.GetColumnName() == ColumnName )
+	{
+		if ( const FCharacterRow* Row = Context.GetRow<FCharacterRow>(); Row && ItemRepository )
+		{
+			return Context.CreateAsSimpleText( ItemRepository->GetDisplayName( Row->DefaultWeapon ) );
+		}
+	}
+
+	return Super::CustomizePropertyCellWidget( Context );
 }
 
 #endif

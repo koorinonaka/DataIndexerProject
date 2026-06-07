@@ -25,10 +25,19 @@ void UItemSchema::InitializeExpandedStructEntries()
 	}
 }
 
+TSharedRef<SWidget> UItemSchema::CustomizePropertyCellWidget( DataIndexer::IPropertyWidgetContext& Context ) const
+{
+	if ( const FName ColumnName = GET_MEMBER_NAME_CHECKED( FItemRow, MetadataTags ); Context.GetColumnName() == ColumnName )
+	{
+		return Context.CreateAsEditInline( Context.GetProperty() );
+	}
+
+	return Super::CustomizePropertyCellWidget( Context );
+}
+
 #endif
 
-TOptional<FText> UItemSchema::GetRowDisplayName(
-	const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const
+TOptional<FText> UItemSchema::GetRowDisplayName( const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const
 {
 	return RowEntity.Get<const FItemRow>().DisplayName;
 }

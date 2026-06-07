@@ -28,6 +28,7 @@ public:
 protected:
 #if WITH_EDITOR
 	virtual void InitializeExpandedStructEntries() override;
+	virtual TSharedRef<SWidget> CustomizePropertyCellWidget( DataIndexer::IPropertyWidgetContext& Context ) const override;
 #endif
 
 	virtual TOptional<FText> GetRowDisplayName(
