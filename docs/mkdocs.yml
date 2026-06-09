@@ -141,6 +141,7 @@ nav:
     - Repository: concepts/repository.md
     - Keys & Handles: concepts/keys-and-handles.md
     - Indexes: concepts/indexes.md
+    - Custom Cell Widgets: concepts/custom-cell-widgets.md
   - Editor Guide:
     - editor-guide/index.md
     - Asset Creation: editor-guide/asset-creation.md
