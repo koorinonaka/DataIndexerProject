@@ -6,7 +6,28 @@ DataIndexer のすべての注目すべき変更をここに記録します。
 
 ---
 
-## v1.0.0 { .release .release--current data-date="2026-05-24" }
+## v1.0.1 { .release .release--current data-date="2026-06-07" }
+
+セルウィジェットのカスタマイズとインライン編集まわりの修正を中心としたパッチリリース。
+
+### 追加 { .release-group .release-group--add }
+
+- `DI_REGISTER_BUILD_INDEX` — Index ビルダーを登録するマクロ。ビルダーのシグネチャをコンパイル時に検証。
+
+### 変更 { .release-group .release-group--change }
+
+- `CustomizePropertyCellWidget` のカスタマイズ関数が行の PrimaryKey を受け取れるようになり、行ごとに表示を切り替え可能に。
+
+### 修正 { .release-group .release-group--fix }
+
+- `CustomizePropertyCellWidget` で UMG ウィジェットを生成するカスタマイズ関数が正しく表示されるよう修正（従来は World コンテキストを解決できず失敗していた）。
+- 検証エラーで、原因の種類と対象カラム名を表示するよう改善（従来は汎用メッセージのみ）。
+- 無効な行やスキーマ未設定の行でも、行の表示名が正しく解決されるよう修正。
+- インライン（ダブルクリック）セル編集の配置・余白が正しく表示されるよう修正。
+
+---
+
+## v1.0.0 { .release data-date="2026-05-24" }
 
 初回公開リリース。
 

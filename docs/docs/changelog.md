@@ -6,7 +6,28 @@ Versions correspond to the `VersionName` field in `DataIndexer.uplugin`.
 
 ---
 
-## v1.0.0 { .release .release--current data-date="2026-05-24" }
+## v1.0.1 { .release .release--current data-date="2026-06-07" }
+
+Patch release focused on cell-widget customization and inline-editing fixes.
+
+### Added { .release-group .release-group--add }
+
+- `DI_REGISTER_BUILD_INDEX` — macro to register an index builder, with the builder signature checked at compile time.
+
+### Changed { .release-group .release-group--change }
+
+- `CustomizePropertyCellWidget` customization functions now receive the row's primary key, so customizations can vary by row identity.
+
+### Fixed { .release-group .release-group--fix }
+
+- `CustomizePropertyCellWidget` customizations that create UMG widgets now render correctly (previously failed to resolve a World context).
+- Validation errors now name the specific problem and the affected column instead of a generic message.
+- Row display names resolve correctly for invalid or schema-less rows.
+- Inline (double-click) cell editors now lay out with correct alignment and padding.
+
+---
+
+## v1.0.0 { .release data-date="2026-05-24" }
 
 First public release.
 
