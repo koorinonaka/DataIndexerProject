@@ -43,7 +43,12 @@ TSharedRef<SWidget> UCharacterSchema::CustomizePropertyCellWidget( DataIndexer::
 TOptional<FText> UCharacterSchema::GetRowDisplayName(
 	const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const
 {
-	return RowEntity.Get<const FCharacterRow>().DisplayName;
+	if ( const FCharacterRow* Row = RowEntity.GetPtr<const FCharacterRow>() )
+	{
+		return Row->DisplayName;
+	}
+
+	return {};
 }
 
 FGuid UCharacterSchema::BuildClassIndex( const FCharacterRow& Row )

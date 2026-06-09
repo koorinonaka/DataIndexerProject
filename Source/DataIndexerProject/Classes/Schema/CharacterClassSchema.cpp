@@ -26,5 +26,10 @@ void UCharacterClassSchema::InitializeExpandedStructEntries()
 TOptional<FText> UCharacterClassSchema::GetRowDisplayName(
 	const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const
 {
-	return RowEntity.Get<const FCharacterClassRow>().DisplayName;
+	if ( const FCharacterClassRow* Row = RowEntity.GetPtr<const FCharacterClassRow>() )
+	{
+		return Row->DisplayName;
+	}
+
+	return {};
 }
