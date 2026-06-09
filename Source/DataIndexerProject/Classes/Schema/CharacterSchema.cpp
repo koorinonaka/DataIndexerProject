@@ -27,6 +27,11 @@ void UCharacterSchema::InitializeExpandedStructEntries()
 
 TSharedRef<SWidget> UCharacterSchema::CustomizePropertyCellWidget( DataIndexer::IPropertyWidgetContext& Context ) const
 {
+	if ( const FName ColumnName = GET_MEMBER_NAME_CHECKED( FCharacterRow, PawnClass1 ); Context.GetColumnName() == ColumnName )
+	{
+		return Context.CreateAsEditInline( Context.GetProperty(), /*bDisplayDefaultPropertyButtons=*/true );
+	}
+
 	if ( const FName ColumnName = GET_MEMBER_NAME_CHECKED( FCharacterRow, DefaultWeapon ); Context.GetColumnName() == ColumnName )
 	{
 		if ( const FCharacterRow* Row = Context.GetRow<FCharacterRow>(); Row && ItemRepository )
