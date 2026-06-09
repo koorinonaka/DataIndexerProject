@@ -10,9 +10,9 @@
  * Schema for ItemRepository.
  *
  * Indexes:
- *   ByTypeIndex          — group items by EItemType (Weapon / Armor / ...)
- *   ByRarityIndex        — group items by EItemRarity (Common / Rare / ...)
- *   ByTypeAndRarityIndex — composite lookup by EItemType × EItemRarity
+ *   ByTypeIndex          — group items by their ItemType row (ItemTypeRepository key)
+ *   ByRarityIndex        — group items by their ItemRarity row (ItemRarityRepository key)
+ *   ByTypeAndRarityIndex — composite lookup by ItemType × ItemRarity
  */
 UCLASS()
 class DATAINDEXERPROJECT_API UItemSchema : public UDataIndexerSchema
@@ -43,4 +43,11 @@ protected:
 
 	UFUNCTION()
 	static FGuid BuildTypeAndRarityIndex( const FItemRow& Row );
+
+protected:
+	UPROPERTY( EditDefaultsOnly, Category = DataIndexer, meta = ( Schema = "/Script/DataIndexerProject.ItemTypeSchema" ) )
+	TObjectPtr<UDataIndexerRepository> ItemTypeRepository;
+
+	UPROPERTY( EditDefaultsOnly, Category = DataIndexer, meta = ( Schema = "/Script/DataIndexerProject.ItemRaritySchema" ) )
+	TObjectPtr<UDataIndexerRepository> ItemRarityRepository;
 };

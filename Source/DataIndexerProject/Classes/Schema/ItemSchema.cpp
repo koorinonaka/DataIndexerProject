@@ -1,5 +1,6 @@
 #include "Schema/ItemSchema.h"
 
+#include "DataIndexerRepository.h"
 #include "Types/ItemTypes.h"
 
 UItemSchema::UItemSchema()
@@ -32,6 +33,22 @@ TSharedRef<SWidget> UItemSchema::CustomizePropertyCellWidget( DataIndexer::IProp
 		return Context.CreateAsEditInline( Context.GetProperty() );
 	}
 
+	if ( const FName ColumnName = GET_MEMBER_NAME_CHECKED( FItemRow, Type ); Context.GetColumnName() == ColumnName )
+	{
+		if ( const FItemRow* Row = Context.GetRow<FItemRow>(); Row && ItemTypeRepository )
+		{
+			return Context.CreateAsSimpleText( ItemTypeRepository->GetDisplayName( Row->Type ) );
+		}
+	}
+
+	if ( const FName ColumnName = GET_MEMBER_NAME_CHECKED( FItemRow, Rarity ); Context.GetColumnName() == ColumnName )
+	{
+		if ( const FItemRow* Row = Context.GetRow<FItemRow>(); Row && ItemRarityRepository )
+		{
+			return Context.CreateAsSimpleText( ItemRarityRepository->GetDisplayName( Row->Rarity ) );
+		}
+	}
+
 	return Super::CustomizePropertyCellWidget( Context );
 }
 
@@ -39,20 +56,25 @@ TSharedRef<SWidget> UItemSchema::CustomizePropertyCellWidget( DataIndexer::IProp
 
 TOptional<FText> UItemSchema::GetRowDisplayName( const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const
 {
-	return RowEntity.Get<const FItemRow>().DisplayName;
+	if ( const FItemRow* Row = RowEntity.GetPtr<const FItemRow>() )
+	{
+		return Row->DisplayName;
+	}
+
+	return {};
 }
 
 FGuid UItemSchema::BuildTypeIndex( const FItemRow& Row )
 {
-	return FGuid( static_cast<uint32>( Row.Type ), 0, 0, 0 );
+	return static_cast<FGuid>( Row.Type );
 }
 
 FGuid UItemSchema::BuildRarityIndex( const FItemRow& Row )
 {
-	return FGuid( static_cast<uint32>( Row.Rarity ), 0, 0, 0 );
+	return static_cast<FGuid>( Row.Rarity );
 }
 
 FGuid UItemSchema::BuildTypeAndRarityIndex( const FItemRow& Row )
 {
-	return FGuid( static_cast<uint32>( Row.Type ), static_cast<uint32>( Row.Rarity ), 0, 0 );
+	return FGuid::NewDeterministicGuid( Row.Type.ToString() + Row.Rarity.ToString() );
 }

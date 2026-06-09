@@ -1,28 +1,10 @@
 #pragma once
 
 #include "DataIndexerSchemaInterface.h"
+#include "DataIndexerTypes.h"
 #include "GameplayTagContainer.h"
 
 #include "ItemTypes.generated.h"
-
-UENUM( BlueprintType )
-enum class EItemType : uint8
-{
-	Weapon UMETA( DisplayName = "Weapon" ),
-	Armor UMETA( DisplayName = "Armor" ),
-	Accessory UMETA( DisplayName = "Accessory" ),
-	Material UMETA( DisplayName = "Material" ),
-};
-
-UENUM( BlueprintType )
-enum class EItemRarity : uint8
-{
-	Common UMETA( DisplayName = "Common" ),
-	Uncommon UMETA( DisplayName = "Uncommon" ),
-	Rare UMETA( DisplayName = "Rare" ),
-	Epic UMETA( DisplayName = "Epic" ),
-	Legendary UMETA( DisplayName = "Legendary" ),
-};
 
 USTRUCT( BlueprintType )
 struct DATAINDEXERPROJECT_API FItemRow
@@ -32,11 +14,11 @@ struct DATAINDEXERPROJECT_API FItemRow
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FText DisplayName;
 
-	UPROPERTY( EditAnywhere, BlueprintReadWrite )
-	EItemType Type = EItemType::Weapon;
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, meta = ( Repository = "ItemTypeRepository" ) )
+	FDataIndexerPrimaryKey Type;
 
-	UPROPERTY( EditAnywhere, BlueprintReadWrite )
-	EItemRarity Rarity = EItemRarity::Common;
+	UPROPERTY( EditAnywhere, BlueprintReadWrite, meta = ( Repository = "ItemRarityRepository" ) )
+	FDataIndexerPrimaryKey Rarity;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 BaseValue = 0;
