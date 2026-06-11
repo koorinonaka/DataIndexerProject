@@ -1,19 +1,70 @@
 # Custom Cell Widgets
 
 Data View は行の各プロパティをセルとして描画する。Schema はデフォルトのセルウィジェットを差し替えて、
-カスタム表示やインライン編集を提供できる。方法は 2 つあり、`FCharacterRow` 上で並べて示す。どちらも
-**編集可能**だが、書き戻しの経路が異なる。
+カスタム表示やインライン編集を提供できる。さらに **仮想列 (virtual column)** — 既存プロパティを別名で
+エイリアスする追加列 — を宣言でき、*同じ*値を異なる見せ方で複数回出せる。
 
-| 列 | 手法 | 書き戻し経路 | 実装場所 |
+`FCharacterRow` はこの両方を同時に示す。単一の `PawnClass` フィールド（`TSubclassOf<APawn>`）を持ち、
+`UCharacterSchema` がそれを **2 つの仮想列** として出す。どちらも **編集可能**だが、書き戻しの経路が
+異なる。
+
+| 列 | 手法 | 書き戻し経路 | 宣言場所 |
 | --- | --- | --- | --- |
-| `PawnClass1` | C++ `CreateAsEditInline` | C++ context — 行メモリを直接編集 | `UCharacterSchema` の C++ override |
-| `PawnClass2` | Blueprint `PropertyWidgetCustomizations` + `USinglePropertyView` をホストする UserWidget | Blueprint `UpdateRow` — 注入された repository context 経由 | `DIS_Character` Blueprint + `WBP_PawnClassCell`、Schema C++ なし |
+| `PawnClassInline` | C++ `CreateAsEditInline` | C++ context — 行メモリを直接編集 | `UCharacterSchema` の C++ |
+| `PawnClassWidget` | Blueprint `PropertyWidgetCustomizations` + `USinglePropertyView` をホストする UserWidget | Blueprint `UpdateRow` — 注入された repository context 経由 | `DIS_Character` Blueprint + `WBP_PawnClassCell` |
 
-どちらも同じ入口 `CustomizePropertyCellWidget` をカスタマイズするが、到達経路が異なる。両者とも同じ
-エディタ staging 層 (`UDataIndexerEditorData`) を通して永続化するので、編集はトランザクション扱い＝
-Undo 可能。
+どちらの列も **同じ** `PawnClass` プロパティをエイリアスするので、片方を編集するともう片方の表示も
+更新される。両者とも同じエディタ staging 層 (`UDataIndexerEditorData`) を通して永続化するので、編集は
+トランザクション扱い＝Undo 可能。生の `PawnClass` プロパティ自体は Data View から隠され、2 つの仮想列
+だけが表示される。
 
-## 入口
+---
+
+## 仮想列
+
+Data View は通常、行 struct のチェック済み `FProperty` ごとに 1 列を生成する。Schema はこれに加えて、
+任意の `ColumnName` で描画する **仮想列** を追加できる。各列は `FDataIndexerVirtualColumn`:
+
+```cpp
+USTRUCT()
+struct FDataIndexerVirtualColumn
+{
+    FName ColumnName;     // 一意・安定な列 ID（layout/visibility キー、ルーティングキー）
+    FText DisplayName;    // ヘッダラベル。空なら ColumnName にフォールバック
+    FName SourceProperty; // 任意。エイリアスする RowStruct メンバ。ネストは "Inner.A"。空 = unbound
+};
+```
+
+Schema は `VirtualColumns` 配列でこれを公開する。Schema Blueprint の Class Defaults パネルで編集でき、
+C++ から設定してもよい。仮想列はプロパティ由来の列の **後** に追加される。`SourceProperty` により2種類:
+
+- **エイリアス列**（`SourceProperty` あり）— その RowStruct メンバをエイリアスし、`FProperty` を再利用するので
+  セル・書き戻し・grid 値操作（copy/paste・fill・既定表示）が既存経路でそのまま動く。`ColumnName` と
+  `DisplayName` だけが異なる。ドット区切り（`"Inner.A"`）でネスト struct メンバを指定できる。
+- **unbound 列**（`SourceProperty` 空）— 紐づくプロパティを持たない「真の」仮想列。セルは schema が
+  `CustomizePropertyCellWidget` で全面提供する（読み取り専用/計算表示、またはカスタムバインド widget）。
+  grid 値操作は**持たない** — copy/paste/fill/既定表示は対象外。
+
+（空でない）`SourceProperty` が解決できない、または `ColumnName` が既存列と衝突する仮想列は、警告とともに
+スキップされる。
+
+!!! note "生列を隠す"
+    あるプロパティを仮想列*だけ*で見せたい場合は、`InitializeExpandedStructEntries` で行 struct の
+    expanded set から除外する（`DisplayName` を隠すのと同じパターン）:
+
+    ```cpp
+    if (FDataIndexerExpandedStructEntry* RowStructEntry = ExpandedStructEntries.Find(RowStruct))
+    {
+        *RowStructEntry -= {
+            GET_MEMBER_NAME_CHECKED(FCharacterRow, DisplayName),
+            GET_MEMBER_NAME_CHECKED(FCharacterRow, PawnClass),
+        };
+    }
+    ```
+
+---
+
+## セルの入口
 
 ```cpp
 virtual TSharedRef<SWidget> CustomizePropertyCellWidget(
@@ -29,22 +80,39 @@ base 実装はその列の Blueprint `PropertyWidgetCustomizations` バインド
   プロパティエディタ。書き戻しあり。
 - `WrapUserWidget(UserWidget)` — UMG `UserWidget` をセルにホストする。
 - `GetColumnName()` / `GetProperty()` / `GetRow<FRowType>()` / `GetPrimaryKey()` / `GetRepository()` —
-  コンテキストアクセサ。
+  コンテキストアクセサ。仮想列の場合 `GetProperty()` はエイリアス先の `SourceProperty` を返す。
 
 ---
 
-## Sample 1 — C++ によるインライン編集（`PawnClass1`）
+## Sample 1 — C++ によるインライン編集（`PawnClassInline`）
 
-C++ Schema で `CustomizePropertyCellWidget` を override し、対象列で `CreateAsEditInline` を返す。
-`CreateAsEditInline` は行メモリ上に実プロパティエディタを構築するため、編集が永続する。
+仮想列を C++ Schema のコンストラクタで宣言し、`CustomizePropertyCellWidget` でその列に対して
+`CreateAsEditInline` を返す。セルのプロパティはエイリアス先の `PawnClass` に解決されるため、
+`CreateAsEditInline` は行メモリ上に実プロパティエディタを構築し、編集が永続する。
 
 ```cpp title="CharacterSchema.cpp"
+namespace
+{
+const FName PawnClassInlineColumn(TEXT("PawnClassInline"));
+}
+
+UCharacterSchema::UCharacterSchema()
+{
+    // ...
+#if WITH_EDITORONLY_DATA
+    FDataIndexerVirtualColumn& InlineColumn = VirtualColumns.AddDefaulted_GetRef();
+    InlineColumn.ColumnName = PawnClassInlineColumn;
+    InlineColumn.DisplayName = NSLOCTEXT("CharacterSchema", "PawnClassInlineColumn", "Pawn (C++)");
+    InlineColumn.SourceProperty = GET_MEMBER_NAME_CHECKED(FCharacterRow, PawnClass);
+#endif
+}
+
 TSharedRef<SWidget> UCharacterSchema::CustomizePropertyCellWidget(
     DataIndexer::IPropertyWidgetContext& Context) const
 {
-    if (const FName Col = GET_MEMBER_NAME_CHECKED(FCharacterRow, PawnClass1);
-        Context.GetColumnName() == Col)
+    if (Context.GetColumnName() == PawnClassInlineColumn)
     {
+        // GetProperty() はエイリアス先の PawnClass に解決されるので、エディタはそこへ書き戻す。
         return Context.CreateAsEditInline(Context.GetProperty(), /*bDisplayDefaultPropertyButtons=*/true);
     }
 
@@ -52,7 +120,7 @@ TSharedRef<SWidget> UCharacterSchema::CustomizePropertyCellWidget(
 }
 ```
 
-`PawnClass1` は `TSubclassOf<APawn>`（単一の object/class プロパティ）なので、セルにはインラインの
+`PawnClass` は `TSubclassOf<APawn>`（単一の object/class プロパティ）なので、セルにはインラインの
 class picker が表示される。`CreateAsEditInline` は任意の単一プロパティと、`IPropertyTypeCustomization`
 が登録された struct に対応する。コンテナプロパティ（`TArray`/`TMap`/`TSet`）は対象外。
 
@@ -63,16 +131,16 @@ customization を維持する代わりにボタンを付けないので、`Creat
 付け直している。）
 
 !!! note
-    `UCharacterSchema` の C++ override は、通常の仮想ディスパッチにより Blueprint サブクラス
+    `UCharacterSchema` の C++ 実装は、通常の仮想ディスパッチにより Blueprint サブクラス
     `DIS_Character` にも適用される。Sample 1 で Blueprint を触る必要はない。
 
 ---
 
-## Sample 2 — `PropertyWidgetCustomizations` 経由の編集可能 UserWidget（`PawnClass2`）
+## Sample 2 — `PropertyWidgetCustomizations` 経由の編集可能 UserWidget（`PawnClassWidget`）
 
-この経路は Schema 側に C++ を要さない。Blueprint 関数がセル用の `UserWidget` を返し、Schema の
-`PropertyWidgetCustomizations` マップでバインドする。ウィジェットは `USinglePropertyView` をホストし、
-`UpdateRow` で編集を行へ書き戻す。
+この経路は Schema 側に C++ を要さない。仮想列は `DIS_Character` の Class Defaults で宣言し、Blueprint
+関数がセル用の `UserWidget` を返して、Schema の `PropertyWidgetCustomizations` マップでバインドする。
+ウィジェットは `USinglePropertyView` をホストし、`UpdateRow` で編集を行へ書き戻す。
 
 !!! info "なぜ Editor Utility Widget か"
     `USinglePropertyView` はエディタ専用モジュール `ScriptableEditorWidgets` に属するため、その
@@ -94,7 +162,15 @@ void SetCellContext(UDataIndexerRepository* Repository, const FDataIndexerPrimar
 いれば `SetCellContext` を呼ぶ（`Context.GetRepository()` と `Context.GetPrimaryKey()` を渡す）。これに
 より、関数シグネチャを変えずに任意のセルウィジェットが書き戻しに参加できる。
 
-### Step 1 — Editor Utility Widget（`WBP_PawnClassCell`）
+### Step 1 — 仮想列を宣言
+
+`DIS_Character` の Class Defaults → **Virtual Columns** でエントリを追加:
+
+- `ColumnName` = `PawnClassWidget`
+- `DisplayName` = `Pawn (BP)`
+- `SourceProperty` = `PawnClass`
+
+### Step 2 — Editor Utility Widget（`WBP_PawnClassCell`）
 
 1. `/Game/GameData/CustomWidget/WBP_PawnClassCell` に Editor Utility Widget Blueprint を作成
    （親 `EditorUtilityWidget`）。
@@ -105,7 +181,7 @@ void SetCellContext(UDataIndexerRepository* Repository, const FDataIndexerPrimar
     - `Repository : UDataIndexerRepository` と `PrimaryKey : FDataIndexerPrimaryKey` — interface で設定。
 4. **Class Settings → Interfaces** で `IDataIndexerInterface_CellContext` を実装。
 
-### Step 2 — `SetCellContext` で初期化
+### Step 3 — `SetCellContext` で初期化
 
 `SetCellContext` はバインド関数が `PawnClass` / `Row` を設定した**後**に発火する。そのため、view を
 実値へ向けるのはここが適切（`Pre Construct` だと spawn 時の値設定と競合し得る）。
@@ -114,34 +190,32 @@ void SetCellContext(UDataIndexerRepository* Repository, const FDataIndexerPrimar
 - `Single Property View → Set Object (Self)` → `Set Property Name ("PawnClass")`。
 - `Bind Event to On Property Changed` → カスタムハンドライベント。
 
-### Step 3 — 編集時に書き戻す
+### Step 4 — 編集時に書き戻す
 
 `On Property Changed` ハンドラ内で:
 
-1. キャッシュした `Row` の `PawnClass2` を編集後の `PawnClass` で差し替えて再構築（Break + Make
+1. キャッシュした `Row` の `PawnClass` を編集後の `PawnClass` で差し替えて再構築（Break + Make
    `CharacterRow`）。
 2. `Update Row (Repository, PrimaryKey, Row)`（`UDataIndexerEditorFunctionLibrary::UpdateRow`）を呼ぶ。
    これは `UDataIndexerEditorData` をトランザクション内で更新するので、Sample 1 のインライン編集と同様に
    Undo 可能。
 
-### Step 4 — `DIS_Character` のバインド関数
+### Step 5 — `DIS_Character` のバインド関数
 
 セルウィジェットのシグネチャ
 `(const FDataIndexerPrimaryKey&, const FCharacterRow&) → UUserWidget*` の関数を追加する。
 
-1. クラス `WBP_PawnClassCell` を `Create Widget`。行の `PawnClass2` をウィジェットの `PawnClass` ピンに、
+1. クラス `WBP_PawnClassCell` を `Create Widget`。行の `PawnClass` をウィジェットの `PawnClass` ピンに、
    行全体を `Row` ピンに渡す（どちらも Expose on Spawn）。
 2. ウィジェットを返す。
 
-これは `EUW_CharacterClassIcon` を返す既存の `GetPropertyWidget` 関数と同じ形。
-
-### Step 5 — 列にバインド
+### Step 6 — 列にバインド
 
 `DIS_Character` の Class Defaults → **Property Widget Customizations** でエントリを追加: キー
-`PawnClass2`、関数 `GetPawnClass2Widget`。これで `PawnClass2` のセルは編集可能な `SinglePropertyView`
-を描画し、編集は `UpdateRow` で永続化する。
+`PawnClassWidget`（仮想列の `ColumnName`）、関数 `GetPawnClassWidget`。これで `PawnClassWidget` の
+セルは編集可能な `SinglePropertyView` を描画し、編集は `UpdateRow` で永続化する。
 
 !!! note "2 つのセルの見た目が違う理由"
-    `PawnClass1` は class picker の値ウィジェット（と標準プロパティボタン）だけを表示する。`PawnClass2`
-    は左側にプロパティ名ラベルが出る。これは `USinglePropertyView` が値ウィジェット単体ではなく、名前
-    **と**値からなる完成した単一プロパティ行を描画するため。
+    `PawnClassInline` は class picker の値ウィジェット（と標準プロパティボタン）だけを表示する。
+    `PawnClassWidget` は左側にプロパティ名ラベルが出る。これは `USinglePropertyView` が値ウィジェット
+    単体ではなく、名前**と**値からなる完成した単一プロパティ行を描画するため。

@@ -1,19 +1,73 @@
 # Custom Cell Widgets
 
 The Data View renders each row property as a cell. A schema can replace the default cell widget to
-show a custom display or an inline editor. There are two ways to do this, demonstrated side by side on
-`FCharacterRow` — both **editable**, but reaching write-back through different mechanisms:
+show a custom display or an inline editor. It can also declare **virtual columns** — extra columns that
+alias an existing property under a distinct name — so the *same* value can appear several times with
+different presentations.
 
-| Column | Approach | Write-back mechanism | Where it lives |
+`FCharacterRow` demonstrates both ideas at once. It has a single `PawnClass` field
+(`TSubclassOf<APawn>`), and `UCharacterSchema` surfaces it as **two virtual columns**, each **editable**
+but reaching write-back through a different mechanism:
+
+| Column | Approach | Write-back mechanism | Where it's declared |
 | --- | --- | --- | --- |
-| `PawnClass1` | C++ `CreateAsEditInline` | C++ context — edits the row's memory directly | `UCharacterSchema` C++ override |
-| `PawnClass2` | Blueprint `PropertyWidgetCustomizations` + a UserWidget hosting `USinglePropertyView` | Blueprint `UpdateRow` — via injected repository context | `DIS_Character` Blueprint + `WBP_PawnClassCell`, no schema C++ |
+| `PawnClassInline` | C++ `CreateAsEditInline` | C++ context — edits the row's memory directly | `UCharacterSchema` C++ |
+| `PawnClassWidget` | Blueprint `PropertyWidgetCustomizations` + a UserWidget hosting `USinglePropertyView` | Blueprint `UpdateRow` — via injected repository context | `DIS_Character` Blueprint + `WBP_PawnClassCell` |
 
-Both customize the same entry point — `CustomizePropertyCellWidget` — but reach it differently. Both
-persist edits through the same editor staging layer (`UDataIndexerEditorData`), so changes are
-transactional and undoable.
+Both columns alias the **same** `PawnClass` property, so editing either one updates the field the other
+displays. Both persist edits through the same editor staging layer (`UDataIndexerEditorData`), so changes
+are transactional and undoable. The raw `PawnClass` property itself is hidden from the Data View — only
+the two virtual columns are shown.
 
-## The entry point
+---
+
+## Virtual columns
+
+The Data View normally derives one column per checked `FProperty` on the row struct. A schema can append
+**virtual columns** that render under a custom `ColumnName`. Each is a `FDataIndexerVirtualColumn`:
+
+```cpp
+USTRUCT()
+struct FDataIndexerVirtualColumn
+{
+    FName ColumnName;     // stable, unique column identity (layout/visibility key, routing key)
+    FText DisplayName;    // header label; falls back to ColumnName when empty
+    FName SourceProperty; // optional aliased RowStruct member; dotted for nested ("Inner.A"); empty = unbound
+};
+```
+
+Schemas expose them through a `VirtualColumns` array editable in the Schema Blueprint Class Defaults
+panel — or set from C++. Virtual columns are appended **after** the property-derived columns. There are
+two flavours, decided by `SourceProperty`:
+
+- **Alias column** (`SourceProperty` set) — aliases that RowStruct member, reusing its `FProperty` so the
+  cell, write-back, and grid value semantics (copy/paste, fill, default display) all work through the
+  existing path; only `ColumnName` and `DisplayName` differ. A dotted `SourceProperty` (`"Inner.A"`)
+  addresses a nested struct member.
+- **Unbound column** (`SourceProperty` empty) — a "true" virtual column with no backing property. The
+  schema supplies its cell entirely via `CustomizePropertyCellWidget` (a read-only/computed display or a
+  custom-binding widget). It has **no** grid value semantics — copy/paste/fill/default-display do not apply.
+
+A virtual column whose (non-empty) `SourceProperty` does not resolve, or whose `ColumnName` collides with
+an existing column, is skipped with a warning.
+
+!!! note "Hiding the raw column"
+    To show a property *only* through virtual columns, remove it from the row struct's expanded set in
+    `InitializeExpandedStructEntries` (same pattern used to hide `DisplayName`):
+
+    ```cpp
+    if (FDataIndexerExpandedStructEntry* RowStructEntry = ExpandedStructEntries.Find(RowStruct))
+    {
+        *RowStructEntry -= {
+            GET_MEMBER_NAME_CHECKED(FCharacterRow, DisplayName),
+            GET_MEMBER_NAME_CHECKED(FCharacterRow, PawnClass),
+        };
+    }
+    ```
+
+---
+
+## The cell entry point
 
 ```cpp
 virtual TSharedRef<SWidget> CustomizePropertyCellWidget(
@@ -29,22 +83,39 @@ building blocks an override reuses:
   wired to the row, with write-back.
 - `WrapUserWidget(UserWidget)` — hosts a UMG `UserWidget` in the cell.
 - `GetColumnName()`, `GetProperty()`, `GetRow<FRowType>()`, `GetPrimaryKey()`, `GetRepository()` —
-  context accessors.
+  context accessors. For a virtual column, `GetProperty()` resolves to the aliased `SourceProperty`.
 
 ---
 
-## Sample 1 — inline editor in C++ (`PawnClass1`)
+## Sample 1 — inline editor in C++ (`PawnClassInline`)
 
-Override `CustomizePropertyCellWidget` in a C++ schema and return `CreateAsEditInline` for the target
-column. `CreateAsEditInline` builds a real property editor over the row's memory, so edits persist.
+Declare the virtual column in the C++ schema constructor, then return `CreateAsEditInline` for it in
+`CustomizePropertyCellWidget`. Because the cell's property resolves to the aliased `PawnClass`,
+`CreateAsEditInline` builds a real property editor over the row's memory, so edits persist.
 
 ```cpp title="CharacterSchema.cpp"
+namespace
+{
+const FName PawnClassInlineColumn(TEXT("PawnClassInline"));
+}
+
+UCharacterSchema::UCharacterSchema()
+{
+    // ...
+#if WITH_EDITORONLY_DATA
+    FDataIndexerVirtualColumn& InlineColumn = VirtualColumns.AddDefaulted_GetRef();
+    InlineColumn.ColumnName = PawnClassInlineColumn;
+    InlineColumn.DisplayName = NSLOCTEXT("CharacterSchema", "PawnClassInlineColumn", "Pawn (C++)");
+    InlineColumn.SourceProperty = GET_MEMBER_NAME_CHECKED(FCharacterRow, PawnClass);
+#endif
+}
+
 TSharedRef<SWidget> UCharacterSchema::CustomizePropertyCellWidget(
     DataIndexer::IPropertyWidgetContext& Context) const
 {
-    if (const FName Col = GET_MEMBER_NAME_CHECKED(FCharacterRow, PawnClass1);
-        Context.GetColumnName() == Col)
+    if (Context.GetColumnName() == PawnClassInlineColumn)
     {
+        // GetProperty() resolves to the aliased PawnClass property, so the editor writes back to it.
         return Context.CreateAsEditInline(Context.GetProperty(), /*bDisplayDefaultPropertyButtons=*/true);
     }
 
@@ -52,7 +123,7 @@ TSharedRef<SWidget> UCharacterSchema::CustomizePropertyCellWidget(
 }
 ```
 
-`PawnClass1` is a `TSubclassOf<APawn>` — a single object/class property — so the cell shows an inline
+`PawnClass` is a `TSubclassOf<APawn>` — a single object/class property — so the cell shows an inline
 class picker. `CreateAsEditInline` supports any single property and any struct that has a registered
 `IPropertyTypeCustomization`; it rejects container properties (`TArray`/`TMap`/`TSet`).
 
@@ -63,16 +134,17 @@ reset-to-default, browse, use-selected — next to the value editor, matching a 
 buttons, then re-adds them via `CreateDefaultPropertyButtonWidgets`.)
 
 !!! note
-    The C++ override on `UCharacterSchema` also applies to its Blueprint subclass `DIS_Character` through
+    The C++ work on `UCharacterSchema` also applies to its Blueprint subclass `DIS_Character` through
     normal virtual dispatch — you do not need to touch the Blueprint for Sample 1.
 
 ---
 
-## Sample 2 — editable UserWidget via `PropertyWidgetCustomizations` (`PawnClass2`)
+## Sample 2 — editable UserWidget via `PropertyWidgetCustomizations` (`PawnClassWidget`)
 
-This path needs no C++ in the schema. A Blueprint function returns a `UserWidget` for the cell, bound
-through the schema's `PropertyWidgetCustomizations` map. The widget hosts a `USinglePropertyView` and
-writes edits back to the row with `UpdateRow`.
+This path needs no C++ in the schema. The virtual column is declared in `DIS_Character` Class Defaults,
+and a Blueprint function returns a `UserWidget` for the cell, bound through the schema's
+`PropertyWidgetCustomizations` map. The widget hosts a `USinglePropertyView` and writes edits back to the
+row with `UpdateRow`.
 
 !!! info "Why an Editor Utility Widget"
     `USinglePropertyView` lives in the editor-only `ScriptableEditorWidgets` module, so its `SetObject` /
@@ -95,7 +167,15 @@ void SetCellContext(UDataIndexerRepository* Repository, const FDataIndexerPrimar
 (using `Context.GetRepository()` and `Context.GetPrimaryKey()`) if it implements the interface — so any
 cell widget can opt into write-back without changing the function signature.
 
-### Step 1 — the Editor Utility Widget (`WBP_PawnClassCell`)
+### Step 1 — declare the virtual column
+
+In `DIS_Character` Class Defaults → **Virtual Columns**, add an entry:
+
+- `ColumnName` = `PawnClassWidget`
+- `DisplayName` = `Pawn (BP)`
+- `SourceProperty` = `PawnClass`
+
+### Step 2 — the Editor Utility Widget (`WBP_PawnClassCell`)
 
 1. Create an Editor Utility Widget Blueprint at `/Game/GameData/CustomWidget/WBP_PawnClassCell`
    (parent `EditorUtilityWidget`).
@@ -106,7 +186,7 @@ cell widget can opt into write-back without changing the function signature.
     - `Repository : UDataIndexerRepository` and `PrimaryKey : FDataIndexerPrimaryKey` — set via the interface.
 4. **Class Settings → Interfaces** — implement `IDataIndexerInterface_CellContext`.
 
-### Step 2 — initialize on `SetCellContext`
+### Step 3 — initialize on `SetCellContext`
 
 `SetCellContext` fires *after* the binding function has set `PawnClass` / `Row`, so it is the right
 place to bind the view to the live value (doing this in `Pre Construct` can race the spawn-time values):
@@ -115,34 +195,32 @@ place to bind the view to the live value (doing this in `Pre Construct` can race
 - `Single Property View → Set Object (Self)`, then `Set Property Name ("PawnClass")`.
 - `Bind Event to On Property Changed` → a custom handler event.
 
-### Step 3 — write back on edit
+### Step 4 — write back on edit
 
 In the `On Property Changed` handler:
 
-1. Rebuild the cached `Row` with its `PawnClass2` replaced by the edited `PawnClass` (Break + Make
+1. Rebuild the cached `Row` with its `PawnClass` replaced by the edited `PawnClass` (Break + Make
    `CharacterRow`).
 2. Call `Update Row (Repository, PrimaryKey, Row)`
    (`UDataIndexerEditorFunctionLibrary::UpdateRow`). It writes through `UDataIndexerEditorData` inside a
    transaction, so the edit is undoable — exactly like the Sample 1 inline editor.
 
-### Step 4 — the binding function on `DIS_Character`
+### Step 5 — the binding function on `DIS_Character`
 
 Add a function with the cell-widget signature
 `(const FDataIndexerPrimaryKey&, const FCharacterRow&) → UUserWidget*`:
 
-1. `Create Widget` of class `WBP_PawnClassCell`, feeding the row's `PawnClass2` into the widget's
+1. `Create Widget` of class `WBP_PawnClassCell`, feeding the row's `PawnClass` into the widget's
    `PawnClass` pin and the whole row into the `Row` pin (both exposed on spawn).
 2. Return the widget.
 
-This mirrors the existing `GetPropertyWidget` function that returns `EUW_CharacterClassIcon`.
+### Step 6 — bind the column
 
-### Step 5 — bind the column
-
-In `DIS_Character` Class Defaults → **Property Widget Customizations**, add an entry: key `PawnClass2`,
-function `GetPawnClass2Widget`. The `PawnClass2` cell now renders an editable `SinglePropertyView`, and
-edits persist via `UpdateRow`.
+In `DIS_Character` Class Defaults → **Property Widget Customizations**, add an entry: key
+`PawnClassWidget` (the virtual column's `ColumnName`), function `GetPawnClassWidget`. The
+`PawnClassWidget` cell now renders an editable `SinglePropertyView`, and edits persist via `UpdateRow`.
 
 !!! note "Why the two cells look different"
-    `PawnClass1` shows only the class-picker value widget (plus the default property buttons).
-    `PawnClass2` shows a property-name label to its left because `USinglePropertyView` renders a complete
-    single-property row — name **and** value — rather than just the value widget.
+    `PawnClassInline` shows only the class-picker value widget (plus the default property buttons).
+    `PawnClassWidget` shows a property-name label to its left because `USinglePropertyView` renders a
+    complete single-property row — name **and** value — rather than just the value widget.

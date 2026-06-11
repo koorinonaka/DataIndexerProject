@@ -13,6 +13,7 @@ DataIndexer のすべての注目すべき変更をここに記録します。
 ### 追加 { .release-group .release-group--add }
 
 - `DI_REGISTER_BUILD_INDEX` — Index ビルダーを登録するマクロ。ビルダーのシグネチャをコンパイル時に検証。
+- 仮想列（`FDataIndexerVirtualColumn`、`UDataIndexerSchema::VirtualColumns`）— Data View に追加列を宣言可能に。`SourceProperty` 指定時は行プロパティをエイリアス（ネストは `"Inner.A"` のドット区切り）し、1 つの値を異なる見せ方の複数列として表示できる。空の場合は unbound 列となり、セルは schema が `CustomizePropertyCellWidget` で全面提供する。
 
 ### 変更 { .release-group .release-group--change }
 
