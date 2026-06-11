@@ -1,7 +1,6 @@
 #pragma once
 
 #include "DataIndexerSchema.h"
-#include "Types/CharacterClassTypes.h"
 
 #include "CharacterClassSchema.generated.h"
 

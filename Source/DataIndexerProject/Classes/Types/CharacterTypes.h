@@ -22,10 +22,7 @@ struct DATAINDEXERPROJECT_API FCharacterRow
 	int32 MaxHP = 100;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
-	TSubclassOf<APawn> PawnClass1;
-
-	UPROPERTY( EditAnywhere, BlueprintReadWrite )
-	TSubclassOf<APawn> PawnClass2;
+	TSubclassOf<APawn> PawnClass;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, meta = ( Repository = "ItemRepository" ) )
 	FDataIndexerPrimaryKey DefaultWeapon;
