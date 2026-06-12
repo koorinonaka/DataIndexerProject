@@ -21,6 +21,27 @@ void UItemRaritySchema::InitializeExpandedStructEntries()
 	}
 }
 
+EDataValidationResult UItemRaritySchema::IsRowValid( FConstStructView RowEntity, FDataValidationContext& Context ) const
+{
+	EDataValidationResult Result = Super::IsRowValid( RowEntity, Context );
+
+	const auto AddError = [&]( const FText& Msg )
+	{
+		Context.AddError( Msg );
+		Result = EDataValidationResult::Invalid;
+	};
+
+	if ( const FItemRarityRow* Row = RowEntity.GetPtr<const FItemRarityRow>() )
+	{
+		if ( Row->DisplayName.IsEmpty() )
+		{
+			AddError( NSLOCTEXT( "ItemRaritySchema", "EmptyDisplayName", "DisplayName must not be empty." ) );
+		}
+	}
+
+	return Result;
+}
+
 #endif
 
 TOptional<FText> UItemRaritySchema::GetRowDisplayName(

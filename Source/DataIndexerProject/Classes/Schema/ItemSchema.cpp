@@ -52,6 +52,35 @@ TSharedRef<SWidget> UItemSchema::CustomizePropertyCellWidget( DataIndexer::IProp
 	return Super::CustomizePropertyCellWidget( Context );
 }
 
+EDataValidationResult UItemSchema::IsRowValid( FConstStructView RowEntity, FDataValidationContext& Context ) const
+{
+	EDataValidationResult Result = Super::IsRowValid( RowEntity, Context );
+
+	const auto AddError = [&]( const FText& Msg )
+	{
+		Context.AddError( Msg );
+		Result = EDataValidationResult::Invalid;
+	};
+
+	if ( const FItemRow* Row = RowEntity.GetPtr<const FItemRow>() )
+	{
+		if ( Row->DisplayName.IsEmpty() )
+		{
+			AddError( NSLOCTEXT( "ItemSchema", "EmptyDisplayName", "DisplayName must not be empty." ) );
+		}
+		if ( !Row->Type.IsValid() )
+		{
+			AddError( NSLOCTEXT( "ItemSchema", "InvalidType", "Type must not be empty." ) );
+		}
+		if ( !Row->Rarity.IsValid() )
+		{
+			AddError( NSLOCTEXT( "ItemSchema", "InvalidRarity", "Rarity must not be empty." ) );
+		}
+	}
+
+	return Result;
+}
+
 #endif
 
 TOptional<FText> UItemSchema::GetRowDisplayName( const FDataIndexerPrimaryKey& PrimaryKey, const FConstStructView& RowEntity ) const

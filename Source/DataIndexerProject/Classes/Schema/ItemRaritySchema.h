@@ -22,6 +22,7 @@ public:
 protected:
 #if WITH_EDITOR
 	virtual void InitializeExpandedStructEntries() override;
+	virtual EDataValidationResult IsRowValid( FConstStructView RowEntity, FDataValidationContext& Context ) const override;
 #endif
 
 	virtual TOptional<FText> GetRowDisplayName(

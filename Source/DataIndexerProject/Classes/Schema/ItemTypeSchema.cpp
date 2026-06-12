@@ -21,6 +21,27 @@ void UItemTypeSchema::InitializeExpandedStructEntries()
 	}
 }
 
+EDataValidationResult UItemTypeSchema::IsRowValid( FConstStructView RowEntity, FDataValidationContext& Context ) const
+{
+	EDataValidationResult Result = Super::IsRowValid( RowEntity, Context );
+
+	const auto AddError = [&]( const FText& Msg )
+	{
+		Context.AddError( Msg );
+		Result = EDataValidationResult::Invalid;
+	};
+
+	if ( const FItemTypeRow* Row = RowEntity.GetPtr<const FItemTypeRow>() )
+	{
+		if ( Row->DisplayName.IsEmpty() )
+		{
+			AddError( NSLOCTEXT( "ItemTypeSchema", "EmptyDisplayName", "DisplayName must not be empty." ) );
+		}
+	}
+
+	return Result;
+}
+
 #endif
 
 TOptional<FText> UItemTypeSchema::GetRowDisplayName(

@@ -63,6 +63,43 @@ TSharedRef<SWidget> UCharacterSchema::CustomizePropertyCellWidget( DataIndexer::
 	return Super::CustomizePropertyCellWidget( Context );
 }
 
+EDataValidationResult UCharacterSchema::IsRowValid( FConstStructView RowEntity, FDataValidationContext& Context ) const
+{
+	EDataValidationResult Result = Super::IsRowValid( RowEntity, Context );
+
+	const auto AddError = [&]( const FText& Msg )
+	{
+		Context.AddError( Msg );
+		Result = EDataValidationResult::Invalid;
+	};
+
+	if ( const FCharacterRow* Row = RowEntity.GetPtr<const FCharacterRow>() )
+	{
+		if ( Row->DisplayName.IsEmpty() )
+		{
+			AddError( NSLOCTEXT( "CharacterSchema", "EmptyDisplayName", "DisplayName must not be empty." ) );
+		}
+		if ( !Row->Class.IsValid() )
+		{
+			AddError( NSLOCTEXT( "CharacterSchema", "InvalidClass", "Class must not be empty." ) );
+		}
+		if ( Row->MaxHP < 1 )
+		{
+			AddError( NSLOCTEXT( "CharacterSchema", "MaxHPNotPositive", "MaxHP must be at least 1." ) );
+		}
+		if ( !Row->PawnClass )
+		{
+			AddError( NSLOCTEXT( "CharacterSchema", "PawnClassNull", "PawnClass must not be empty." ) );
+		}
+		if ( !Row->DefaultWeapon.IsValid() )
+		{
+			AddError( NSLOCTEXT( "CharacterSchema", "InvalidDefaultWeapon", "DefaultWeapon must not be empty." ) );
+		}
+	}
+
+	return Result;
+}
+
 #endif
 
 TOptional<FText> UCharacterSchema::GetRowDisplayName(
