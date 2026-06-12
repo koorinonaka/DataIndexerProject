@@ -14,6 +14,7 @@ Patch release focused on cell-widget customization and inline-editing fixes.
 
 - `DI_REGISTER_BUILD_INDEX` — macro to register an index builder, with the builder signature checked at compile time.
 - Virtual columns (`FDataIndexerVirtualColumn`, `UDataIndexerSchema::VirtualColumns`) — declare extra Data View columns. With a `SourceProperty` they alias a row property (dotted, e.g. `"Inner.A"`, for nested members) so one value can be shown as several columns with different presentations; with an empty `SourceProperty` they are unbound columns whose cell the schema supplies entirely via `CustomizePropertyCellWidget`.
+- Column reordering — drag column headers in the Data View to rearrange data property and Virtual columns. Order is persisted per-schema in **Schema Layouts**.
 
 ### Changed { .release-group .release-group--change }
 

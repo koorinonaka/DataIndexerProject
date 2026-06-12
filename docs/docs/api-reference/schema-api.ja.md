@@ -110,4 +110,34 @@ virtual EDataValidationResult IsRowValid(
 #endif
 ```
 
-`IsRowValid` は **Validate Data**（`UEditorValidatorSubsystem` 経由）時に各行ごとに呼び出されます。各行のバリデーションロジックを追加するためにオーバーライドしてください。
+`IsRowValid` は **Validate Data**（`UEditorValidatorSubsystem` 経由）時に各行ごとに呼び出されます。C++ でオーバーライドするか、Blueprint から `RowValidationFunction` をバインドして各行のバリデーションロジックを追加します。
+
+---
+
+## RowValidationFunction
+
+```cpp
+#if WITH_EDITORONLY_DATA
+UPROPERTY( EditDefaultsOnly, Category = Functions, meta = ( AllowFunctionLibraries ) )
+FMemberReference RowValidationFunction;
+#endif
+```
+
+Schema の Class Defaults パネルから設定できる任意の行バリデーションフックです。バインドする関数は次のシグネチャを持つ必要があります。
+
+```
+void FunctionName(const FRowStruct& Row, UDataIndexerRowValidationContext* Context)
+```
+
+バインドが設定されているとき、基底 `IsRowValid` はすべての行に対してこの関数を呼び出します。エラーと警告は `FDataValidationContext` に転送されます。`IsDataValid` はアセット検証時にシグネチャを検証し、不整合があればエラーを報告します。
+
+---
+
+## UDataIndexerRowValidationContext
+
+`UDataIndexerRowValidationContext`（`DataIndexerRowValidationContext.h`）は、`RowValidationFunction` にバインドした関数の第2引数として渡されるトランジェントな `BlueprintType` オブジェクトです。Blueprint からエラーや警告を報告するために使用します。
+
+| 関数 | 説明 |
+|---|---|
+| `AddError(FText Error)` | エラーを追加します。行が `Invalid` として報告され、保存・クックがブロックされます。 |
+| `AddWarning(FText Warning)` | 警告を追加します。保存・クックはブロックされません。 |

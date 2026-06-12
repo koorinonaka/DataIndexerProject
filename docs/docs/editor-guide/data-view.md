@@ -180,7 +180,20 @@ You can also drag the **drag handle** icon (`⠿`) at the left edge of a row to 
 
 ## Column width and ordering
 
-Column widths and ordering are persisted per-schema in the **Schema Layouts** editor setting. Drag column headers to reorder. Drag the divider between column headers to resize.
+Column widths and ordering are persisted per-schema in the **Schema Layouts** editor setting.
+
+### Reordering columns
+
+Drag a column header left or right to a new position. A vertical indicator line shows where the column will be inserted on drop.
+
+<!-- TODO: data-view-column-reorder.gif -->
+
+!!! note "Fixed columns"
+    System columns — **Line Number**, **Display Name**, **Visibility**, and **Reference Viewer** — cannot be reordered. Only data property columns and Virtual Columns are movable.
+
+### Resizing columns
+
+Drag the divider between column headers to resize a column.
 
 ### Reset Layout
 

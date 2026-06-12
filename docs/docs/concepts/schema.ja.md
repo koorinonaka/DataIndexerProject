@@ -102,18 +102,15 @@ Schema は 3 つのことを担当します。
 
 ## データバリデーション
 
-!!! warning "Blueprint 未対応"
-    `IsRowValid` の Blueprint オーバーライドは現在対応していません。バリデーションは C++ でのみ実装できます。
-
-`IsRowValid` をオーバーライド（エディタ専用）して、各行のバリデーションロジックを追加します。
-
 検証は次のタイミングで自動的に実行されます。
 
 - Content Browser で **右クリック → Validate Data** を選択したとき
 - アセット保存時（エディタ設定で **Save Validation** を有効にした場合）
 - クック時
 
-戻り値が `EDataValidationResult::Invalid` の場合、`Context` に追加したエラーメッセージがエディタに表示され、保存・クックがブロックされます。
+### C++
+
+`IsRowValid` をオーバーライド（エディタ専用）して各行のバリデーションロジックを追加します。戻り値が `EDataValidationResult::Invalid` の場合、`Context` に追加したエラーメッセージがエディタに表示され、保存・クックがブロックされます。
 
 ```cpp
 #if WITH_EDITOR
@@ -132,6 +129,24 @@ EDataValidationResult UItemSchema::IsRowValid(
 }
 #endif
 ```
+
+### Blueprint
+
+Schema の Class Defaults で **RowValidationFunction** を `(const FRowStruct&, UDataIndexerRowValidationContext*)` シグネチャの関数にバインドします。Details パネルの **Create matching function** で正しいパラメータのスタブを自動生成できます。
+
+関数内では Context オブジェクトの `AddError` または `AddWarning` を呼び出して問題を報告します。
+
+- `AddError(FText)` — 行を無効としてマークし、エディタにメッセージを表示します。
+- `AddWarning(FText)` — 保存・クックをブロックせずに警告を報告します。
+
+| 結果 | バリデーション結果 |
+|---|---|
+| Error が1件以上 | `EDataValidationResult::Invalid` — 保存・クックがブロックされます |
+| Warning のみ | `EDataValidationResult::Valid` — 警告はエディタに表示されますがブロックなし |
+| Error/Warning ともになし | `EDataValidationResult::Valid` |
+
+!!! note "シグネチャ検証"
+    バインドした関数のシグネチャが不正（パラメータ型・数の不一致、または void 以外の戻り値）の場合、Schema アセットの検証時に `IsDataValid` がエラーを報告します。
 
 ## カラムレイアウト（ExpandedStructEntries）
 
