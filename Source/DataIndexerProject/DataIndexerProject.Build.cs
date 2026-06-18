@@ -11,6 +11,7 @@ public class DataIndexerProject : ModuleRules
 			"CoreUObject",
 			"Engine",
 			"GameplayTags",
+			"SlateCore",
 			"DataIndexer",
 		]);
 

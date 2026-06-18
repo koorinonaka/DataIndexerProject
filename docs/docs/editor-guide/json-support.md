@@ -54,6 +54,8 @@ The format is auto-detected: files with a `RowEntity` field are read as native D
 
 A repository open in the custom editor can be reimported from the toolbar **Reimport** button.
 
+![The Reimport button on the Data View toolbar](../assets/images/data-view-toolbar-reimport.png)
+
 - If a source file is already recorded: reimports from that file automatically
 - If no source file is recorded: opens a file selection dialog (same behavior as Import JSON)
 

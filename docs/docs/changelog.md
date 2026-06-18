@@ -6,7 +6,34 @@ Versions correspond to the `VersionName` field in `DataIndexer.uplugin`.
 
 ---
 
-## v1.0.0 { .release .release--current data-date="2026-05-24" }
+## v1.0.1 { .release .release--current data-date="2026-06-07" }
+
+Patch release focused on cell-widget customization and inline-editing fixes.
+
+### Added { .release-group .release-group--add }
+
+- `DI_REGISTER_BUILD_INDEX` — macro to register an index builder, with the builder signature checked at compile time.
+- Virtual columns (`FDataIndexerVirtualColumn`, `UDataIndexerSchema::VirtualColumns`) — declare extra Data View columns. With a `SourceProperty` they alias a row property (dotted, e.g. `"Inner.A"`, for nested members) so one value can be shown as several columns with different presentations; with an empty `SourceProperty` they are unbound columns whose cell the schema supplies entirely via `CustomizePropertyCellWidget`.
+- Column reordering — drag column headers in the Data View to rearrange data property and Virtual columns. Order is persisted per-schema in **Schema Layouts**.
+- `FDataIndexerVirtualColumn::PreferredWidth` — optional initial width (pixels) for a virtual column; left unset, the column auto-sizes from its content.
+- `RowValidationFunction` — an optional per-row validation hook on the schema, assignable in Blueprint (function libraries allowed) and complementing the C++ `IsRowValid`. Issues are reported through a `UDataIndexerRowValidationContext`.
+- Editor row CRUD via `UDataIndexerEditorFunctionLibrary` — Blueprint-callable **Add Row**, **Update Row**, and **Delete Row(s)** that write through the editor's transactional (undoable) staging layer.
+- `IDataIndexerInterface_CellContext` (`SetCellContext`) — the Data View injects the owning repository and primary key into a freshly built cell widget that implements this interface, so a Blueprint-authored editable cell can write edits back via **Update Row**.
+
+### Changed { .release-group .release-group--change }
+
+- `CustomizePropertyCellWidget` customization functions now receive the row's primary key, so customizations can vary by row identity.
+
+### Fixed { .release-group .release-group--fix }
+
+- `CustomizePropertyCellWidget` customizations that create UMG widgets now render correctly (previously failed to resolve a World context).
+- Validation errors now name the specific problem and the affected column instead of a generic message.
+- Row display names resolve correctly for invalid or schema-less rows.
+- Inline (double-click) cell editors now lay out with correct alignment and padding.
+
+---
+
+## v1.0.0 { .release data-date="2026-05-24" }
 
 First public release.
 

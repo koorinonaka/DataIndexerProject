@@ -1,7 +1,6 @@
 #pragma once
 
 #include "DataIndexerSchema.h"
-#include "Types/CharacterClassTypes.h"
 
 #include "CharacterClassSchema.generated.h"
 
@@ -23,6 +22,7 @@ public:
 protected:
 #if WITH_EDITOR
 	virtual void InitializeExpandedStructEntries() override;
+	virtual EDataValidationResult IsRowValid( FConstStructView RowEntity, FDataValidationContext& Context ) const override;
 #endif
 
 	virtual TOptional<FText> GetRowDisplayName(

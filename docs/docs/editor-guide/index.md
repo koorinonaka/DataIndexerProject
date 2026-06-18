@@ -10,17 +10,17 @@ The `DataIndexerEd` module adds a custom editing workflow on top of the runtime 
 !!! note "Editor-only"
     Everything in this section requires Unreal Editor. The `DataIndexerEd` module is declared `UncookedOnly` and is not available in packaged builds.
 
-## Workflow overview
+## Editor layout
 
-Setting up a new data table follows this sequence:
+Double-clicking a Repository asset opens a three-panel editor.
 
-1. **Create a Blueprint struct** — defines the shape of a single row
-2. **Create a Schema Blueprint** — `DataIndexerSchema` subclass, binds to the struct from step 1
-3. **Create a Repository asset** — `DataIndexerRepository`
-4. **Set Schema Class on the Repository**
-5. **Double-click the Repository** — opens the Data View
-6. **Press Insert to add rows** — edit inline or via the Selection Details panel
-7. **Save** — reverse lookup tables rebuild automatically
+![Editor layout overview](../assets/images/editor-overview.png)
+
+| Panel | Position | Role |
+|-------|----------|------|
+| Asset Details | Left (hidden by default, docked to left side) | Repository-level properties: Schema Class, Parent Repositories, etc. |
+| Data View | Center | Row grid — add, delete, and edit rows inline |
+| Selection Details | Right | Full property editor for the selected row |
 
 ## Pages in this section
 
@@ -37,6 +37,12 @@ Setting up a new data table follows this sequence:
     ---
 
     The three-panel custom editor. Insert, edit, and delete rows; configure which columns appear; navigate between parent and child repositories.
+
+- :material-table-cog:{ .lg .middle } &nbsp; **[Custom Cell Widgets](custom-cell-widgets.md)**
+
+    ---
+
+    Replace default cell widgets with custom displays or inline editors, and declare virtual columns that alias a property under multiple presentations.
 
 - :material-code-json:{ .lg .middle } &nbsp; **[JSON Support](json-support.md)**
 

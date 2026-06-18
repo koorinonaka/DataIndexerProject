@@ -102,18 +102,15 @@ A schema does three things:
 
 ## Data validation
 
-!!! warning "Blueprint not supported"
-    Blueprint override of `IsRowValid` is not currently supported. Validation must be implemented in C++.
-
-Override `IsRowValid` (editor-only) to add per-row validation logic.
-
 Validation runs automatically at the following points:
 
 - When selecting **Validate Data** via right-click in the Content Browser
 - On asset save (if **Save Validation** is enabled in editor settings)
 - During cook
 
-A return value of `EDataValidationResult::Invalid` surfaces the errors added to `Context` in the editor and blocks save and cook.
+### C++
+
+Override `IsRowValid` (editor-only) to add per-row validation logic. A return value of `EDataValidationResult::Invalid` surfaces the errors added to `Context` in the editor and blocks save and cook.
 
 ```cpp
 #if WITH_EDITOR
@@ -132,6 +129,24 @@ EDataValidationResult UItemSchema::IsRowValid(
 }
 #endif
 ```
+
+### Blueprint
+
+Bind **RowValidationFunction** in the Schema's Class Defaults to a function whose signature is `(const FRowStruct&, UDataIndexerRowValidationContext*)` — use **Create matching function** in the details panel to generate a stub with the correct parameters.
+
+Inside the function, call `AddError` or `AddWarning` on the context object to report issues:
+
+- `AddError(FText)` — marks the row as invalid and surfaces the message in the editor.
+- `AddWarning(FText)` — reports a warning without blocking save or cook.
+
+| Outcome | Result |
+|---|---|
+| One or more errors | `EDataValidationResult::Invalid` — save and cook are blocked |
+| Warnings only | `EDataValidationResult::Valid` — warnings are displayed but not blocking |
+| No errors or warnings | `EDataValidationResult::Valid` |
+
+!!! note "Signature validation"
+    If the bound function has an incompatible signature (wrong parameter types, wrong count, or a non-void return), `IsDataValid` reports it as an error when the Schema asset is validated.
 
 ## Column layout (ExpandedStructEntries)
 

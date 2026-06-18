@@ -23,6 +23,19 @@ static FDataIndexerPrimaryKey ParseKey( const TCHAR* InGuid )
 	return FDataIndexerPrimaryKey( Guid );
 }
 
+// Type / Rarity rows are referenced by deterministic GUID derived from their name.
+// The same convention seeds DIS_ItemType / DIS_ItemRarity, so fixtures store the name
+// ("Weapon", "Common", ...) and resolve it to the key here.
+static FDataIndexerPrimaryKey ItemTypeKey( const TCHAR* Name )
+{
+	return FDataIndexerPrimaryKey( FGuid::NewDeterministicGuid( FString( TEXT( "ItemType." ) ) + Name ) );
+}
+
+static FDataIndexerPrimaryKey ItemRarityKey( const TCHAR* Name )
+{
+	return FDataIndexerPrimaryKey( FGuid::NewDeterministicGuid( FString( TEXT( "ItemRarity." ) ) + Name ) );
+}
+
 static const FDataIndexerPrimaryKey IronSwordKey = ParseKey( TEXT( "43D743EA-4773-4EC4-8DF9-0E68899CFFDD" ) );
 static const FDataIndexerPrimaryKey SteelSwordKey = ParseKey( TEXT( "F1042C38-9D92-4271-B103-A1D48B3CE6FC" ) );
 static const FDataIndexerPrimaryKey IronShieldKey = ParseKey( TEXT( "D6A40602-596C-4122-BB3F-ECB12BB5692C" ) );
@@ -34,14 +47,15 @@ static void AddItem( UItemSchemaTestRepository* Repo, const FDataIndexerPrimaryK
 	Repo->LocalEntries.Emplace( Key, FInstancedStruct::Make( Row ) );
 	Repo->EntryOwners.Emplace( Key, Repo );
 
+	// Mirror the index builders in UItemSchema so the reverse lookups match the query keys.
 	Repo->ReverseLookups.FindOrAdd( UItemSchema::ByTypeIndex() )
-		.Entries.FindOrAdd( FGuid( static_cast<uint32>( Row.Type ), 0, 0, 0 ) )
+		.Entries.FindOrAdd( static_cast<FGuid>( Row.Type ) )
 		.Add( Key );
 	Repo->ReverseLookups.FindOrAdd( UItemSchema::ByRarityIndex() )
-		.Entries.FindOrAdd( FGuid( static_cast<uint32>( Row.Rarity ), 0, 0, 0 ) )
+		.Entries.FindOrAdd( static_cast<FGuid>( Row.Rarity ) )
 		.Add( Key );
 	Repo->ReverseLookups.FindOrAdd( UItemSchema::ByTypeAndRarityIndex() )
-		.Entries.FindOrAdd( FGuid( static_cast<uint32>( Row.Type ), static_cast<uint32>( Row.Rarity ), 0, 0 ) )
+		.Entries.FindOrAdd( FGuid::NewDeterministicGuid( Row.Type.ToString() + Row.Rarity.ToString() ) )
 		.Add( Key );
 }
 
@@ -96,6 +110,16 @@ static UItemSchemaTestRepository* LoadItemFixture( FAutomationTestBase& Test )
 
 		FItemRow Row;
 		FJsonObjectConverter::JsonObjectToUStruct( RowEntityPtr->ToSharedRef(), FItemRow::StaticStruct(), &Row, 0, 0 );
+
+		// Type / Rarity are authored as names; resolve them to deterministic keys.
+		if ( FString TypeName; ( *RowEntityPtr )->TryGetStringField( TEXT( "Type" ), TypeName ) )
+		{
+			Row.Type = ItemTypeKey( *TypeName );
+		}
+		if ( FString RarityName; ( *RowEntityPtr )->TryGetStringField( TEXT( "Rarity" ), RarityName ) )
+		{
+			Row.Rarity = ItemRarityKey( *RarityName );
+		}
 
 		AddItem( Repo, FDataIndexerPrimaryKey( Guid ), Row );
 	}
@@ -152,8 +176,8 @@ bool FItemInterface_FindRowByKey_Test::RunTest( const FString& Parameters )
 	{
 		return false;
 	}
-	TestTrue( TEXT( "Iron Sword type is Weapon" ), Row->Type == EItemType::Weapon );
-	TestTrue( TEXT( "Iron Sword rarity is Common" ), Row->Rarity == EItemRarity::Common );
+	TestTrue( TEXT( "Iron Sword type is Weapon" ), Row->Type == ItemTypeKey( TEXT( "Weapon" ) ) );
+	TestTrue( TEXT( "Iron Sword rarity is Common" ), Row->Rarity == ItemRarityKey( TEXT( "Common" ) ) );
 	TestEqual( TEXT( "Iron Sword base value" ), Row->BaseValue, 100 );
 
 	// Missing key
@@ -166,8 +190,8 @@ bool FItemInterface_FindRowByKey_Test::RunTest( const FString& Parameters )
 	{
 		return false;
 	}
-	TestTrue( TEXT( "Battle Axe type is Weapon" ), BattleAxeRow->Type == EItemType::Weapon );
-	TestTrue( TEXT( "Battle Axe rarity is Epic" ), BattleAxeRow->Rarity == EItemRarity::Epic );
+	TestTrue( TEXT( "Battle Axe type is Weapon" ), BattleAxeRow->Type == ItemTypeKey( TEXT( "Weapon" ) ) );
+	TestTrue( TEXT( "Battle Axe rarity is Epic" ), BattleAxeRow->Rarity == ItemRarityKey( TEXT( "Epic" ) ) );
 
 	return true;
 }
@@ -197,8 +221,8 @@ bool FItemInterface_FindRowByHandle_Test::RunTest( const FString& Parameters )
 	{
 		return false;
 	}
-	TestTrue( TEXT( "Silver Ring type is Accessory" ), Row->Type == EItemType::Accessory );
-	TestTrue( TEXT( "Silver Ring rarity is Rare" ), Row->Rarity == EItemRarity::Rare );
+	TestTrue( TEXT( "Silver Ring type is Accessory" ), Row->Type == ItemTypeKey( TEXT( "Accessory" ) ) );
+	TestTrue( TEXT( "Silver Ring rarity is Rare" ), Row->Rarity == ItemRarityKey( TEXT( "Rare" ) ) );
 
 	// Null repository
 	FDataIndexerRowHandle NullRepoHandle;
@@ -255,17 +279,20 @@ bool FItemInterface_ForEachItemsByType_Test::RunTest( const FString& Parameters 
 
 	// Weapon: Iron Sword, Steel Sword, Battle Axe = 3
 	int32 WeaponCount = 0;
-	FItemInterfaceMock::ForEachItemsByType( *Repo, EItemType::Weapon, [&]( const FDataIndexerPrimaryKey& ) { ++WeaponCount; } );
+	FItemInterfaceMock::ForEachItemsByType(
+		*Repo, ItemTypeKey( TEXT( "Weapon" ) ), [&]( const FDataIndexerPrimaryKey& ) { ++WeaponCount; } );
 	TestEqual( TEXT( "ForEachItemsByType Weapon = 3" ), WeaponCount, 3 );
 
 	// Armor: Iron Shield = 1
 	int32 ArmorCount = 0;
-	FItemInterfaceMock::ForEachItemsByType( *Repo, EItemType::Armor, [&]( const FDataIndexerPrimaryKey& ) { ++ArmorCount; } );
+	FItemInterfaceMock::ForEachItemsByType(
+		*Repo, ItemTypeKey( TEXT( "Armor" ) ), [&]( const FDataIndexerPrimaryKey& ) { ++ArmorCount; } );
 	TestEqual( TEXT( "ForEachItemsByType Armor = 1" ), ArmorCount, 1 );
 
 	// Material: none = 0
 	int32 MaterialCount = 0;
-	FItemInterfaceMock::ForEachItemsByType( *Repo, EItemType::Material, [&]( const FDataIndexerPrimaryKey& ) { ++MaterialCount; } );
+	FItemInterfaceMock::ForEachItemsByType(
+		*Repo, ItemTypeKey( TEXT( "Material" ) ), [&]( const FDataIndexerPrimaryKey& ) { ++MaterialCount; } );
 	TestEqual( TEXT( "ForEachItemsByType Material = 0" ), MaterialCount, 0 );
 
 	return true;
@@ -314,19 +341,19 @@ bool FItemInterface_GetItemsByType_Test::RunTest( const FString& Parameters )
 	}
 
 	// Weapon: Iron Sword, Steel Sword, Battle Axe
-	const TArray<FDataIndexerPrimaryKey> Weapons = FItemInterfaceMock::GetItemsByType( *Repo, EItemType::Weapon );
+	const TArray<FDataIndexerPrimaryKey> Weapons = FItemInterfaceMock::GetItemsByType( *Repo, ItemTypeKey( TEXT( "Weapon" ) ) );
 	TestEqual( TEXT( "GetItemsByType Weapon = 3" ), Weapons.Num(), 3 );
 	TestTrue( TEXT( "Weapons contains Iron Sword" ), Weapons.Contains( IronSwordKey ) );
 	TestTrue( TEXT( "Weapons contains Steel Sword" ), Weapons.Contains( SteelSwordKey ) );
 	TestTrue( TEXT( "Weapons contains Battle Axe" ), Weapons.Contains( BattleAxeKey ) );
 
 	// Accessory: Silver Ring only
-	const TArray<FDataIndexerPrimaryKey> Accessories = FItemInterfaceMock::GetItemsByType( *Repo, EItemType::Accessory );
+	const TArray<FDataIndexerPrimaryKey> Accessories = FItemInterfaceMock::GetItemsByType( *Repo, ItemTypeKey( TEXT( "Accessory" ) ) );
 	TestEqual( TEXT( "GetItemsByType Accessory = 1" ), Accessories.Num(), 1 );
 	TestTrue( TEXT( "Accessories contains Silver Ring" ), Accessories.Contains( SilverRingKey ) );
 
 	// Material: empty
-	const TArray<FDataIndexerPrimaryKey> Materials = FItemInterfaceMock::GetItemsByType( *Repo, EItemType::Material );
+	const TArray<FDataIndexerPrimaryKey> Materials = FItemInterfaceMock::GetItemsByType( *Repo, ItemTypeKey( TEXT( "Material" ) ) );
 	TestEqual( TEXT( "GetItemsByType Material = 0" ), Materials.Num(), 0 );
 
 	return true;
@@ -348,18 +375,18 @@ bool FItemInterface_GetItemsByRarity_Test::RunTest( const FString& Parameters )
 	}
 
 	// Common: Iron Sword, Steel Sword
-	const TArray<FDataIndexerPrimaryKey> Commons = FItemInterfaceMock::GetItemsByRarity( *Repo, EItemRarity::Common );
+	const TArray<FDataIndexerPrimaryKey> Commons = FItemInterfaceMock::GetItemsByRarity( *Repo, ItemRarityKey( TEXT( "Common" ) ) );
 	TestEqual( TEXT( "GetItemsByRarity Common = 2" ), Commons.Num(), 2 );
 	TestTrue( TEXT( "Common contains Iron Sword" ), Commons.Contains( IronSwordKey ) );
 	TestTrue( TEXT( "Common contains Steel Sword" ), Commons.Contains( SteelSwordKey ) );
 
 	// Rare: Silver Ring only
-	const TArray<FDataIndexerPrimaryKey> Rares = FItemInterfaceMock::GetItemsByRarity( *Repo, EItemRarity::Rare );
+	const TArray<FDataIndexerPrimaryKey> Rares = FItemInterfaceMock::GetItemsByRarity( *Repo, ItemRarityKey( TEXT( "Rare" ) ) );
 	TestEqual( TEXT( "GetItemsByRarity Rare = 1" ), Rares.Num(), 1 );
 	TestTrue( TEXT( "Rare contains Silver Ring" ), Rares.Contains( SilverRingKey ) );
 
 	// Legendary: empty
-	const TArray<FDataIndexerPrimaryKey> Legendaries = FItemInterfaceMock::GetItemsByRarity( *Repo, EItemRarity::Legendary );
+	const TArray<FDataIndexerPrimaryKey> Legendaries = FItemInterfaceMock::GetItemsByRarity( *Repo, ItemRarityKey( TEXT( "Legendary" ) ) );
 	TestEqual( TEXT( "GetItemsByRarity Legendary = 0" ), Legendaries.Num(), 0 );
 
 	return true;
@@ -383,7 +410,7 @@ bool FItemInterface_GetItemsByTypeAndRarity_Test::RunTest( const FString& Parame
 
 	// Weapon + Common: Iron Sword, Steel Sword
 	const TArray<FDataIndexerPrimaryKey> WeaponCommon =
-		FItemInterfaceMock::GetItemsByTypeAndRarity( *Repo, EItemType::Weapon, EItemRarity::Common );
+		FItemInterfaceMock::GetItemsByTypeAndRarity( *Repo, ItemTypeKey( TEXT( "Weapon" ) ), ItemRarityKey( TEXT( "Common" ) ) );
 	TestEqual( TEXT( "Weapon+Common = 2" ), WeaponCommon.Num(), 2 );
 	TestTrue( TEXT( "Weapon+Common contains Iron Sword" ), WeaponCommon.Contains( IronSwordKey ) );
 	TestTrue( TEXT( "Weapon+Common contains Steel Sword" ), WeaponCommon.Contains( SteelSwordKey ) );
@@ -391,13 +418,13 @@ bool FItemInterface_GetItemsByTypeAndRarity_Test::RunTest( const FString& Parame
 
 	// Weapon + Epic: Battle Axe only
 	const TArray<FDataIndexerPrimaryKey> WeaponEpic =
-		FItemInterfaceMock::GetItemsByTypeAndRarity( *Repo, EItemType::Weapon, EItemRarity::Epic );
+		FItemInterfaceMock::GetItemsByTypeAndRarity( *Repo, ItemTypeKey( TEXT( "Weapon" ) ), ItemRarityKey( TEXT( "Epic" ) ) );
 	TestEqual( TEXT( "Weapon+Epic = 1" ), WeaponEpic.Num(), 1 );
 	TestTrue( TEXT( "Weapon+Epic contains Battle Axe" ), WeaponEpic.Contains( BattleAxeKey ) );
 
 	// Armor + Common: empty (Iron Shield is Uncommon)
 	const TArray<FDataIndexerPrimaryKey> ArmorCommon =
-		FItemInterfaceMock::GetItemsByTypeAndRarity( *Repo, EItemType::Armor, EItemRarity::Common );
+		FItemInterfaceMock::GetItemsByTypeAndRarity( *Repo, ItemTypeKey( TEXT( "Armor" ) ), ItemRarityKey( TEXT( "Common" ) ) );
 	TestEqual( TEXT( "Armor+Common = 0" ), ArmorCommon.Num(), 0 );
 
 	return true;

@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "DataIndexerSchemaInterface.h"
 #include "DataIndexerTypes.h"
+#include "GameFramework/Pawn.h"
 
 #include "CharacterTypes.generated.h"
 
@@ -19,6 +20,9 @@ struct DATAINDEXERPROJECT_API FCharacterRow
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	int32 MaxHP = 100;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	TSubclassOf<APawn> PawnClass;
 
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, meta = ( Repository = "ItemRepository" ) )
 	FDataIndexerPrimaryKey DefaultWeapon;

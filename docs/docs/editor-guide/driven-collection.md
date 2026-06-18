@@ -14,6 +14,10 @@ A driven collection is a companion asset to a `UDataIndexerRepository`. It maint
 - Per-row asset references that don't belong in row data (e.g., icons, meshes, ability classes). Separating asset references lets you manage hard-reference loading independently from row data.
 - Data settings for a row list including parent rows.
 
+As an example, `CharacterClassIconCollection` maps one icon texture to each class (Warrior / Mage / Rogue / Priest) in the `DI_CharacterClass` repository. The keys are read-only, resolve to display names, and stay in sync with the `Source Repository` rows.
+
+![CharacterClassIconCollection details panel: a per-class icon map and the Source Repository](../assets/images/driven-collection-details.png)
+
 ## SourceRepository
 
 ```cpp

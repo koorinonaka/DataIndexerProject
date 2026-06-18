@@ -58,8 +58,12 @@ There are two ways to edit a row:
 **Inline editing (Data View)**
 : Double-click a cell in the grid. Simple scalar properties, enums, and short strings support inline editing. Press **Escape** to exit without navigating away, or click another cell to confirm and move the selection.
 
+    ![Inline editing](../assets/images/feature-05.gif)
+
 **Selection Details (full editor)**
 : Select a row (via right-click → **Select Row**, or click the drag-handle column). The **Selection Details** panel on the right shows the full property editor with nested struct support, asset pickers, and custom widgets registered by the schema.
+
+    ![Selection Details panel](../assets/images/data-view-selection-details.png)
 
 ## Context menu
 
@@ -180,7 +184,22 @@ You can also drag the **drag handle** icon (`⠿`) at the left edge of a row to 
 
 ## Column width and ordering
 
-Column widths and ordering are persisted per-schema in the **Schema Layouts** editor setting. Drag column headers to reorder. Drag the divider between column headers to resize.
+Column widths and ordering are persisted per-schema in the **Schema Layouts** editor setting.
+
+### Reordering columns
+
+Drag a column header left or right to a new position. A vertical indicator line shows where the column will be inserted on drop.
+
+<!-- TODO: data-view-column-reorder.gif -->
+
+!!! note "Fixed columns"
+    System columns — **Line Number**, **Display Name**, **Visibility**, and **Reference Viewer** — cannot be reordered. Only data property columns and Virtual Columns are movable.
+
+### Resizing columns
+
+Drag the divider between column headers to resize a column.
+
+![Resizing a column](../assets/images/data-view-column-resize.gif)
 
 ### Reset Layout
 

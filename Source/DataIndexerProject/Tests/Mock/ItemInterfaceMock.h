@@ -27,7 +27,7 @@ struct FItemInterfaceMock
 
 	// ── ForEachPrimaryKeys(Index, Query) — filtered ───────────────────────────
 
-	static void ForEachItemsByType( const UDataIndexerRepository& Repository, EItemType Type,
+	static void ForEachItemsByType( const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& Type,
 		const TFunctionRef<void( const FDataIndexerPrimaryKey& )>& Callback );
 
 	// ── GetPrimaryKeys() — all ────────────────────────────────────────────────
@@ -36,10 +36,10 @@ struct FItemInterfaceMock
 
 	// ── GetPrimaryKeys(Index, Query) — filtered ───────────────────────────────
 
-	static TArray<FDataIndexerPrimaryKey> GetItemsByType( const UDataIndexerRepository& Repository, EItemType Type );
+	static TArray<FDataIndexerPrimaryKey> GetItemsByType( const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& Type );
 
-	static TArray<FDataIndexerPrimaryKey> GetItemsByRarity( const UDataIndexerRepository& Repository, EItemRarity Rarity );
+	static TArray<FDataIndexerPrimaryKey> GetItemsByRarity( const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& Rarity );
 
 	static TArray<FDataIndexerPrimaryKey> GetItemsByTypeAndRarity(
-		const UDataIndexerRepository& Repository, EItemType Type, EItemRarity Rarity );
+		const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& Type, const FDataIndexerPrimaryKey& Rarity );
 };

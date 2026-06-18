@@ -38,6 +38,12 @@ Repository アセットをダブルクリックすると 3 パネル構成のエ
 
     3 パネル構成のカスタムエディタ。行の追加・編集・削除、表示カラムの設定、親・子 Repository 間のナビゲーション。
 
+- :material-table-cog:{ .lg .middle } &nbsp; **[カスタムセルウィジェット](custom-cell-widgets.md)**
+
+    ---
+
+    デフォルトのセルウィジェットをカスタム表示またはインラインエディタに置き換える。同一プロパティを異なる表現で複数列に表示するバーチャルカラムも解説。
+
 - :material-code-json:{ .lg .middle } &nbsp; **[JSON サポート](json-support.md)**
 
     ---

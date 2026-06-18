@@ -28,7 +28,8 @@ void FItemInterfaceMock::ForEachItem(
 // ── ForEachPrimaryKeys(Index, Query) ─────────────────────────────────────────
 
 void FItemInterfaceMock::ForEachItemsByType(
-	const UDataIndexerRepository& Repository, EItemType Type, const TFunctionRef<void( const FDataIndexerPrimaryKey& )>& Callback )
+	const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& Type,
+	const TFunctionRef<void( const FDataIndexerPrimaryKey& )>& Callback )
 {
 	FItemRow Query;
 	Query.Type = Type;
@@ -45,7 +46,7 @@ TArray<FDataIndexerPrimaryKey> FItemInterfaceMock::GetAllItemKeys( const UDataIn
 
 // ── GetPrimaryKeys(Index, Query) ──────────────────────────────────────────────
 
-TArray<FDataIndexerPrimaryKey> FItemInterfaceMock::GetItemsByType( const UDataIndexerRepository& Repository, EItemType Type )
+TArray<FDataIndexerPrimaryKey> FItemInterfaceMock::GetItemsByType( const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& Type )
 {
 	FItemRow Query;
 	Query.Type = Type;
@@ -53,7 +54,7 @@ TArray<FDataIndexerPrimaryKey> FItemInterfaceMock::GetItemsByType( const UDataIn
 	return FItemInterface::GetPrimaryKeys( Repository, UItemSchema::ByTypeIndex(), Query );
 }
 
-TArray<FDataIndexerPrimaryKey> FItemInterfaceMock::GetItemsByRarity( const UDataIndexerRepository& Repository, EItemRarity Rarity )
+TArray<FDataIndexerPrimaryKey> FItemInterfaceMock::GetItemsByRarity( const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& Rarity )
 {
 	FItemRow Query;
 	Query.Rarity = Rarity;
@@ -62,7 +63,7 @@ TArray<FDataIndexerPrimaryKey> FItemInterfaceMock::GetItemsByRarity( const UData
 }
 
 TArray<FDataIndexerPrimaryKey> FItemInterfaceMock::GetItemsByTypeAndRarity(
-	const UDataIndexerRepository& Repository, EItemType Type, EItemRarity Rarity )
+	const UDataIndexerRepository& Repository, const FDataIndexerPrimaryKey& Type, const FDataIndexerPrimaryKey& Rarity )
 {
 	FItemRow Query;
 	Query.Type = Type;

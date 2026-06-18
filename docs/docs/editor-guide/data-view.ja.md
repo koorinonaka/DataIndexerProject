@@ -193,7 +193,20 @@ Selection Details パネルの **Development** カテゴリに **Editor Flags** 
 
 ## カラム幅と並び順
 
-カラムの幅と並び順はエディタ設定の **Schema Layouts** にSchemaごとに保存されます。カラムヘッダーをドラッグして並び替えられます。カラムヘッダー間の仕切りをドラッグしてリサイズできます。
+カラムの幅と並び順はエディタ設定の **Schema Layouts** にSchemaごとに保存されます。
+
+### カラムの並び替え
+
+カラムヘッダーを左右にドラッグしてデータカラムを並び替えられます。ドラッグ中は縦線インジケーターが挿入位置を示します。
+
+<!-- TODO: data-view-column-reorder.gif -->
+
+!!! note "固定カラム"
+    **Line Number**・**Display Name**・**Visibility**・**Reference Viewer** のシステムカラムは並び替えできません。並び替えられるのはデータプロパティカラムと Virtual Column のみです。
+
+### カラムのリサイズ
+
+カラムヘッダー間の仕切りをドラッグしてリサイズできます。
 
 ![カラム幅の変更](../assets/images/data-view-column-resize.gif)
 

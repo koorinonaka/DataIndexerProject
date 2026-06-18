@@ -10,9 +10,9 @@
  * Schema for ItemRepository.
  *
  * Indexes:
- *   ByTypeIndex          — group items by EItemType (Weapon / Armor / ...)
- *   ByRarityIndex        — group items by EItemRarity (Common / Rare / ...)
- *   ByTypeAndRarityIndex — composite lookup by EItemType × EItemRarity
+ *   ByTypeIndex          — group items by their ItemType row (ItemTypeRepository key)
+ *   ByRarityIndex        — group items by their ItemRarity row (ItemRarityRepository key)
+ *   ByTypeAndRarityIndex — composite lookup by ItemType × ItemRarity
  */
 UCLASS()
 class DATAINDEXERPROJECT_API UItemSchema : public UDataIndexerSchema
@@ -26,10 +26,17 @@ public:
 	DI_DEFINE_INDEX( ByRarityIndex );
 	DI_DEFINE_INDEX( ByTypeAndRarityIndex );
 
+	UFUNCTION( BlueprintPure, Category = DataIndexer )
+	FText GetTypeDisplayName( const FDataIndexerPrimaryKey& TypeKey ) const;
+
+	UFUNCTION( BlueprintPure, Category = DataIndexer )
+	FText GetRarityDisplayName( const FDataIndexerPrimaryKey& RarityKey ) const;
+
 protected:
 #if WITH_EDITOR
 	virtual void InitializeExpandedStructEntries() override;
 	virtual TSharedRef<SWidget> CustomizePropertyCellWidget( DataIndexer::IPropertyWidgetContext& Context ) const override;
+	virtual EDataValidationResult IsRowValid( FConstStructView RowEntity, FDataValidationContext& Context ) const override;
 #endif
 
 	virtual TOptional<FText> GetRowDisplayName(
@@ -43,4 +50,11 @@ protected:
 
 	UFUNCTION()
 	static FGuid BuildTypeAndRarityIndex( const FItemRow& Row );
+
+protected:
+	UPROPERTY( EditDefaultsOnly, Category = DataIndexer, meta = ( Schema = "/Script/DataIndexerProject.ItemTypeSchema" ) )
+	TObjectPtr<UDataIndexerRepository> ItemTypeRepository;
+
+	UPROPERTY( EditDefaultsOnly, Category = DataIndexer, meta = ( Schema = "/Script/DataIndexerProject.ItemRaritySchema" ) )
+	TObjectPtr<UDataIndexerRepository> ItemRarityRepository;
 };

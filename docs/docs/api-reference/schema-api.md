@@ -110,4 +110,34 @@ virtual EDataValidationResult IsRowValid(
 #endif
 ```
 
-`IsRowValid` is called for each row during **Validate Data** (via `UEditorValidatorSubsystem`). Override it to add per-row validation logic.
+`IsRowValid` is called for each row during **Validate Data** (via `UEditorValidatorSubsystem`). Override it in C++ to add per-row validation logic, or bind `RowValidationFunction` from Blueprint.
+
+---
+
+## RowValidationFunction
+
+```cpp
+#if WITH_EDITORONLY_DATA
+UPROPERTY( EditDefaultsOnly, Category = Functions, meta = ( AllowFunctionLibraries ) )
+FMemberReference RowValidationFunction;
+#endif
+```
+
+Optional per-row validation hook settable from the Schema's Class Defaults panel. The bound function must have the signature:
+
+```
+void FunctionName(const FRowStruct& Row, UDataIndexerRowValidationContext* Context)
+```
+
+The base `IsRowValid` calls this function for every row when the binding is set. Errors and warnings are forwarded to `FDataValidationContext`. `IsDataValid` validates the signature at asset-validation time and reports an error if it is incompatible.
+
+---
+
+## UDataIndexerRowValidationContext
+
+`UDataIndexerRowValidationContext` (`DataIndexerRowValidationContext.h`) is a transient `BlueprintType` object passed as the second argument to the function bound in `RowValidationFunction`. Use it to report errors and warnings from Blueprint.
+
+| Function | Description |
+|---|---|
+| `AddError(FText Error)` | Adds an error. Causes the row to be reported as `Invalid`, blocking save and cook. |
+| `AddWarning(FText Warning)` | Adds a warning. Does not block save or cook. |
