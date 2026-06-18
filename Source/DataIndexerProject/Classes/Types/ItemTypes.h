@@ -14,6 +14,12 @@ struct DATAINDEXERPROJECT_API FItemRow
 	UPROPERTY( EditAnywhere, BlueprintReadWrite )
 	FText DisplayName;
 
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	FText Subtitle;
+
+	UPROPERTY( EditAnywhere, BlueprintReadWrite )
+	FText Description;
+
 	UPROPERTY( EditAnywhere, BlueprintReadWrite, meta = ( Repository = "ItemTypeRepository" ) )
 	FDataIndexerPrimaryKey Type;
 

@@ -26,6 +26,12 @@ public:
 	DI_DEFINE_INDEX( ByRarityIndex );
 	DI_DEFINE_INDEX( ByTypeAndRarityIndex );
 
+	UFUNCTION( BlueprintPure, Category = DataIndexer )
+	FText GetTypeDisplayName( const FDataIndexerPrimaryKey& TypeKey ) const;
+
+	UFUNCTION( BlueprintPure, Category = DataIndexer )
+	FText GetRarityDisplayName( const FDataIndexerPrimaryKey& RarityKey ) const;
+
 protected:
 #if WITH_EDITOR
 	virtual void InitializeExpandedStructEntries() override;
