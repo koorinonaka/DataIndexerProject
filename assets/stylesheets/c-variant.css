@@ -205,6 +205,14 @@
   margin: 0 auto;
   padding: 28px 48px 64px;
 }
+/* モバイルでは横 padding を Material 標準の 16px (.8rem) に戻す。
+   tabbed-labels / scrollwrap の edge-to-edge 化 (margin -16px + max-width:100vw)
+   が 16px padding 前提のため、48px のままだとページ全体が横はみ出しする */
+@media screen and (max-width: 44.984375em) {
+  .md-content__inner {
+    padding: 24px 16px 48px;
+  }
+}
 .md-content__inner > h1 {
   font-size: 36px;
   line-height: 1.12;
