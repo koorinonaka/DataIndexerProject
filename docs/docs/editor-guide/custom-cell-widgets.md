@@ -267,7 +267,7 @@ exactly as it looks in-game. `UItemSchema` does this with an `InventoryCard` col
 `WBP_InventoryRowCard` — the in-game inventory row UI, an **MVVM** widget driven by a `VM_InventoryRowCard`
 viewmodel (which exposes the row's `FItemRow` as its `Row` property) — once per row.
 
-![Data View InventoryCard column rendering the WBP_InventoryRowCard MVVM card for each item row](../assets/images/inventory-card-mvvm-preview.png)
+![Data View InventoryCard column rendering the WBP_InventoryRowCard MVVM card for each item row](../assets/images/inventory-card-mvvm-preview.gif)
 
 This example uses the row struct `FItemRow` (only the fields the card displays are shown):
 

@@ -261,7 +261,7 @@ override する場合は `Context` から次の部品を使ってセルを組み
 はインゲーム用のアイテム行 UI で、`VM_InventoryRowCard` ビューモデル（行の `FItemRow` を `Row` プロパティ
 として公開します）で駆動する **MVVM** ウィジェットです。これを行ごとに描画します。
 
-![Data View の InventoryCard 列が、各アイテム行に WBP_InventoryRowCard の MVVM カードを描画している様子](../assets/images/inventory-card-mvvm-preview.png)
+![Data View の InventoryCard 列が、各アイテム行に WBP_InventoryRowCard の MVVM カードを描画している様子](../assets/images/inventory-card-mvvm-preview.gif)
 
 この例では行 struct `FItemRow` を使います（カードが表示するフィールドのみ示します）。
 
