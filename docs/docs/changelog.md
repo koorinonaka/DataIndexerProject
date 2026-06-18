@@ -15,6 +15,10 @@ Patch release focused on cell-widget customization and inline-editing fixes.
 - `DI_REGISTER_BUILD_INDEX` — macro to register an index builder, with the builder signature checked at compile time.
 - Virtual columns (`FDataIndexerVirtualColumn`, `UDataIndexerSchema::VirtualColumns`) — declare extra Data View columns. With a `SourceProperty` they alias a row property (dotted, e.g. `"Inner.A"`, for nested members) so one value can be shown as several columns with different presentations; with an empty `SourceProperty` they are unbound columns whose cell the schema supplies entirely via `CustomizePropertyCellWidget`.
 - Column reordering — drag column headers in the Data View to rearrange data property and Virtual columns. Order is persisted per-schema in **Schema Layouts**.
+- `FDataIndexerVirtualColumn::PreferredWidth` — optional initial width (pixels) for a virtual column; left unset, the column auto-sizes from its content.
+- `RowValidationFunction` — an optional per-row validation hook on the schema, assignable in Blueprint (function libraries allowed) and complementing the C++ `IsRowValid`. Issues are reported through a `UDataIndexerRowValidationContext`.
+- Editor row CRUD via `UDataIndexerEditorFunctionLibrary` — Blueprint-callable **Add Row**, **Update Row**, and **Delete Row(s)** that write through the editor's transactional (undoable) staging layer.
+- `IDataIndexerInterface_CellContext` (`SetCellContext`) — the Data View injects the owning repository and primary key into a freshly built cell widget that implements this interface, so a Blueprint-authored editable cell can write edits back via **Update Row**.
 
 ### Changed { .release-group .release-group--change }
 

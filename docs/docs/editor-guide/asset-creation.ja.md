@@ -34,6 +34,10 @@ Schema Blueprint を作成する前に、使用する行構造体を定義しま
 !!! note "Schemaの変更"
     **Row Struct が一致していれば**、バインド済みSchemaは別のSchemaに変更できます。Row Struct が異なる場合は JSON Export / Import でマイグレーションしてください。
 
+バインドした Schema は Data View 左の **Asset Details** パネルの **Schema Class** で確認・変更できます。
+
+![Asset Details パネルで Schema Class に Schema を割り当てた Repository](../assets/images/repository-schema-binding.png)
+
 Repository アセットをダブルクリックすると Data View が開きます。
 
 - **Insert** キーで行を追加 — GUID のPrimaryKeyが自動生成されます

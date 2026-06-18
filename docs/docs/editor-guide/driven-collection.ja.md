@@ -14,6 +14,10 @@ Driven Collection は `UDataIndexerRepository` のコンパニオンアセット
 - 行データに含めるべきでない行ごとのアセット参照（例：アイコン・メッシュ・アビリティクラス）。アセット参照を分けることで、ハード参照によるロード管理を行データと切り離せます。
 - 親を含めた行一覧に対してのデータ設定。
 
+例として `CharacterClassIconCollection` は、`DI_CharacterClass` Repository の各クラス（Warrior / Mage / Rogue / Priest）にアイコンテクスチャを 1 つずつ紐付けます。キーは読み取り専用で表示名に解決され、`Source Repository` の行に追従します。
+
+![CharacterClassIconCollection の詳細パネル。クラスごとのアイコンマップと Source Repository](../assets/images/driven-collection-details.png)
+
 ## SourceRepository
 
 ```cpp

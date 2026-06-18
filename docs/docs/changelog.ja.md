@@ -15,6 +15,10 @@ DataIndexer のすべての注目すべき変更をここに記録します。
 - `DI_REGISTER_BUILD_INDEX` — Index ビルダーを登録するマクロ。ビルダーのシグネチャをコンパイル時に検証。
 - 仮想列（`FDataIndexerVirtualColumn`、`UDataIndexerSchema::VirtualColumns`）— Data View に追加列を宣言可能に。`SourceProperty` 指定時は行プロパティをエイリアス（ネストは `"Inner.A"` のドット区切り）し、1 つの値を異なる見せ方の複数列として表示できる。空の場合は unbound 列となり、セルは schema が `CustomizePropertyCellWidget` で全面提供する。
 - 列並び替え — Data View のカラムヘッダーをドラッグしてデータプロパティカラムおよび Virtual Column を並び替えられます。並び順は **Schema Layouts** にSchemaごとに保存されます。
+- `FDataIndexerVirtualColumn::PreferredWidth` — 仮想列の初期幅（ピクセル）を任意指定。未設定の場合は内容に合わせて自動サイズ。
+- `RowValidationFunction` — Schema に設定できる任意の行ごとの検証フック。Blueprint（関数ライブラリ可）で割り当てられ、C++ の `IsRowValid` を補完。検証結果は `UDataIndexerRowValidationContext` 経由で報告されます。
+- `UDataIndexerEditorFunctionLibrary` によるエディタ行 CRUD — Blueprint から呼べる **Add Row** / **Update Row** / **Delete Row(s)**。エディタのトランザクション（Undo 可能）ステージング層を介して書き込みます。
+- `IDataIndexerInterface_CellContext`（`SetCellContext`）— このインターフェースを実装したセルウィジェットに、Data View が所属 Repository と PrimaryKey を注入。Blueprint で作った編集可能セルが **Update Row** で編集を書き戻せるようになります。
 
 ### 変更 { .release-group .release-group--change }
 

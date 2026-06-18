@@ -128,6 +128,7 @@ plugins:
             Migrate from DataTable: DataTable から移行する
             Repository Metadata: Repository メタデータ
             Parent Hierarchy: 親 Repository 階層
+            Custom Cell Widgets: カスタムセルウィジェット
             Changelog: 変更履歴
   - minify:
       minify_html: true
@@ -141,11 +142,11 @@ nav:
     - Repository: concepts/repository.md
     - Keys & Handles: concepts/keys-and-handles.md
     - Indexes: concepts/indexes.md
-    - Custom Cell Widgets: concepts/custom-cell-widgets.md
   - Editor Guide:
     - editor-guide/index.md
     - Asset Creation: editor-guide/asset-creation.md
     - Data View: editor-guide/data-view.md
+    - Custom Cell Widgets: editor-guide/custom-cell-widgets.md
     - JSON Support: editor-guide/json-support.md
     - Driven Collection: editor-guide/driven-collection.md
   - API Reference:

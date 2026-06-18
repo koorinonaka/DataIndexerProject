@@ -54,6 +54,8 @@ DataIndexer Repositoryは JSON によるエクスポート・インポート・D
 
 カスタムエディタで開いたRepositoryはツールバーの **Reimport** ボタンから再インポートできます。
 
+![Data View ツールバーの Reimport ボタン](../assets/images/data-view-toolbar-reimport.png)
+
 - インポート元ファイルが保存済みの場合：そのファイルから自動的に再インポートします
 - 未保存の場合：ファイル選択ダイアログを開きます（Import JSON と同じ動作）
 

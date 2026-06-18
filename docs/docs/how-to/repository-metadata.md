@@ -65,6 +65,10 @@ public:
 
 Each UPROPERTY's picker only shows repositories of the matching schema. Designers cannot assign the wrong type.
 
+The bundled `CharacterSchema` uses the same technique: its `Item Repository` (filtered to `ItemSchema`) and `Character Class Repository` (filtered to `CharacterClassSchema`) pickers each list only repositories of their declared schema.
+
+![Schema-filtered repository pickers on CharacterSchema: Item Repository and Character Class Repository](../assets/images/schema-filtered-pickers.png)
+
 ---
 
 ## NotOverridable { #notoverridable }

@@ -65,6 +65,10 @@ public:
 
 各 UPROPERTY のピッカーは対応するSchemaのRepositoryのみを表示します。デザイナーが誤った型を割り当てることができなくなります。
 
+同梱の `CharacterSchema` も同じ手法を使っています。`Item Repository`（`ItemSchema` でフィルタ）と `Character Class Repository`（`CharacterClassSchema` でフィルタ）の 2 つのピッカーは、それぞれ対応するSchemaのRepositoryだけを候補に出します。
+
+![CharacterSchema の Schema フィルタ済みリポジトリピッカー（Item Repository / Character Class Repository）](../assets/images/schema-filtered-pickers.png)
+
 ---
 
 ## NotOverridable { #notoverridable }

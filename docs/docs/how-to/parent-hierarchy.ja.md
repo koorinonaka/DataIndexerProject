@@ -29,7 +29,14 @@ DI_AllItems  （親）
 3. **Details** パネルで **Parent Repositories** を探し、`DI_AllItems` を追加する
 4. `DI_ShopA` を保存する
 
+![Asset Details パネルの Parent Repositories に親を追加した状態](../assets/images/parent-repositories-field.png)
+
 Data View に両Repositoryの行が表示されます。親由来の行はエディタテーマに応じて視覚的に区別されます（薄いテキストやロックアイコンなど）。
+
+![親の行と子独自の行が並ぶ Data View](../assets/images/parent-hierarchy-data-view.png)
+
+!!! example "同梱サンプル"
+    付属サンプルでは `DI_Ability_Mage` が `DI_Ability` を親に持ちます。上の Data View では `Attack` / `Defence` / `Heal` が親 `DI_Ability` から継承された行（ドラッグハンドルなし。説明文は Mage 用にオーバーライド済み）で、`Fireball` / `FrostBolt` / `ArcaneShield` が子独自の行（ドラッグハンドルあり）です。
 
 !!! note "複数の親"
     Repositoryには複数の親を設定できます。すべての親の行が見えるようになり、エディタが循環参照を自動で検出します。

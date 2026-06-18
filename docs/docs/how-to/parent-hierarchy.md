@@ -29,7 +29,14 @@ Create `DI_AllItems` normally: right-click → **Miscellaneous → DataIndexer �
 3. In the **Details** panel, find **Parent Repositories** and add `DI_AllItems`
 4. Save `DI_ShopA`
 
+![Parent Repositories in the Asset Details panel with a parent added](../assets/images/parent-repositories-field.png)
+
 The Data View now shows rows from both repositories. Parent-sourced rows are visually distinguished (lighter text or a lock icon, depending on the editor theme).
+
+![Data View showing inherited parent rows alongside the child's own rows](../assets/images/parent-hierarchy-data-view.png)
+
+!!! example "Bundled sample"
+    The bundled sample uses `DI_Ability_Mage` with `DI_Ability` as its parent. In the Data View above, `Attack` / `Defence` / `Heal` are inherited from the parent `DI_Ability` (no drag handle; their descriptions are overridden for the mage), while `Fireball` / `FrostBolt` / `ArcaneShield` are the child's own rows (with drag handles).
 
 !!! note "Multiple parents"
     A repository can list more than one parent. Rows from all parents are visible, and the editor detects circular references automatically.
