@@ -49,7 +49,15 @@ When a row originates from a parent repository and the child's Data View display
 
 === "Blueprint"
 
-    Open the **User Defined Struct** editor. Select a variable. In the **Details** panel, toggle **Not Overridable**. When enabled, child repositories that override a parent row cannot edit this field.
+    Open the Schema asset (`UDataIndexerSchema`) and find **Column Layout** under the **DataIndexer** category. When the Row Struct is a **User Defined Struct**, each field row shows two toggles:
+
+    - Eye icon — whether the field is shown as a column
+    - Lock icon — `NotOverridable` (when locked, the field is read-only in a child's override rows)
+
+    Clicking the lock icon toggles the field's `NotOverridable` metadata. Native C++ row structs don't show the lock toggle — declare `meta = (NotOverridable)` in C++ instead.
+
+    ![Eye (visibility) and lock (NotOverridable) toggles on each Column Layout field row](../assets/images/column-layout-not-overridable.png)
+
 ## Public API
 
 ### `GetSchema()`
