@@ -1,5 +1,5 @@
 ---
-status: ready
+status: verify_pending
 order: 10
 tier: standard
 screen: required
@@ -81,13 +81,39 @@ DataIndexer の docs サイト (トップの overview とドキュメント本�
 - canvas を light / dark で開き、スクリーンショットを Execution Log に残す。
 
 ## Execution Log
-Not started.
+- 2026-10-25: メインスレッドが Design canvas を作成し、素材画像 10 枚を asset としてアップロードした。現状のスクショ 2 枚 (トップと concepts/schema、dark、1440px 幅) も含む。
+- 2026-10-25〜26: canvas の中身を task-executor-canvas (max) が書いた。13 ファイル、所要 38 分。executor の自作 lint はエラー 0 件、テキストの最低コントラストは 4.73。
+- 2026-10-26: メインスレッドが canvas.json と 12 枚のボードを公開した (version 3)。
+- Verification は未了: ブラウザペインは claude.ai にサインインしていないので、canvas を開けなかった。
+- 既定で進めて記録:
+  - 本文ページはトップと逆のテーマで描いた (A は light、B と C は dark)。両方のテーマをページの大きさで見せるため。
+  - テーマは props のトグルにせず固定にした。
+  - ja 見出しは `lang="ja"` + `word-break: auto-phrase` + `text-wrap: balance` で組んだ。t261025-dbeb に渡す。
 
 ## Summary
-Not started.
+canvas: https://claude.ai/artifact/8uPTrWirULD7DSRCRAPPYs
+
+- 現状: スクショ 2 枚と凡例 (Main)。凡例には要因 1〜6、各案が捨てた要因、動画の置き場を載せた。
+- A エディタが主役:
+  - 色は UE の灰と、行の選択色の琥珀 #f8b800。書体は IBM Plex。
+  - hero 全幅の 16:9 に動画を置く。
+  - 1〜5 を捨てた。6 は暗い背景を残し、青を琥珀に替えた。
+- B 台帳 (Ledger):
+  - 色は紙・インク・キーの緑。書体は Archivo 系。
+  - hero は「参照 → GUID キー → リネーム」の図版。
+  - 2 つ目のセクションに動画を置く。
+  - 1, 3, 4, 5, 6 を捨てた。
+- C マニュアル:
+  - LP を持たない。トップは本の扉と目次。色は白・インク・深紅 #9b1d33。書体は Source Serif。
+  - タイトル横の Figure 1 に動画を置く。
+  - 1〜6 すべてを捨てた。
 
 ## Changed Files
-Not started.
+- repo の変更は無い。成果物は canvas (Artifact) だけ。
 
 ## Blockers
-なし
+Verification の残り: canvas を light / dark で開いてスクリーンショットを撮る。サインイン済みのブラウザが要る。次の 4 点を目で確かめる。
+1. Spec と Main で、下端のブロックが切れていないこと。
+2. B-Home の矢印とキーの行の縦位置が揃っていること。
+3. A-Home と B-Docs のヘッダーが 1440px 幅で折り返さないこと。
+4. Google Fonts (Archivo Narrow、Martian Mono、Zen Kaku Gothic New、IBM Plex Sans JP) が読み込まれていること。
