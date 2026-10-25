@@ -54,7 +54,6 @@ extra_css:
   - assets/stylesheets/c-variant.css
 
 extra_javascript:
-  - assets/javascripts/toc-fix.js
   - assets/javascripts/quick-start-progress.js
   - assets/javascripts/overview-tabs.js
 
