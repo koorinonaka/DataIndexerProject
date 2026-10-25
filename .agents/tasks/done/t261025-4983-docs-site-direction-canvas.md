@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 10
 tier: standard
 screen: required
@@ -114,12 +114,4 @@ canvas: https://claude.ai/artifact/8uPTrWirULD7DSRCRAPPYs
 - repo の変更は無い。成果物は canvas (Artifact) だけ。
 
 ## Blockers
-Verification の残り: canvas を light / dark で開いてスクリーンショットを撮る。サインイン済みのブラウザが要る。次の 4 点を目で確かめる。
-1. Spec と Main で、下端のブロックが切れていないこと。
-2. B-Home の矢印とキーの行の縦位置が揃っていること。
-3. A-Home と B-Docs のヘッダーが 1440px 幅で折り返さないこと。
-4. Google Fonts (Archivo Narrow、Martian Mono、Zen Kaku Gothic New、IBM Plex Sans JP) が読み込まれていること。
-5. AB-Home と AB-Docs のヘッダーが 1440px 幅で折り返さず、はみ出さないこと。
-6. AB の 3 枚の下端が切れていないこと。
-7. AB-Spec の ja 見出しが「リネームしても、/参照は壊れない。」で折れること。
-8. AB の 3 枚で IBM Plex (Sans / Mono / Sans JP) が読み込まれていること。
+なし。Verification はユーザーが canvas を自分で開いて確かめ、統合案を承認した (2026-10-26)。ブラウザペインは未サインインのため、メインスレッドのスクリーンショットは無い。

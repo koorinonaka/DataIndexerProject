@@ -1,7 +1,8 @@
 ---
-status: draft
+status: ready
 order: 20
 tier: standard
+ds: AB
 screen: required
 agent: any
 created_by: task-create
@@ -42,7 +43,37 @@ created_by: task-create
   4. `--hl-string` と `--hl-num` は B の配色に無い。ここで決める。
   5. 実際の色は `extra.css` の `--md-*` を通して効く。`tokens.css` だけを変えても効かない。
   6. `mkdocs.yml` は `scheme: di-light` と書き、`extra.css` は `[data-md-color-scheme="default"]` を対象にしている。食い違いの可能性がある。
-- 昇格レビュー時に埋める: 統合案の canvas ボード (AB-Home / AB-Docs / AB-Spec) から写す寸法・色の値。値ごとに基準 (外形か内側か) を書く。
+- ユーザーが統合案を承認した (2026-10-26、「これで進めて」)。
+- 統合案の出典 (同じマシンのローカルにある。読むだけ):
+  - フォルダ: `C:/Users/koori/AppData/Local/Temp/claude/E--workspace-DataIndexerProject--claude-worktrees-webpage-brushup-f06e9d/51965596-7144-4ddf-9788-b4785a1ef74e/scratchpad/canvas/project/`
+  - `AB-Spec.dc.html`: トークンと寸法の正。値はすべて `box-sizing: border-box` で測ってある。
+  - `AB-Home.dc.html` / `AB-Docs.dc.html`: トップと本文ページの構成と inline style。
+  - フォルダが消えていたら、canvas https://claude.ai/artifact/8uPTrWirULD7DSRCRAPPYs の同名ファイルを見る。
+- 色トークン (AB-Spec、light / dark):
+
+  | token | light | dark |
+  |---|---|---|
+  | --bg | #f3efe4 | #0f1411 |
+  | --bg-alt | #faf7ef | #151c18 |
+  | --bg-sunken | #ebe5d6 | #0b0f0d |
+  | --bg-code | #ebe5d6 | #1b241f |
+  | --border | #d8d0bd | #26302b |
+  | --border-strong | #bfb59e | #26302b |
+  | --text | #1c1a15 | #e6ebe5 |
+  | --text-muted | #5c5649 | #a3ada5 |
+  | --text-faint | #5c5649 | #8a958d |
+  | --accent | #0f6b45 | #3ecf8e |
+  | --accent-hover | #0a4d31 | #7fe3b5 |
+  | --mark | #16b978 (文字に使わない) | #3ecf8e |
+  | --button-bg / -fg | #1c1a15 / #f3efe4 | #3ecf8e / #0f1411 |
+  | --hl-fg | #1c1a15 | #dfe6df |
+  | --hl-macro | #5b3f9e | #b9a3f0 |
+  | --hl-keyword | #8a2c5c | #e39ac0 |
+  | --hl-type | #0f6b45 | #3ecf8e |
+  | --hl-comment | #5c5649 | #7f8b83 |
+
+  `--hl-string` と `--hl-num` は AB-Spec に無い。実行者が 4.5:1 以上で決め、Execution Log に値と比を書く。
+- 既定のテーマは light。OS の設定に従い、設定が無ければ light を出す。
 
 ## Scope
 - 選んだ案の配色・書体・余白を `tokens.css` のトークンに落とし、全ページに効かせる。
@@ -70,7 +101,33 @@ created_by: task-create
 - en / ja、light / dark の 4 通りでトップと `concepts/schema` が canvas の選んだ案と一致する。
 - 幅 375px でトップに横スクロールが出ない。
 - 動画が無い状態でも hero が poster 画像で成立している。
-- (寸法表は昇格レビュー時に canvas から書く)
+- 寸法表 (AB-Spec が出典。単位 px。外形 = border-box の外寸、内側 = 枠と padding の内側)。次の値が実装と一致する:
+
+  | 部品 | 値 | 基準 |
+  |---|---|---|
+  | ヘッダー | 高さ 64 (下罫 1px 込み)、左右 padding 40、折り返さない | 外形 |
+  | ロゴ | 28×28、語まで 10、語は Sans 600 18/24 | 外形 |
+  | ナビ | Sans 500 14/20、項目の間 20、現在地は下線 2px --accent | — |
+  | 検索欄 | 160×34 (枠 1px 込み)、左右 padding 12 | 外形 |
+  | ボタン | 高さ 36、左右 padding 16、Sans 600 14/20 | 外形 |
+  | フッター | 高さ 56 (上罫 1px 込み)、左右 40。版 (v1.0.1) を置く | 外形 |
+  | 角 | 0 (キーの印だけ半径 3) | — |
+  | 本文ページの列 | 280 : 残り : 248 | 外形 |
+  | サイドバーの行 | 高さ 36 (上罫 1px 込み)、Sans 14.5/20、子の字下げ 18 | 外形 |
+  | 本文列 | padding 40 64 72、max-width 760 | 760 は内側 |
+  | H1 (本文ページ) | Sans 600 52/60、-0.01em | — |
+  | H2 | Sans 600 24/32、上に太罫 2px、罫から字まで 14 | — |
+  | H3 | Sans 600 19/28 | — |
+  | 本文 | Sans 400 17/28、インラインコード Mono 15 | — |
+  | コードブロック | Mono 400 13.5/21、頭は高さ 34 (下罫 1px 込み) | 外形 |
+  | note (admonition) | 上に太罫 2px --accent、下罫 1px、padding 12 0 14 | — |
+  | 右の目次 | 左罫 1px、padding 40 32 40 24、行は min-height 34 | 外形 |
+  | トップの内容幅 | max-width 1280、左右 80 | 1280 は内側 |
+  | トップ h1 (Display) | Sans 600 40/48、-0.01em。ja は 700 40/52 | — |
+  | リード文 | Sans 400 18/28、--text-muted | — |
+  | 動画枠 | 16:9。1440 幅で 1280×720。枠線は outline 1px で寸法に入れない | 内側 |
+  | セクション | padding 64 80 (最後だけ下 72)、見出しの太罫 2px | — |
+  | タイル | 4 列、間 16、枠 1px --border-strong、面 --bg-alt、画像 16:10 | 画像は内側 |
 
 ## Tests
 - `cd docs; python -m mkdocs build` がエラー無しで終わる。
@@ -89,4 +146,4 @@ Not started.
 Not started.
 
 ## Blockers
-canvas の A+B 統合案 (AB-Home / AB-Docs / AB-Spec) をユーザーが確かめるのを待つ。
+なし
