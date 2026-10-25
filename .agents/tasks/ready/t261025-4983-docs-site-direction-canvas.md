@@ -89,6 +89,8 @@ DataIndexer の docs サイト (トップの overview とドキュメント本�
   - 本文ページはトップと逆のテーマで描いた (A は light、B と C は dark)。両方のテーマをページの大きさで見せるため。
   - テーマは props のトグルにせず固定にした。
   - ja 見出しは `lang="ja"` + `word-break: auto-phrase` + `text-wrap: balance` で組んだ。t261025-dbeb に渡す。
+- 2026-10-26: ユーザーが canvas を見て決めた。トップは A、配色と本文ページは B、書体は IBM Plex、C は採らない。動画は poster で先に出す。
+- 2026-10-26: A+B の統合案の行 (AB-Home / AB-Docs / AB-Spec) を task-executor-canvas が書いた (34 分)。メインスレッドが公開した (version 4)。
 
 ## Summary
 canvas: https://claude.ai/artifact/8uPTrWirULD7DSRCRAPPYs
@@ -117,3 +119,7 @@ Verification の残り: canvas を light / dark で開いてスクリーンシ�
 2. B-Home の矢印とキーの行の縦位置が揃っていること。
 3. A-Home と B-Docs のヘッダーが 1440px 幅で折り返さないこと。
 4. Google Fonts (Archivo Narrow、Martian Mono、Zen Kaku Gothic New、IBM Plex Sans JP) が読み込まれていること。
+5. AB-Home と AB-Docs のヘッダーが 1440px 幅で折り返さず、はみ出さないこと。
+6. AB の 3 枚の下端が切れていないこと。
+7. AB-Spec の ja 見出しが「リネームしても、/参照は壊れない。」で折れること。
+8. AB の 3 枚で IBM Plex (Sans / Mono / Sans JP) が読み込まれていること。
