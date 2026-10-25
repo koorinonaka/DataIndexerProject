@@ -6,7 +6,47 @@ DataIndexer の注目すべき変更はすべてここに記録します。
 
 ---
 
-## v1.0.1 { .release .release--current data-date="2026-06-07" }
+## v1.0.2 { .release .release--current data-date="2026-10-25" }
+
+NotOverridable を Blueprint から設定できるようにし、行の検証と JSON インポートのコマンドを足したパッチリリース。Data View とコンパイルまわりの不具合も修正。
+
+### 追加 { .release-group .release-group--add }
+
+- Schema の **Column Layout** の NotOverridable ロック：User Defined Struct の各フィールドで、表示切り替えの隣に鍵アイコンを置いた。ロックしたフィールドは Override 行で読み取り専用になる。
+- **Validate**：Data View の行コンテキストメニューのコマンド。選択行に Schema の行検証を実行し、行ごとの結果を **Asset Check** メッセージログに出力する。
+- `UDataIndexerEditorFunctionLibrary::ImportRowsFromJSON`：DataIndexer 形式の JSON 文字列を Repository にインポートする、Blueprint から呼べる関数。Repository の行を置き換え、Undo できる。
+- Selection Details が `Parent|Child` 形式のカテゴリ名から入れ子のサブカテゴリを作り、`ShowOnlyInnerProperties` に従うようになった。カテゴリのフィルタチップはルートのカテゴリに働く。
+
+### 変更 { .release-group .release-group--change }
+
+- **互換性のない変更：** `UDataIndexerSchema::IsRowValid` の第 1 引数に、行の `FDataIndexerPrimaryKey` が加わった。C++ のオーバーライドを新しいシグネチャに合わせる必要がある。
+- 派生Repositoryの NotOverridable フィールドは、常に最も近い親Repositoryの値に従う。値はロード時・エディタを開いたとき・JSON インポート時・行の Override 時に解決され、派生アセットには保存されず、コンパイル時に焼き込まれる。メタデータの付いたサブ構造体は、Override 行で丸ごと読み取り専用になる。
+- Data View のカラム幅を、Schema のセルが実際に描くテキスト（`CreateAsSimpleText` を含む）から決めるようにした。RowName カラムは自動サイズになり、手動のリサイズも保つ。オブジェクトのセルはアセット名を表示し、フルパスでも検索できる。
+- Shift + マウスホイールで Data View を横スクロールできる。
+- 行の検証結果の先頭に、その行の Repository へのリンクが付く。
+- `AddRowFromView` / `UpdateRowFromView` が const の Repository を受け取れるようになった。
+
+### 修正 { .release-group .release-group--fix }
+
+- User Defined Struct フィールドの NotOverridable のチェックボックスが、構造体エディタに表示されていなかった。Schema の Column Layout に移した（「追加」を参照）。
+- 菱形の親グラフで共通の祖先を経路ごとに走査し、その行が Data View に重複して表示されていた。各Repositoryを 1 回だけ走査するよう修正。
+- フィルタで行が隠れているときや継承行が混ざっているときに、ドラッグで並び替えた行が違う位置に入っていた。
+- 警告だけのコンパイル（Build Index 関数が未バインドの場合など）が失敗しなくなった。
+- ある行が検証に失敗すると、それ以降の行もすべて Invalid と報告されていた。各行を、その行の Issue だけで判定するよう修正。
+- DataTable JSON のインポートで、データを置き換える前に全要素を検証する。不正なファイルでアセットが中途半端にインポートされることはなくなった。
+- セルのコピー＆ペーストで、値に含まれるタブと改行をエスケープするよう修正。
+- Schema の RowStruct が Repository に保存された行と合わないとき、すべての編集コマンドが無効のままになっていた。Repository を開いたときに行のリセットを提案するよう修正。
+- Blueprint のロード中に、カスタム K2 ノードのピンがワイルドカードに戻らなくなった。**Get Keys by Index** の `OutKeys` ピンの接続も修正。
+- `Repository` メタデータが `TOptional` プロパティを通しても解決されるよう修正。
+- Data View セルの Repository ピッカーが、共有サムネイルプールにフォールバックするよう修正。
+- 行の挿入を Undo した直後の選択と、PrimaryKey コンボの選択解除で起きていたクラッシュを修正。
+- 継承行を複製すると、コピーを先頭ではなく末尾に追加するよう修正。
+- Data View の UI：エディタタブ名を「Data Indexer」に修正（従来は「State Tree」）。フィルハンドルのドラッグでセル選択を保つ。混在状態からの **Show All** ですべてのカラムを表示する。セル選択からでも **Duplicate** が働く。
+- カラムレイアウトを読むだけでユーザー設定に項目が増えていた問題を修正。Selection Details のカテゴリ選択は、プロジェクトの Default 設定ではなくユーザー設定に保存する。
+
+---
+
+## v1.0.1 { .release data-date="2026-06-07" }
 
 セルウィジェットのカスタマイズとインライン編集まわりの修正を中心としたパッチリリース。
 

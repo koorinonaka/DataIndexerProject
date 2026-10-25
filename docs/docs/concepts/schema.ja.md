@@ -114,7 +114,7 @@ Schema は 3 つのことを担当します。
 
 ```cpp
 #if WITH_EDITOR
-EDataValidationResult UItemSchema::IsRowValid(
+EDataValidationResult UItemSchema::IsRowValid(const FDataIndexerPrimaryKey& PrimaryKey,
     FConstStructView RowEntity, FDataValidationContext& Context) const
 {
     if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())

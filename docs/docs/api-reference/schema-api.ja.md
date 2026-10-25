@@ -105,7 +105,7 @@ virtual TSharedRef<SWidget> CustomizePropertyCellWidget(
 ```cpp
 #if WITH_EDITOR
 virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
-virtual EDataValidationResult IsRowValid(
+virtual EDataValidationResult IsRowValid(const FDataIndexerPrimaryKey& PrimaryKey,
     FConstStructView RowEntity, FDataValidationContext& Context) const;
 #endif
 ```

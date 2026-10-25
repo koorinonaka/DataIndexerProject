@@ -99,6 +99,7 @@ Data View は**行選択モード**と**セル選択モード**の 2 種類を�
 | **MoveDown** | `Ctrl+J` | 選択行を 1 つ下に移動 |
 | **Override** | `Shift+O` | 親Repositoryの行をこのRepositoryでオーバーライド |
 | **Toggle** | `Shift+T` | DevOnlyRow フラグを切り替え |
+| **Validate** | — | 選択行に Schema の行検証（`IsRowValid`）を実行し、結果を **Asset Check** メッセージログに出力 |
 
 **MoveUp** / **MoveDown** のほか、行左端の **ドラッグハンドル**（`⠿` アイコン）をドラッグしても並び替えができます。
 
