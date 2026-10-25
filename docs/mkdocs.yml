@@ -13,9 +13,14 @@ edit_uri: ""
 theme:
   name: material
   custom_dir: overrides
-  logo: assets/images/logo-di-light.svg
+  logo: assets/images/logo-di.svg
   favicon: assets/images/logo-di.svg
+  # 既定は OS の設定に従う (設定が無ければ light)。トグルは 自動 → light → dark の順に回る。
   palette:
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/brightness-auto
+        name: Switch to light mode
     - media: "(prefers-color-scheme: light)"
       scheme: di-light
       primary: custom
@@ -29,19 +34,12 @@ theme:
       accent: custom
       toggle:
         icon: material/brightness-4
-        name: Switch to light mode
-  font:
-    text: Inter
-    code: JetBrains Mono
+        name: Switch to system preference
+  font: false
   features:
-    - navigation.tabs
-    - navigation.tabs.sticky
-    - navigation.sections
     - navigation.indexes
     - navigation.path
-    - navigation.expand
     - navigation.top
-    - toc.integrate
     - search.suggest
     - search.highlight
     - content.code.copy
@@ -167,5 +165,9 @@ nav:
 
 extra:
   generator: false
+  di_version: v1.0.1
+  # トップの動画。mp4 を docs/assets/ に置いたら、そのパスを書く (例: assets/videos/overview.mp4)。
+  # 空のあいだは poster 画像 (editor-overview.png) だけを出す。
+  hero_video: ""
 
 copyright: Copyright &copy; 2026 Koorinonaka

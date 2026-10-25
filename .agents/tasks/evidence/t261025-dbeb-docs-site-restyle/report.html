@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>docs 再スタイル 検証</title>
+<style>
+:root{--bg:#f3efe4;--alt:#faf7ef;--line:#d8d0bd;--text:#1c1a15;--muted:#5c5649;--ok:#0f6b45;--ng:#8a2c5c}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1411;--alt:#151c18;--line:#26302b;--text:#e6ebe5;--muted:#a3ada5;--ok:#3ecf8e;--ng:#e39ac0}}
+body{margin:0;background:var(--bg);color:var(--text);font:15px/1.6 system-ui,sans-serif}
+main{max-width:1200px;margin:0 auto;padding:24px 16px 64px}
+h1{font-size:24px;margin:0 0 4px}h2{font-size:18px;margin:32px 0 8px;padding-top:10px;border-top:2px solid var(--text)}
+p.meta{color:var(--muted);margin:0}
+table{border-collapse:collapse;width:100%;font-size:14px}th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600}td.ok{color:var(--ok);font-weight:600}
+code{font-family:ui-monospace,Consolas,monospace;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+.grid.m{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+figure{margin:0;background:var(--alt);border:1px solid var(--line)}figure img{display:block;width:100%;height:auto}
+figcaption{padding:6px 8px;font:12px/1.4 ui-monospace,Consolas,monospace;color:var(--muted)}
+</style>
+</head>
+<body>
+<main>
+<h1>t261025-dbeb docs サイト再スタイル — 検証</h1>
+<p class="meta">2026-10-26 · マシン ALICE · ビルド結果を <code>python -m http.server</code> で配信し、Claude の内蔵ブラウザ (Chromium) で測った。</p>
+
+<h2>測り方</h2>
+<p>各ページで <code>getBoundingClientRect</code> と <code>getComputedStyle</code> を読むスクリプトを走らせ、寸法表 (canvas AB-Spec) の値と突き合わせた。幅 1440 はスクロールバー 15px を含むので、ページの内側の幅は 1425。トップの内容幅は min(1280, 内側 − 160) と比べた (1440 では 1265、スクロールバーの無い 1440 で 1280 になる)。本文の行長は min(760, 本文列 − 128) と比べた。</p>
+
+<h2>寸法表との突き合わせ (16 通り、不一致 0)</h2>
+<table>
+<thead><tr><th>ページ</th><th>light 1440</th><th>dark 1440</th><th>light 375</th><th>dark 375</th></tr></thead>
+<tbody>
+<tr><td><code>/</code></td><td class="ok">一致</td><td class="ok">一致</td><td class="ok">横スクロール無し</td><td class="ok">横スクロール無し</td></tr>
+<tr><td><code>/concepts/schema/</code></td><td class="ok">一致</td><td class="ok">一致</td><td class="ok">横スクロール無し</td><td class="ok">横スクロール無し</td></tr>
+<tr><td><code>/ja/</code></td><td class="ok">一致</td><td class="ok">一致</td><td class="ok">横スクロール無し</td><td class="ok">横スクロール無し</td></tr>
+<tr><td><code>/ja/concepts/schema/</code></td><td class="ok">一致</td><td class="ok">一致</td><td class="ok">横スクロール無し</td><td class="ok">横スクロール無し</td></tr>
+</tbody>
+</table>
+
+<h2>測った値 (1440、light、en)</h2>
+<table>
+<thead><tr><th>部品</th><th>寸法表</th><th>測った値</th></tr></thead>
+<tbody>
+<tr><td>ヘッダー</td><td>高さ 64、左右 40、折り返さない</td><td>64 / <code>0px 40px</code> / nowrap</td></tr>
+<tr><td>ロゴ</td><td>28×28、語まで 10、Sans 600 18/24</td><td>28×28 / 10 / IBM Plex Sans 600 18/24</td></tr>
+<tr><td>ナビ</td><td>Sans 500 14/20、間 20、現在地 下線 2px --accent</td><td>500 14/20 / 20 / 2px solid #0f6b45</td></tr>
+<tr><td>検索欄</td><td>160×34、左右 12</td><td>160×34 (アイコン 14 + 間 8 で字は左 34)</td></tr>
+<tr><td>ボタン</td><td>高さ 36、左右 16、Sans 600 14/20</td><td>36 / <code>0px 16px</code> / 600 14/20</td></tr>
+<tr><td>フッター</td><td>高さ 56、左右 40、版</td><td>56 / <code>0px 40px</code> / v1.0.1</td></tr>
+<tr><td>本文ページの列</td><td>280 : 残り : 248</td><td>280 : 899 : 248 (罫 1px を重ねる)</td></tr>
+<tr><td>サイドバーの行</td><td>36、Sans 14.5/20、子の字下げ 18</td><td>36 / 400 14.5/20 / 18、印 6×18</td></tr>
+<tr><td>本文列</td><td>padding 40 64 72、max-width 760</td><td><code>40px 64px 72px</code> / 段落の幅 760</td></tr>
+<tr><td>H1 / H2 / H3</td><td>600 52/60 · 600 24/32 太罫 2px 罫から 14 · 600 19/28</td><td>一致 (ja は 700、H2 は 24/34)</td></tr>
+<tr><td>本文 / インライン / コード</td><td>17/28 · Mono 15 · Mono 13.5/21、頭 34</td><td>一致</td></tr>
+<tr><td>note</td><td>上 2px --accent、下 1px、padding 12 0 14</td><td>一致</td></tr>
+<tr><td>右の目次</td><td>padding 40 32 40 24、行 34</td><td>40 / 24 / 32 / 34</td></tr>
+<tr><td>トップ hero</td><td>padding 40 80 56、h1 600 40/48 (ja 700 40/52)、リード 18/28</td><td>一致</td></tr>
+<tr><td>動画枠</td><td>16:9、outline 1px</td><td>1265×712 (16:9)、outline 1px</td></tr>
+<tr><td>4 項目 / セクション / タイル</td><td>4 列 · padding 64 80 (最後 72) · 4 列 間 16 画像 16:10</td><td>一致</td></tr>
+</tbody>
+</table>
+
+<h2>横スクロール (sitemap の全 48 ページ × 幅 375 / 768 / 1440)</h2>
+<p>48 ページ × 3 幅で <code>scrollWidth &gt; clientWidth</code> は 0 件。直す前は <code>/api-reference/schema-api/</code> (en / ja) の幅 375 で見出しのアンカーがはみ出していた。</p>
+
+<h2>スクリーンショット · 1440</h2>
+<div class="grid">
+<figure><img src="en-home-light-1440.jpg" alt=""><figcaption>/ · light</figcaption></figure>
+<figure><img src="en-home-dark-1440.jpg" alt=""><figcaption>/ · dark</figcaption></figure>
+<figure><img src="ja-home-light-1440.jpg" alt=""><figcaption>/ja/ · light</figcaption></figure>
+<figure><img src="ja-home-dark-1440.jpg" alt=""><figcaption>/ja/ · dark</figcaption></figure>
+<figure><img src="en-schema-light-1440.jpg" alt=""><figcaption>/concepts/schema/ · light</figcaption></figure>
+<figure><img src="en-schema-dark-1440.jpg" alt=""><figcaption>/concepts/schema/ · dark</figcaption></figure>
+<figure><img src="ja-schema-light-1440.jpg" alt=""><figcaption>/ja/concepts/schema/ · light</figcaption></figure>
+<figure><img src="ja-schema-dark-1440.jpg" alt=""><figcaption>/ja/concepts/schema/ · dark</figcaption></figure>
+</div>
+
+<h2>スクリーンショット · 375</h2>
+<div class="grid m">
+<figure><img src="en-home-light-375.jpg" alt=""><figcaption>/ · light</figcaption></figure>
+<figure><img src="en-home-dark-375.jpg" alt=""><figcaption>/ · dark</figcaption></figure>
+<figure><img src="ja-home-light-375.jpg" alt=""><figcaption>/ja/ · light</figcaption></figure>
+<figure><img src="ja-home-dark-375.jpg" alt=""><figcaption>/ja/ · dark</figcaption></figure>
+<figure><img src="en-schema-light-375.jpg" alt=""><figcaption>/concepts/schema/ · light</figcaption></figure>
+<figure><img src="en-schema-dark-375.jpg" alt=""><figcaption>/concepts/schema/ · dark</figcaption></figure>
+<figure><img src="ja-schema-light-375.jpg" alt=""><figcaption>/ja/concepts/schema/ · light</figcaption></figure>
+<figure><img src="ja-schema-dark-375.jpg" alt=""><figcaption>/ja/concepts/schema/ · dark</figcaption></figure>
+</div>
+</main>
+</body>
+</html>

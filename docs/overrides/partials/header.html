@@ -1,0 +1,47 @@
+{#-
+  1 行のヘッダー (AB 統合案)。ロゴ・最上位ナビ・検索・言語・テーマ・Get on Fab を 1 行に並べる。
+  最上位ナビは Material の tabs-item マクロで描くが、data-md-component="tabs" を付けない
+  (付けるとスクロールで隠す Material の JS が動く)。
+-#}
+{% import "partials/tabs-item.html" as tab with context %}
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner" aria-label="{{ lang.t('header') }}">
+    <label class="md-header__button md-icon di-drawer-button" for="__drawer" aria-label="{{ lang.t('nav') }}">
+      {% set icon = config.theme.icon.menu or "material/menu" %}
+      {% include ".icons/" ~ icon ~ ".svg" %}
+    </label>
+    <a href="{{ config.extra.homepage | d(nav.homepage.url, true) | url }}" title="{{ config.site_name | e }}" class="di-brand" aria-label="{{ config.site_name }}" data-md-component="logo">
+      <img src="{{ config.theme.logo | url }}" alt="" width="28" height="28">
+      <span class="di-brand__name">{{ config.site_name }}</span>
+    </a>
+    <ul class="di-nav" aria-label="{{ lang.t('tabs') }}">
+      {% for nav_item in nav.items %}
+        {{ tab.render(nav_item) }}
+      {% endfor %}
+    </ul>
+    <div class="di-header__end">
+      {% if "material/search" in config.plugins %}
+        {% set search = config.plugins["material/search"] | attr("config") %}
+        {% if search.enabled %}
+          <label class="md-header__button md-icon di-search-button" for="__search" aria-label="{{ lang.t('search.placeholder') }}">
+            {% set icon = config.theme.icon.search or "material/magnify" %}
+            {% include ".icons/" ~ icon ~ ".svg" %}
+          </label>
+          {% include "partials/search.html" %}
+        {% endif %}
+      {% endif %}
+      {% if config.extra.alternate %}
+        {% include "partials/alternate.html" %}
+      {% endif %}
+      {% if config.theme.palette and not config.theme.palette is mapping %}
+        {% include "partials/palette.html" %}
+      {% endif %}
+      {% if config.repo_url %}
+        <a href="{{ config.repo_url }}" class="di-button" target="_blank" rel="noopener">{{ config.repo_name }}</a>
+      {% endif %}
+    </div>
+    {% if not config.theme.palette is mapping %}
+      {% include "partials/javascripts/palette.html" %}
+    {% endif %}
+  </nav>
+</header>
