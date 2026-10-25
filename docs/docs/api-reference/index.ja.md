@@ -5,7 +5,7 @@ hide:
 
 # API リファレンス
 
-DataIndexer のランタイム API は 2 種類あります — デザイナー向けの Blueprint ノードと、コードサイド統合用の型付き C++ API です。
+DataIndexer のランタイム API はデザイナー向けの Blueprint ノードと、コードサイド統合用の型付き C++ API の 2 種類です。
 
 ---
 
@@ -19,7 +19,7 @@ DataIndexer は 3 つのメカニズムで Blueprint に対応した API を公�
 | カスタム K2 ノード | 型付き行取得とPrimaryKeyのディスパッチ |
 | 構造体型 | UPROPERTY 変数型としての `FDataIndexerRowHandle` と `FDataIndexerKeysHandle` |
 
-ほとんどの Blueprint ノードはランタイムセーフでパッケージビルドでも使用できます。エディタサブシステム呼び出しをラップする一部のノードはエディタ専用で、ランタイム Blueprint では表示されません。
+ほとんどの Blueprint ノードはランタイムセーフでパッケージビルドでも使用できます。エディタサブシステムの呼び出しをラップする一部のノードはエディタ専用で、ランタイム Blueprint では表示されません。
 
 <div class="grid cards" markdown>
 
@@ -27,13 +27,13 @@ DataIndexer は 3 つのメカニズムで Blueprint に対応した API を公�
 
     ---
 
-    `UDataIndexerFunctionLibrary` のすべてのノードの完全リファレンス — 等値比較・変換・検証・IndexKey構築。
+    `UDataIndexerFunctionLibrary` のすべてのノード（等値比較・変換・検証・IndexKey構築）の完全リファレンス。
 
 - :material-graph:{ .lg .middle } &nbsp; **[Custom K2 Nodes](k2-nodes.md)**
 
     ---
 
-    `GetRow`・`SelectPrimaryKey`・`SwitchPrimaryKey` グラフノード — 型付き行アクセスとキーベースのディスパッチを提供します。
+    `GetRow`・`SelectPrimaryKey`・`SwitchPrimaryKey` グラフノードは、型付き行アクセスとキーベースのディスパッチを提供します。
 
 </div>
 
@@ -41,7 +41,7 @@ DataIndexer は 3 つのメカニズムで Blueprint に対応した API を公�
 
 ## C++ API
 
-`DataIndexer` ランタイムモジュールは、Repositoryへのクエリ・行の走査・IndexKey ビルダーの構築用の型付き C++ API を公開しています。
+`DataIndexer` ランタイムモジュールはRepositoryへのクエリ・行の走査・IndexKey ビルダーの構築用の型付き C++ API を公開しています。
 
 モジュールの `.Build.cs` に `DataIndexer` を追加します。
 
@@ -57,7 +57,7 @@ PublicDependencyModuleNames.AddRange(new string[]
 
 | ヘッダー | 内容 |
 |---------|------|
-| `DataIndexerTypes.h` | 行アクセス用の基本値型 — PrimaryKey・RowHandle・KeysHandle・Index・IndexKey |
+| `DataIndexerTypes.h` | 行アクセス用の基本値型（PrimaryKey・RowHandle・KeysHandle・Index・IndexKey） |
 | `DataIndexerRepository.h` | 行クエリ・IndexKey 走査・表示名解決を行うリポジトリクラス |
 | `DataIndexerSchema.h` | 行構造体アクセス・IndexKey ビルダー登録・プロパティカスタマイズを管理するスキーマクラス |
 | `DataIndexerSchemaInterface.h` | キャストなしで型安全な Repository クエリを行う型付き C++ ファサード |
@@ -70,18 +70,18 @@ PublicDependencyModuleNames.AddRange(new string[]
 
     ---
 
-    `UDataIndexerRepository` — 行のクエリ・キーの走査・表示名。
+    `UDataIndexerRepository`：行のクエリ・キーの走査・表示名。
 
 - :material-file-cog-outline:{ .lg .middle } &nbsp; **[Schema API](schema-api.md)**
 
     ---
 
-    `UDataIndexerSchema` — 行構造体へのアクセス・表示名・IndexKey ビルダー・プロパティカスタマイズの登録。
+    `UDataIndexerSchema`：行構造体へのアクセス・表示名・IndexKey ビルダー・プロパティカスタマイズの登録。
 
 - :material-code-braces:{ .lg .middle } &nbsp; **[Native Schema Interface](native-schema-interface.md)**
 
     ---
 
-    `DataIndexer::TNativeSchemaInterface<T>` — RepositoryQueryに推奨される型付き C++ ファサード。
+    `DataIndexer::TNativeSchemaInterface<T>` は Repository クエリに推奨される型付き C++ ファサードです。
 
 </div>

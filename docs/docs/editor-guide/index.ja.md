@@ -19,7 +19,7 @@ Repository アセットをダブルクリックすると 3 パネル構成のエ
 | パネル | 位置 | 役割 |
 |-------|------|------|
 | アセット Details | 左（デフォルト非表示、左サイドにドック済み） | Schema Class・Parent Repositories などRepositoryレベルのプロパティ |
-| Data View | 中央 | 行グリッド — 追加・削除・インライン編集 |
+| Data View | 中央 | 行グリッド：追加・削除・インライン編集 |
 | Selection Details | 右 | 選択行のフルプロパティエディタ |
 
 ## このセクションのページ
@@ -48,12 +48,12 @@ Repository アセットをダブルクリックすると 3 パネル構成のエ
 
     ---
 
-    コードレビュー向け差分対応 JSON へのエクスポートと、マージ操作としての JSON インポート。
+    コードレビューで差分を確認しやすい JSON へのエクスポートと、マージ操作としての JSON インポート。
 
 - :material-layers-triple:{ .lg .middle } &nbsp; **[Driven Collection](driven-collection.md)**
 
     ---
 
-    `UDataIndexerDrivenCollection` — `FDataIndexerPrimaryKey` をキーとするサブアセット（アイコン・アビリティクラス等）を管理する C++ エディタアセット基底クラス。
+    `UDataIndexerDrivenCollection`：`FDataIndexerPrimaryKey` をキーとするサブアセット（アイコン・アビリティクラス等）を管理する C++ エディタアセット基底クラス。
 
 </div>

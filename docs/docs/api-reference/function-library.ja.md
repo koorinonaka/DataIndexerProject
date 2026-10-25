@@ -12,7 +12,7 @@ GetAllPrimaryKeys(Repository) → TArray<FDataIndexerPrimaryKey>
 
 ![Get All Primary Keys node](../assets/images/thumbnails/fn-get-all-primary-keys.png){ .fn-node }
 
-Repositoryを通して見えるすべてのPrimaryKeyを返します（親Repositoryを含む）。Blueprint で UI リストへの表示やすべての行の走査に使います。
+Repositoryを通して見えるすべてのPrimaryKey（親Repositoryを含む）を返します。Blueprint で UI リストへの表示やすべての行の走査に使います。
 
 ---
 
@@ -81,7 +81,7 @@ GetRowHandleName(RowHandle, OutDisplayName) → bool
 
 ![Get Row Handle Name node](../assets/images/thumbnails/fn-get-row-handle-name.png){ .fn-node }
 
-行のSchema駆動の表示名を取得します。ハンドルが無効またはSchemaが表示名を返さない場合は `false` を返します。
+行のSchema駆動の表示名を取得します。ハンドルが無効な場合、またはSchemaが表示名を返さない場合は `false` を返します。
 
 ---
 

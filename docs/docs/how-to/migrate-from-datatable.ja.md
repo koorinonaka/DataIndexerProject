@@ -12,7 +12,7 @@ title: DataTable から移行する
 |-|-----------|-------------|
 | 行の識別子 | `FName`（手動で命名する文字列） | `FDataIndexerPrimaryKey`（自動生成 GUID） |
 | アセット型 | `UDataTable` | `UDataIndexerRepository` |
-| Schema | 暗黙的 — 構造体がアセットに内包 | 明示的 — 別途 `UDataIndexerSchema` アセットを作成 |
+| Schema | 暗黙的で、構造体がアセットに内包される | 明示的で、別途 `UDataIndexerSchema` アセットを作成する |
 | インポート形式 | CSV または フラットな行オブジェクトの JSON | DataTable JSON を直接取り込み可。ネイティブ形式は `PrimaryKey` + `RowEntity` ラッパー |
 | セカンダリ Index | 手動コード | 宣言的な `BuildIndex` 関数 |
 | 階層・継承 | 非対応 | 親 Repository の合成 |
@@ -64,7 +64,7 @@ DataIndexer は DataTable 形式の JSON を直接インポートできます。
 - DataTable の `Name`（行名）を保持したい場合は、保存先のプロパティを選びます。
 - 行名が不要な場合は **(Ignore)** を選びます。行は匿名となり、`PrimaryKey`（GUID）でのみ識別されます。
 
-`PrimaryKey` は各行に対して自動生成されます（JSON に `PrimaryKey` フィールドがあればその GUID が使われます）。インポートは**完全置換**として実行されます — 既存の行はすべて削除され、JSON の内容で置き換えられます。保存後、エディタがセカンダリ Index を自動再構築します。
+JSON に `PrimaryKey` フィールドがあればその GUID が使われ、なければ `PrimaryKey` は各行に対して自動生成されます。インポートは**完全置換**として実行されます。既存の行はすべて削除され、JSON の内容で置き換えられます。保存後、エディタがセカンダリ Index を自動再構築します。
 
 !!! note "行名を表示名として使う場合"
     DataTable の行名は人間可読なラベルとしても機能していることがあります。多くの場合は **(Ignore)** で行名を捨て、代わりに Schema の **Row Display Name Function** をバインド（または C++ で `GetRowDisplayName` をオーバーライド）して実際の行フィールド（例: `DisplayName`）から意味のある `FText` を返すのが推奨です。DataIndexer のエディタや Blueprint ノードは、行名が表示されていた場所でこの関数の結果を使用します。
