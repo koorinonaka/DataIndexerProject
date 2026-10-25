@@ -135,7 +135,7 @@ static void ForEachPrimaryKeys(
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback);
 ```
 
-`Row` からIndexKeyを計算し、そのキーに一致する PrimaryKey だけを走査します。フィールドを部分的に埋めた行を渡し、「このクエリ行と同じフィールド値を持つ行をすべて取得する」という意図を表します。
+`Query` からIndexKeyを計算し、そのキーに一致する PrimaryKey だけを走査します。フィールドを部分的に埋めた行を渡し、「このクエリ行と同じフィールド値を持つ行をすべて取得する」という意図を表します。
 
 ```cpp
 FItemRow Query;

@@ -65,8 +65,9 @@ A repository can reference one or more parent repositories. All rows owned by a 
 
 **Behaviour:**
 
-- Inherited rows appear in the Data View with a distinct background tint. They are hidden by default; enable **Filters → Show Inherited Rows** to show them.
-- Inherited rows cannot be edited in the child — open the parent to modify them.
+- Inherited rows appear in the Data View with a distinct background tint and are shown by default.
+- Once a child overrides an inherited row, the parent's original is hidden from the child's Data View; enable **Filters → Show Inherited Rows** to show it.
+- Inherited rows cannot be edited as-is in the child — to change the parent's value, open the parent.
 - To edit an inherited row in the child, select it and press **Override** (`Shift+O`). This copies the row into the child repository with the same primary key so it can be edited independently.
 - Parent-side **Editor Flags** can restrict what children can do: **Not Overridable in Children** blocks the override operation, and **Hidden in Children** hides the row from the child's Data View entirely.
 

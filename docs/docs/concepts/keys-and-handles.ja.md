@@ -70,12 +70,12 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
     // ロック — 行ピッカーを非表示
     FBlueprintEditorUtils::SetBlueprintVariableMetaData(
         Blueprint, VarName, nullptr,
-        DataIndexer::MetaDataKeys::ReadOnlyKeys, TEXT("true"));
+        TEXT("ReadOnlyKeys"), TEXT("true"));
 
     // ロック解除 — 行ピッカーを再表示
     FBlueprintEditorUtils::RemoveBlueprintVariableMetaData(
         Blueprint, VarName, nullptr,
-        DataIndexer::MetaDataKeys::ReadOnlyKeys);
+        TEXT("ReadOnlyKeys"));
     ```
 
 

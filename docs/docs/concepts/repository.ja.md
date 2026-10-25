@@ -31,8 +31,8 @@ Repositoryは 1 つ以上の親Repositoryを参照できます。走査・クエ
 
 === "Blueprint"
 
-    !!! warning "未実装"
-        Blueprint からの `NotOverridable` 設定は現在対応していません。今後のリリースで UI を追加予定です。
+    Schema Blueprint の **Class Defaults** → **Column Layout** で、ロックしたいフィールドの鍵アイコンをクリックします。ロックしたフィールドは Override 行で読み取り専用になり、常に最も近い親Repositoryの値に従います。
+
 ## Schemaによるピッカーの絞り込み
 
 クラスが持つ `UDataIndexerRepository` UPROPERTY を特定のSchemaのRepositoryのみに制限したい場合は、`meta = (Schema = "...")` を追加します。UPROPERTY のほかに UFUNCTION も指定できます。エディタはスキーマを解決し、アセットピッカーを対応するRepositoryのみに絞り込みます。

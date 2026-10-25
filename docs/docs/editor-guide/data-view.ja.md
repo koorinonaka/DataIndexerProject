@@ -100,6 +100,10 @@ Data View は**行選択モード**と**セル選択モード**の 2 種類を�
 | **Override** | `Shift+O` | 親Repositoryの行をこのRepositoryでオーバーライド |
 | **Toggle** | `Shift+T` | DevOnlyRow フラグを切り替え |
 
+**MoveUp** / **MoveDown** のほか、行左端の **ドラッグハンドル**（`⠿` アイコン）をドラッグしても並び替えができます。
+
+![ドラッグで行を並び替える](../assets/images/data-view-move-row.gif)
+
 ## コピーとペースト
 
 コピー/ペーストの動作は選択モードによって異なります。
@@ -186,10 +190,6 @@ Selection Details パネルの **Development** カテゴリに **Editor Flags** 
 | **Hidden in Children** | 子Repositoryの Data View にこの行を表示しません。子が誤って参照・編集するのを防ぎます。 |
 
 複数フラグの同時設定が可能です。フラグなしの状態は **No Flags Set** と表示されます。
-
-行左端の **ドラッグハンドル**（`⠿` アイコン）をドラッグしても並び替えができます。
-
-![ドラッグで行を並び替える](../assets/images/data-view-move-row.gif)
 
 ## カラム幅と並び順
 

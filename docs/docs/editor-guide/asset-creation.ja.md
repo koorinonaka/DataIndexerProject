@@ -62,9 +62,10 @@ Repositoryには 1 つ以上の親Repositoryを設定できます。親が持つ
 
 **動作：**
 
-- 継承行はデフォルトで表示されますが、子Repositoryでは編集できません。編集するには親を開いてください。
+- 継承行はデフォルトで表示されますが、そのままでは子Repositoryで編集できません。親の値を変えるには、親を開いて編集してください。
 - 子Repositoryで継承行をオーバーライドすると、その行の継承元は子の Data View には表示されなくなります。
 - 子Repositoryで継承行を編集したい場合は、その行を選択して **Override**（`Shift+O`）を実行します。同じPrimaryKeyで行が子Repositoryにコピーされ、独立して編集できるようになります。
+- 親側の **Editor Flags** で、子の操作を制限できます。**Not Overridable in Children** は Override を禁止し、**Hidden in Children** は子の Data View から行を隠します。
 
 !!! warning "循環参照の検出"
     エディタは循環する親チェーン（`A → B → A`）をブロックします。循環参照を作成しようとすると、親フィールドが選択を拒否します。

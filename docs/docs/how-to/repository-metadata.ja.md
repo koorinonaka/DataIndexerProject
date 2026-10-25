@@ -79,35 +79,28 @@ public:
 
 ### Blueprint（User Defined Struct）
 
-1. 行構造体の **User Defined Struct** エディタを開く
-2. ロックしたい変数を選択する
-3. **Details** パネルで **Not Overridable** を有効にする
+1. 行構造体を設定した Schema Blueprint を開く
+2. **Class Defaults** の **Column Layout** カテゴリで、ロックしたいフィールドを探す
+3. 目のアイコンの右にある鍵アイコンをクリックしてロックする
 
-これで、その行をオーバーライドした子Repositoryではこのフィールドが読み取り専用になります。
+これで、その行をオーバーライドした子Repositoryではこのフィールドが読み取り専用になり、常に最も近い親Repositoryの値に従います。この値は子Repositoryのアセットには保存されません。
 
 ### C++（ネイティブ構造体）
 
-ネイティブ構造体の場合は、エディタ初期化時に `FStructureEditorUtils::SetMetaData` を使用します。この呼び出しは `UDataIndexerSchema` サブクラスや専用のエディタサブシステムで行うのが適切です。
+ネイティブ構造体では、UPROPERTY に `meta = (NotOverridable)` を付加します。Column Layout の鍵アイコンは User Defined Struct のフィールドにだけ表示されます。
 
 ```cpp
-#if WITH_EDITOR
-void LockBaseStatFields(UUserDefinedStruct* ItemStruct)
+USTRUCT(BlueprintType)
+struct FItemRow
 {
-    for (FGuid VariableGuid : FStructureEditorUtils::GetVarGuids(ItemStruct))
-    {
-        FName VarName = FStructureEditorUtils::GetVariableFriendlyNameForProperty(
-            ItemStruct, FStructureEditorUtils::GetVarDescription(ItemStruct, VariableGuid));
+    GENERATED_BODY()
 
-        if (VarName == GET_MEMBER_NAME_CHECKED(FItemRow, BaseValue) ||
-            VarName == GET_MEMBER_NAME_CHECKED(FItemRow, Rarity))
-        {
-            FStructureEditorUtils::SetMetaData(
-                ItemStruct, VariableGuid,
-                DataIndexer::MetaDataKeys::NotOverridable, TEXT("true"));
-        }
-    }
-}
-#endif
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (NotOverridable))
+    int32 BaseValue = 0;
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (NotOverridable))
+    EItemRarity Rarity;
+};
 ```
 
 ### プロパティカスタマイズでのフラグ確認
@@ -126,13 +119,10 @@ void FMyRowCustomization::CustomizeChildren(
     for (uint32 i = 0; i < NumChildren; ++i)
     {
         TSharedPtr<IPropertyHandle> Child = StructHandle->GetChildHandle(i);
-        if (Child->GetProperty()->HasMetaData(DataIndexer::MetaDataKeys::NotOverridable))
+        IDetailPropertyRow& Row = Builder.AddProperty(Child.ToSharedRef());
+        if (Child->GetProperty()->HasMetaData(TEXT("NotOverridable")))
         {
-            Child->MarkHiddenByCustomization();
-        }
-        else
-        {
-            Builder.AddProperty(Child.ToSharedRef());
+            Row.IsEnabled(false);
         }
     }
 }
@@ -142,7 +132,7 @@ void FMyRowCustomization::CustomizeChildren(
 
 シナリオ: グローバルアイテムRepositoryが `BaseValue` と `Rarity` を定義している。地域ショップのRepositoryはアイテムをオーバーライドできる（例: 割引フラグの変更）が、ベースステータスは変更不可にしたい。
 
-1. `FItemRow` UDStruct の `BaseValue` と `Rarity` に `NotOverridable` を追加する
+1. `FItemRow` の `BaseValue` と `Rarity` を NotOverridable にする（手順は上の Blueprint か C++ を参照）
 2. `DI_AllItems` をグローバルRepositoryとして作成する
 3. `DI_AllItems` を親に持つ `DI_ShopA` を作成する（[親Repository階層](parent-hierarchy.md) を参照）
 4. `DI_ShopA` で親由来の行を開く。`BaseValue` と `Rarity` がグレーアウトされている

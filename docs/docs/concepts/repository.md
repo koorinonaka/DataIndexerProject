@@ -31,25 +31,18 @@ When a row originates from a parent repository and the child's Data View display
 
 === "C++"
 
-    For native C++ structs, prefer `const` or access control. For UDStruct fields, the customization layer manages this key:
+    Add `meta = (NotOverridable)` to the UPROPERTY. In an override row, properties with this metadata become read-only.
 
     ```cpp
-    // Lock a UDStruct variable in override mode
-    FStructureEditorUtils::SetMetaData(
-        UserDefinedStruct, VariableGuid,
-        DataIndexer::MetaDataKeys::NotOverridable, TEXT("true"));
-
-    // Check inside a property customization
-    if (PropertyAndParent.Property.HasMetaData(DataIndexer::MetaDataKeys::NotOverridable))
-    {
-        // Render the property read-only
-    }
+    UPROPERTY(EditDefaultsOnly, Category = DataIndexer, meta = (NotOverridable))
+    FString InheritedReadOnlyField;
     ```
 
 
 === "Blueprint"
 
-    Open the **User Defined Struct** editor. Select a variable. In the **Details** panel, toggle **Not Overridable**. When enabled, child repositories that override a parent row cannot edit this field.
+    In the schema Blueprint's **Class Defaults** → **Column Layout**, click the lock icon next to the field you want to lock. A locked field is read-only in override rows and always follows the value from the nearest parent repository.
+
 ## Public API
 
 ### `GetSchema()`

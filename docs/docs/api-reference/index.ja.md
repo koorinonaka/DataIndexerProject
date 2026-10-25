@@ -16,7 +16,7 @@ DataIndexer は 3 つのメカニズムで Blueprint に対応した API を公�
 | メカニズム | 説明 |
 |-----------|------|
 | `UDataIndexerFunctionLibrary` | キー・ハンドル操作用の Pure および Callable ユーティリティノード |
-| カスタム K2 ノード | 型付き行取得とPrimaryKeyのディスパッチ |
+| カスタム K2 ノード | 型付き行取得、Index による逆引き、PrimaryKeyのディスパッチ |
 | 構造体型 | UPROPERTY 変数型としての `FDataIndexerRowHandle` と `FDataIndexerKeysHandle` |
 
 ほとんどの Blueprint ノードはランタイムセーフでパッケージビルドでも使用できます。エディタサブシステムの呼び出しをラップする一部のノードはエディタ専用で、ランタイム Blueprint では表示されません。
@@ -33,7 +33,7 @@ DataIndexer は 3 つのメカニズムで Blueprint に対応した API を公�
 
     ---
 
-    `GetRow`・`SelectPrimaryKey`・`SwitchPrimaryKey` グラフノードは、型付き行アクセスとキーベースのディスパッチを提供します。
+    `GetRow`・`GetKeysByIndex`・`SelectPrimaryKey`・`SwitchPrimaryKey` グラフノードは、型付き行アクセス、Index による逆引き、キーベースのディスパッチを提供します。
 
 </div>
 

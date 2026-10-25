@@ -16,7 +16,7 @@ DataIndexer exposes a Blueprint-friendly surface through three mechanisms:
 | Mechanism | Description |
 |-----------|-------------|
 | `UDataIndexerFunctionLibrary` | Pure and callable utility nodes for key/handle operations |
-| Custom K2 Nodes | Typed row retrieval and primary key dispatch |
+| Custom K2 Nodes | Typed row retrieval, index lookup, and primary key dispatch |
 | Struct types | `FDataIndexerRowHandle` and `FDataIndexerKeysHandle` as UPROPERTY variable types |
 
 Most Blueprint nodes are runtime-safe and available in packaged builds. A small number of nodes (those wrapping editor subsystem calls) are editor-only and will not appear in runtime Blueprints.
@@ -33,7 +33,7 @@ Most Blueprint nodes are runtime-safe and available in packaged builds. A small 
 
     ---
 
-    The `GetRow`, `SelectPrimaryKey`, and `SwitchPrimaryKey` graph nodes that provide typed row access and key-based dispatch.
+    The `GetRow`, `GetKeysByIndex`, `SelectPrimaryKey`, and `SwitchPrimaryKey` graph nodes that provide typed row access, index lookup, and key-based dispatch.
 
 </div>
 
