@@ -19,12 +19,8 @@
   margin: 0 auto;
 }
 
-/* ── hero: padding 40 80 56。深緑の帯 (--hero-*) ────────────────────────────── */
-.di-hero {
-  padding: 40px 80px 56px;
-  background: var(--hero-bg);
-  color: var(--hero-fg);
-}
+/* ── hero: padding 40 80 56 ───────────────────────────────────────────────── */
+.di-hero { padding: 40px 80px 56px; }
 .di-hero h1 {
   margin: 0;
   font-size: 40px;
@@ -42,17 +38,17 @@
   max-width: 880px;
   font-size: 18px;
   line-height: 28px;
-  color: var(--hero-muted);
+  color: var(--text-muted);
 }
 .di-lead code {
   font-size: 16px;
-  color: var(--hero-accent);
+  color: var(--accent);
 }
 
 /* 動画枠: 16:9 (内側)。枠線は outline 1px で外に描き、寸法に入れない */
 .di-hero__media {
   margin-top: 28px;
-  outline: 1px solid var(--hero-rule);
+  outline: 1px solid var(--text);
   background: #0f1411;
 }
 .di-hero__media img,
@@ -79,19 +75,19 @@
   gap: 6px;
   margin: 0;
   padding-top: 8px;
-  border-top: 2px solid var(--hero-rule);
+  border-top: 2px solid var(--accent);
 }
 .di-home .di-points a {
   font-size: 14px;
   line-height: 20px;
   font-weight: 600;
-  color: var(--hero-fg);
+  color: var(--text);
 }
-.di-home .di-points a:hover { color: var(--hero-accent); }
+.di-home .di-points a:hover { color: var(--accent); }
 .di-points span {
   font-size: 13px;
   line-height: 19px;
-  color: var(--hero-muted);
+  color: var(--text-muted);
 }
 
 /* ── 図版: 参照 → GUID キー → リネーム (B 案の hero の図を小さくしたもの) ───── */
