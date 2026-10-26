@@ -69,6 +69,10 @@ project 固有情報だけを持ち、ワークフロー仕様を重複記載し
   `Logger` / `Migration` / `NotOverridable` / `Repository` / `Schema` / `SchemaLayout` / `Serializer` /
   `View` / `ViewModel`)。結果は `Saved/Logs/DataIndexerProject.log` の `Automation Test Succeeded/Failed` 行で確認する。
 
+  docs サイト (`docs/`) だけを触ったタスク: `cd docs; python -m mkdocs build -d <scratchpad>/site`
+  がエラー無しで終わる。見た目の変更は、ビルド結果を `python -m http.server` で配信し、
+  ブラウザで en / ja・light / dark・幅 375px / 1440px のスクリーンショットを証跡に残す。
+
 - **full** (run 終端と push 前に1回): quick と同じビルド + `Automation RunTests DataIndexerEd` (全群)。
 - ソース変更後は Editor ターゲットのビルドを成功させる。runtime 構造体のサイズ・`WITH_EDITORONLY_DATA`
   に触るタスクは Game ターゲット (`DataIndexerProject Win64 Development`) もビルドする。
