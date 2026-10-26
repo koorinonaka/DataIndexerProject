@@ -11,7 +11,7 @@ A repository can declare one or more *parent* repositories. When iterating or qu
 This guide uses a classic item-shop scenario:
 
 - `DI_AllItems` — the global item master with every item in the game
-- `DI_ShopA` — the inventory for a specific NPC shop; sells a subset of items and overrides the price on some
+- `DI_ShopA` — the inventory for a specific NPC shop; inherits every item from `DI_AllItems`, adds its own rows, and overrides the price on some
 
 ```
 DI_AllItems  (parent)

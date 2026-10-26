@@ -1,8 +1,8 @@
 # Custom Cell Widgets
 
 Data View は行の各プロパティをセルとして描画します。Schema はデフォルトのセルウィジェットを差し替えて、
-カスタム表示やインライン編集を提供できます。さらに **仮想列 (virtual column)** — 既存プロパティを別名で
-エイリアスする追加列 — を宣言でき、*同じ*値を異なる見せ方で複数回出せます。
+カスタム表示やインライン編集を提供できます。さらに **仮想列 (virtual column)** を宣言でき、*同じ*値を
+異なる見せ方で複数回出せます。仮想列は既存プロパティを別名でエイリアスする追加列です。
 
 ![同じ PawnClass を Pawn (C++) / Pawn (BP) の 2 つの仮想列で表示した Data View](../assets/images/virtual-columns-sample.png)
 
@@ -50,14 +50,14 @@ struct FDataIndexerVirtualColumn
 Schema の `VirtualColumns` 配列に追加します。仮想列は通常の列の **後** に並びます。`SourceProperty` の有無で
 2 種類に分かれます。
 
-- **エイリアス列**（`SourceProperty` あり）— 既存のプロパティを別名で出すだけの列です。編集・コピー＆ペースト・
-  フィルなどは元のプロパティと同じように動き、変わるのは列名と表示名だけ。ネストしたプロパティはドット区切り
+- **エイリアス列**（`SourceProperty` あり）：既存のプロパティを別名で出すだけの列です。編集・コピー＆ペースト・
+  フィルなどは元のプロパティと同じように動き、変わるのは列名と表示名だけです。ネストしたプロパティはドット区切り
   （`"Inner.A"`）で指定します。
-- **unbound 列**（`SourceProperty` 空）— 元になるプロパティを持たない列です。セルの中身は Schema が丸ごと
+- **unbound 列**（`SourceProperty` 空）：元になるプロパティを持たない列です。セルの中身は Schema が丸ごと
   用意します（読み取り専用の表示や計算結果、カスタム widget など）。元プロパティが無いため、コピー＆ペーストや
   フィルは使えません。
 
-`PreferredWidth`（任意・両フレーバー共通）は列の初期幅を px で指定します。未設定なら内容から自動算出。
+`PreferredWidth`（任意・両フレーバー共通）は列の初期幅を px で指定します。未設定なら内容から自動算出します。
 あくまで初期値で、ユーザーがリサイズすればそちらが優先されます。
 
 ### 仮想列を宣言する
@@ -127,10 +127,10 @@ virtual TSharedRef<SWidget> CustomizePropertyCellWidget(
 何も指定しなければ、その列に Blueprint のバインドがあればそれを使い、無ければ単純なテキストになります。
 override する場合は `Context` から次の部品を使ってセルを組み立てます。
 
-- `CreateAsSimpleText(Text)` — 読み取り専用のテキストラベルです。渡す `Text` は自由に組み立てられるので、
+- `CreateAsSimpleText(Text)`：読み取り専用のテキストラベルです。渡す `Text` は自由に組み立てられるので、
   ここでセルの表示文字列を好きに書き換えられます（値の整形、別フィールドからの合成、表示用ラベルへの
   置き換えなど）。
-- `CreateAsEditInline(Property, bDisplayDefaultPropertyButtons = true)` — 編集できるインラインエディタです。
+- `CreateAsEditInline(Property, bDisplayDefaultPropertyButtons = true)`：編集できるインラインエディタです。
   Details パネルと同じ **エディタ標準のプロパティ UI**（class picker・数値入力・struct 用のカスタム UI など）を
   そのままセルに表示し、編集は行へ保存されます。
 
@@ -174,7 +174,7 @@ override する場合は `Context` から次の部品を使ってセルを組み
 
 === "Blueprint"
 
-    この経路は C++ を一切書きません。`PawnClassWidget` 列は `DIS_Character` の Class Defaults で宣言し
+    この経路では C++ を一切書きません。`PawnClassWidget` 列は `DIS_Character` の Class Defaults で宣言し
     （上記「仮想列を宣言する」参照）、Blueprint 関数がセル用の `UserWidget` を返して、Schema の
     `PropertyWidgetCustomizations` でバインドします。ウィジェットは `USinglePropertyView` を持ち、`UpdateRow`
     で編集を行へ書き戻します。
@@ -190,15 +190,15 @@ override する場合は `Context` から次の部品を使ってセルを組み
     repository と PrimaryKey を渡してくれます。セルウィジェットでこの interface を実装すれば、追加の配線なしで
     書き戻しに必要な情報を受け取れます。
 
-    **Step 1 — Editor Utility Widget（`WBP_PawnClassCell`）**
+    **Step 1：Editor Utility Widget（`WBP_PawnClassCell`）**
 
     1. `/Game/GameData/CustomWidget/WBP_PawnClassCell` に Editor Utility Widget Blueprint を作成します
        （親 `EditorUtilityWidget`）。
     2. **Single Property View** を root に配置します。
     3. 変数を 2 つだけ追加します。
-        - `Row : FCharacterRow` — 書き戻し用の行データです。バインド関数から渡すので Instance Editable +
-          **Expose on Spawn**。
-        - `PawnClass : TSubclassOf<APawn>` — Single Property View が表示・編集するスクラッチ値です。`Row` から
+        - `Row : FCharacterRow`：書き戻し用の行データです。バインド関数から渡すので Instance Editable +
+          **Expose on Spawn** にします。
+        - `PawnClass : TSubclassOf<APawn>`：Single Property View が表示・編集するスクラッチ値です。`Row` から
           取り出して埋めるので **Transient** にし、Instance Editable / Expose on Spawn は不要です。
 
         `Repository` と `PrimaryKey` の変数は作りません。後述のとおり `SetCellContext` の入力ピンから直接使います。
@@ -206,7 +206,7 @@ override する場合は `Context` から次の部品を使ってセルを組み
 
     ![WBP_PawnClassCell の階層。PropertyView（Single Property View）を root に配置](../assets/images/wbp-pawnclasscell-tree.png)
 
-    **Step 2 — `SetCellContext` で初期化**
+    **Step 2：`SetCellContext` で初期化**
 
     `SetCellContext` はバインド関数が `Row` を設定した**後**に発火し、引数で `Repository` と `PrimaryKey` を
     受け取ります。view を実値へ向けるのはここが適切です（`Pre Construct` だと spawn 時の値設定と競合し得ます）。
@@ -219,7 +219,7 @@ override する場合は `Context` から次の部品を使ってセルを組み
 
     [![SetCellContext のノードグラフ。値の保存、Set Object/Set Property Name、On Property Changed のバインド](../assets/images/wbp-pawnclasscell-setcellcontext.png)](../assets/images/wbp-pawnclasscell-setcellcontext.png){target=_blank}
 
-    **Step 3 — 編集時に書き戻す**
+    **Step 3：編集時に書き戻す**
 
     `On Property Changed` ハンドラ内で次を行います。
 
@@ -227,7 +227,7 @@ override する場合は `Context` から次の部品を使ってセルを組み
     2. `Update Row (Repository, PrimaryKey, Row)` を呼びます（`Repository` / `PrimaryKey` は `SetCellContext`
        のピンから配線）。編集はトランザクションとして保存されるので、C++ のインライン編集と同様に Undo できます。
 
-    **Step 4 — `DIS_Character` のバインド関数**
+    **Step 4：`DIS_Character` のバインド関数**
 
     セル用の関数（戻り値 `UUserWidget*`、入力に `Row` を取る）を追加します。
 
@@ -237,7 +237,7 @@ override する場合は `Context` から次の部品を使ってセルを組み
 
     ![GetPawnClassWidget: WBP_PawnClassCell を Create Widget し Row ピンだけ渡して Return する](../assets/images/get-pawnclasswidget-function.png)
 
-    **Step 5 — 列にバインド**
+    **Step 5：列にバインド**
 
     `DIS_Character` の Class Defaults → **Property Widget Customizations** でエントリを追加します。キーは
     `PawnClassWidget`（仮想列の `ColumnName`）、関数は `GetPawnClassWidget` です。これで `PawnClassWidget` の
@@ -288,8 +288,8 @@ struct FItemRow
    Data View のセルウィジェットはプレイヤー（`PlayerContext`）を持ちません。このフラグが無いと MVVM の初期化が
    スキップされ、バインドが一切動きません。インゲームと違ってプレイヤー無しで動かすため、このフラグが必須です。
 
-2. **行ごとに別々のビューモデルが必要です。** `VM_InventoryRowCard` はそのままだと全セル — および WBP の
-   エディタプレビュー — が 1 つのインスタンスを共有してしまいます。`UItemSchema::CustomizePropertyCellWidget`
+2. **行ごとに別々のビューモデルが必要です。** `VM_InventoryRowCard` はそのままだと全セル（および WBP の
+   エディタプレビュー）が 1 つのインスタンスを共有してしまいます。`UItemSchema::CustomizePropertyCellWidget`
    は、セルを作る前に古いビューモデルを捨てておくことで、行ごとに新しいビューモデルが作られるようにします。
 
     ```cpp title="ItemSchema.cpp"

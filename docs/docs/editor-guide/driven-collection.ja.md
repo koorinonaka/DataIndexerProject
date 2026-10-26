@@ -1,20 +1,20 @@
 # Driven Collection
 
-`UDataIndexerDrivenCollection` は、`FDataIndexerPrimaryKey` をキーとするサブアセット — アイコン・アビリティクラス参照・その他の `UObject` ポインタなど — を管理するエディタアセット用の抽象 `UDataAsset` 基底クラスです。エントリはソースRepositoryと自動的に同期されます。
+`UDataIndexerDrivenCollection` は、`FDataIndexerPrimaryKey` をキーとするサブアセット（アイコン・アビリティクラス参照・その他の `UObject` ポインタなど）を管理するエディタアセット用の抽象 `UDataAsset` 基底クラスです。エントリはソース Repository と自動的に同期されます。
 
 !!! note "C++ 必須"
     この機能を利用するには C++ でのサブクラス化が必要です。エントリビルダーパターンには C++ のテンプレートインスタンス化が必要なため、Blueprint サブクラス化はサポートされていません。
 
 ## コンセプト
 
-Driven Collection は `UDataIndexerRepository` のコンパニオンアセットです。Repositoryと同じ `FDataIndexerPrimaryKey` セットをキーとする `TMap` を保持し、各値には行データの内部に置けない・置くべきでないアセットや構造体を格納します。エディタでソースRepositoryから行が追加・削除されると、コレクションは自動的にエントリを再構築します。
+Driven Collection は `UDataIndexerRepository` のコンパニオンアセットです。Repositoryと同じ `FDataIndexerPrimaryKey` セットをキーとする `TMap` を保持し、各値には行データの内部に置けない・置くべきでないアセットや構造体を格納します。エディタでソース Repository から行が追加・削除されると、コレクションは自動的にエントリを再構築します。
 
 **主なユースケース：**
 
 - 行データに含めるべきでない行ごとのアセット参照（例：アイコン・メッシュ・アビリティクラス）。アセット参照を分けることで、ハード参照によるロード管理を行データと切り離せます。
 - 親を含めた行一覧に対してのデータ設定。
 
-例として `CharacterClassIconCollection` は、`DI_CharacterClass` Repository の各クラス（Warrior / Mage / Rogue / Priest）にアイコンテクスチャを 1 つずつ紐付けます。キーは読み取り専用で表示名に解決され、`Source Repository` の行に追従します。
+例として `CharacterClassIconCollection` は `DI_CharacterClass` Repository の各クラス（Warrior / Mage / Rogue / Priest）にアイコンテクスチャを 1 つずつ紐付けます。キーは読み取り専用で表示名に解決され、`Source Repository` の行に追従します。
 
 ![CharacterClassIconCollection の詳細パネル。クラスごとのアイコンマップと Source Repository](../assets/images/driven-collection-details.png)
 
@@ -99,7 +99,7 @@ UMyDrivenCollection::UMyDrivenCollection()
 3. 新しいキーにデフォルト構築されたエントリを追加する
 4. Repositoryの行順にマッチするようエントリを安定ソートする
 
-キーが引き続き存在する既存エントリはそのまま残ります — 値は再構築後も保持されます。
+キーが引き続き存在する既存エントリはそのまま残ります。値は再構築後も保持されます。
 
 ## ランタイムアクセス
 
@@ -126,4 +126,4 @@ TSoftObjectPtr<UTexture2D> UMyDrivenCollection::GetIcon(const FDataIndexerPrimar
 ```
 
 !!! tip "ソフト参照"
-    loaded な `UTexture2D*` ではなく `TSoftObjectPtr` を返すことで、ロードのタイミングを呼び出し側に委ねられます — アセット参照を行データの外に置く本来の目的です。呼び出し側は必要に応じて `LoadSynchronous()` や非同期ロードを行えます。
+    loaded な `UTexture2D*` ではなく `TSoftObjectPtr` を返すことで、ロードのタイミングを呼び出し側に委ねられます。これがアセット参照を行データの外に置く本来の目的です。呼び出し側は必要に応じて `LoadSynchronous()` や非同期ロードを行えます。

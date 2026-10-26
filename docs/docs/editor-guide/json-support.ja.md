@@ -33,12 +33,12 @@ DataIndexer Repositoryは JSON によるエクスポート・インポート・D
 ]
 ```
 
-**ポイント：**
+**ポイント**
 
 - `PrimaryKey` は行の `FDataIndexerPrimaryKey` を GUID 文字列で表したもの
 - `RowEntity` は UE の JSON プロパティシリアライズで行構造体をシリアライズしたもの
 - `EditorFlags` はエディタ専用の行状態（コメントアウト・子で非表示など）のビットマスク。`0` は無し
-- エクスポートにはローカル行のみ含まれます — 親Repositoryの行はエクスポートされません
+- エクスポートにはローカル行のみ含まれ、親Repositoryの行はエクスポートされません
 
 ## インポート
 
@@ -46,9 +46,9 @@ DataIndexer Repositoryは JSON によるエクスポート・インポート・D
 2. **Import JSON** を選択
 3. JSON ファイルを選択する
 
-インポートは**完全置換**として実行されます — 既存の行はすべて削除され、JSON ファイルの内容で置き換えられます。
+インポートは**完全置換**として実行されます。既存の行はすべて削除され、JSON ファイルの内容で置き換えられます。
 
-形式は自動判定されます：`RowEntity` フィールドを持つファイルはネイティブの DataIndexer JSON、フラットな行オブジェクトは DataTable JSON として扱われます。DataTable 経由の手順は [DataTable から移行する](../how-to/migrate-from-datatable.md) を参照してください。
+形式は自動判定されます。`RowEntity` フィールドを持つファイルはネイティブの DataIndexer JSON、フラットな行オブジェクトは DataTable JSON として扱われます。DataTable 経由の手順は [DataTable から移行する](../how-to/migrate-from-datatable.md) を参照してください。
 
 ## Reimport
 

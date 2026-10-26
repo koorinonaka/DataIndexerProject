@@ -63,7 +63,7 @@
       {% if is_ja %}
       <p class="ov-features-kicker">なぜ DataIndexer か</p>
       <h2>DataTable で壊れていた参照が、<br>今は生き続ける。</h2>
-      <p class="ov-section-lead">ゲームデータの寿命はプロジェクトより長い。命名規則の見直し、デザイナーの気変わり、ローカライズ ── 何度行をリネームしても、参照側のコード・Blueprint・アセットが一切壊れない世界を目指して設計されています。</p>
+      <p class="ov-section-lead">ゲームデータの寿命はプロジェクトより長い。命名規則の見直し、デザイナーの気変わり、ローカライズで行を何度リネームしても、参照側のコード・Blueprint・アセットが一切壊れない世界を目指して設計されています。</p>
       {% else %}
       <p class="ov-features-kicker">Why DataIndexer</p>
       <h2>References that broke with DataTable now survive.</h2>
@@ -86,7 +86,7 @@
         </div>
         <div class="ov-ba-cell ov-ba-bad">
           <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#a83d1a" stroke-width="2" aria-hidden="true"><path d="M4 4l8 8m0-8l-8 8"/></svg></span>
-          <span>FName 参照のため、全参照箇所が静かに壊れる。手動で全置換が必要。</span>
+          <span>FName 参照のため、全参照箇所が気づかないうちに壊れる。手動で全置換が必要。</span>
         </div>
         <div class="ov-ba-cell ov-ba-good">
           <span class="ov-ba-icon"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#1f7a52" stroke-width="2.2" aria-hidden="true"><path d="M3 8.5l3.5 3.5L13 5"/></svg></span>
@@ -254,7 +254,7 @@
       <div class="ov-feature-text">
         <div class="ov-feature-kicker">01 / メンテナンス性</div>
         <h3>リネームしても、参照は壊れない。</h3>
-        <p class="ov-feature-desc">DataTable の FName 参照はリネームで壊れます。DataIndexer は GUID（<code>FDataIndexerPrimaryKey</code>）で識別するため、名前が変わっても参照は生き続けます。</p>
+        <p class="ov-feature-desc">DataTable の FName 参照はリネームで壊れます。DataIndexer は各行を GUID（<code>FDataIndexerPrimaryKey</code>）で識別するため、名前が変わっても参照は生き続けます。</p>
         <ul class="ov-feature-bullets">
           <li>
             <strong>GUID ベースの PrimaryKey</strong>
@@ -262,7 +262,7 @@
           </li>
           <li>
             <strong>Key 参照の追跡</strong>
-            <p>どのアセット・コードから参照されているかをエディタ上で確認できます。</p>
+            <p>Key がどのアセット・コードから参照されているかをエディタ上で確認できます。</p>
           </li>
         </ul>
       </div>
@@ -279,7 +279,7 @@
         <ul class="ov-feature-bullets">
           <li>
             <strong>Repository の継承と統合</strong>
-            <p>UCompositeDataTable が担っていた「親テーブルの統合」を継承。複数の Repository をマージする機能も標準サポートです。</p>
+            <p>UCompositeDataTable が担っていた「親テーブルの統合」を、Repository の継承で実現。複数の Repository をマージする機能も標準サポートです。</p>
           </li>
           <li>
             <strong>継承時の上書き</strong>
@@ -297,7 +297,7 @@
       <div class="ov-feature-text">
         <div class="ov-feature-kicker">03 / 専用エディタ</div>
         <h3>編集はセルで。整合性はスキーマで。</h3>
-        <p class="ov-feature-desc">マスターデータを Excel で組んで CSV インポート、参照整合性は VLOOKUP で目視確認 ── この回りくどさを終わらせるための専用エディタ。スプレッドシートの操作感はそのまま、整合性は型システムが保証します。</p>
+        <p class="ov-feature-desc">マスターデータを Excel で組んで CSV インポート、参照整合性は VLOOKUP で目視確認。この回りくどさを終わらせるための専用エディタ。スプレッドシートの操作感はそのまま、整合性は型システムが保証します。</p>
         <ul class="ov-feature-bullets">
           <li>
             <strong>スプレッドシート感覚のセル操作</strong>
@@ -434,7 +434,7 @@
       {% if is_ja %}
       <p class="ov-features-kicker">In Practice · 実装例</p>
       <h2>C++ でも Blueprint でも、同じデータに同じ整合性で。</h2>
-      <p class="ov-section-lead">C++ では型安全な Native Interface で、Blueprint では Get Row ノードで — どちらからでも同じ Repository を参照できます。</p>
+      <p class="ov-section-lead">C++ は型安全な Native Interface、Blueprint は Get Row ノードと、どちらからでも同じ Repository を参照できます。</p>
       {% else %}
       <p class="ov-features-kicker">In Practice</p>
       <h2>The same data. C++ or Blueprint.</h2>
@@ -496,7 +496,7 @@ for (const FDataIndexerPrimaryKey&amp; K :
             <img src="{{ base_url }}/assets/images/bp-struct-sample.png"
                  alt="Blueprint struct setup">
           </div>
-          <figcaption>{% if is_ja %}① 構造体を定義 — エディタで型を組み立てる{% else %}① Define the struct — build types in the editor{% endif %}</figcaption>
+          <figcaption>{% if is_ja %}① エディタで構造体を定義{% else %}① Define the struct — build types in the editor{% endif %}</figcaption>
         </figure>
         <figure class="ov-dual-bp-fig">
           <div class="ov-dual-bp-frame"
@@ -506,7 +506,7 @@ for (const FDataIndexerPrimaryKey&amp; K :
             <img src="{{ base_url }}/assets/images/bp-node-sample.png"
                  alt="Blueprint node wiring">
           </div>
-          <figcaption>{% if is_ja %}② ノードでクエリ — Get Row / Get Primary Keys{% else %}② Query with nodes — Get Row / Get Primary Keys{% endif %}</figcaption>
+          <figcaption>{% if is_ja %}② Get Row / Get Primary Keys ノードでクエリ{% else %}② Query with nodes — Get Row / Get Primary Keys{% endif %}</figcaption>
         </figure>
       </div>
     </div>
@@ -559,7 +559,7 @@ function ovCloseLightbox() {
     {% if is_ja %}
     <div>
       <h2>編集も、検証も、検索も。<br>すべてエディタの中で。</h2>
-      <p class="ov-cta-sub">マスターデータの構築から参照整合性チェックまで完結します。<br>UE 5.7+ 対応 ── 標準プラグイン、エンジン改変不要。</p>
+      <p class="ov-cta-sub">マスターデータの構築から参照整合性チェックまで、エディタの中で完結します。<br>UE 5.7+ 対応の標準プラグイン。エンジン改変は不要です。</p>
     </div>
     <a href="quick-start/" class="ov-btn-cta">
       クイックスタート

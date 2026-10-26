@@ -1,6 +1,6 @@
 # Repository API
 
-`UDataIndexerRepository`（`DataIndexerRepository.h`）はランタイムのデータアセットクラスです。すべての行クエリはこのパブリックメソッドを通じて行います。
+`UDataIndexerRepository`（`DataIndexerRepository.h`）はランタイムのデータアセットクラスです。すべての行クエリはこのクラスのパブリックメソッドを通じて行います。
 
 !!! tip "C++ から使う場合は NativeSchemaInterface を推奨"
     型安全なクエリには [`TNativeSchemaInterface<T>`](./native-schema-interface.md) を使ってください。`FindRow`・`ForEachPrimaryKeys` など、このページと同等のAPIをコンパイル時型チェック付きで提供します。直接 `UDataIndexerRepository` を操作するのは、`FConstStructView` を扱う低レベルコードや内部実装に限定してください。
@@ -51,7 +51,7 @@ void ForEachPrimaryKeys(
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback) const;
 ```
 
-このRepositoryを通して見えるすべてのPrimaryKeyを走査します（親Repositoryを含む）。順序：ローカルキーが先（挿入順）、次に親キー。
+このRepositoryを通して見えるすべてのPrimaryKey（親Repositoryを含む）を走査します。順序：ローカルキーが先（挿入順）、次に親キー。
 
 ```cpp
 Repository->ForEachPrimaryKeys([&](const FDataIndexerPrimaryKey& Key)
@@ -72,7 +72,7 @@ void ForEachPrimaryKeys(
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback) const;
 ```
 
-セカンダリ Index 検索にマッチするPrimaryKeyを走査します。`ReverseLookups` テーブルを直接参照するため O(マッチ数)、全行を走査しません。
+セカンダリ Index 検索にマッチするPrimaryKeyを走査します。`ReverseLookups` テーブルを直接参照するため計算量は O(マッチ数) で、全行を走査しません。
 
 ```cpp
 FItemRow Query;
@@ -95,7 +95,7 @@ Repository->ForEachPrimaryKeys(
 FText GetDisplayName(const FDataIndexerPrimaryKey& PrimaryKey) const;
 ```
 
-Schemaの `GetRowDisplayName` を呼び出して人間可読なラベルを返します。Schemaが null または行が見つからない場合は `FText::GetEmpty()` を返します。
+Schemaの `GetRowDisplayName` を呼び出して人間可読なラベルを返します。Schemaが null の場合、または行が見つからない場合は `FText::GetEmpty()` を返します。
 
 ---
 

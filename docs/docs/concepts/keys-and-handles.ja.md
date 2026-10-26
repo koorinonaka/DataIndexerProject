@@ -4,7 +4,7 @@ DataIndexer は行を特定するために 3 種類のアドレス型を使用�
 
 ## FDataIndexerPrimaryKey
 
-`FDataIndexerPrimaryKey` は `FGuid` を継承し、Repository内の単一行を安定・恒久的に識別します。
+`FDataIndexerPrimaryKey` は `FGuid` を継承し、Repository内の単一行を安定的かつ恒久的に識別します。
 
 ```cpp
 USTRUCT(BlueprintType)
@@ -22,7 +22,7 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
 
 ### `Repository` メタデータ
 
-アクター・データアセット・構造体の `UPROPERTY` にベアなPrimaryKeyを保存できます。エディタが行ピッカーを表示するRepositoryを特定できるよう `meta = (Repository = "...")` を指定してください。
+アクター・データアセット・構造体の `UPROPERTY` にベアなPrimaryKeyを保存できます。エディタが行ピッカーを表示するRepositoryを特定できるよう、`meta = (Repository = "...")` を指定してください。
 
 値には同じクラス上の `UDataIndexerRepository*` を返す**プロパティ名または関数名**を指定します。引数なしの `UFUNCTION` も使用できます。
 
@@ -50,8 +50,8 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
 
     ドロップダウンには既存の `UDataIndexerRepository*` 変数（**Variables**）と引数なしリゾルバ関数（**Functions**）が一覧表示されます。該当する変数・関数がまだ無い場合は、その場で作成できる 2 つのショートカットも用意されています。
 
-    - **Create Repository Variable** — `UDataIndexerRepository*` 型のメンバー変数（既定名 `Repository`）を新規追加し、それを Repository ソースとして選択します。最も手軽な方法で、参照する Repository を変数として外部から差し込めます。
-    - **Create Matching Function** — `UDataIndexerRepository*` を返す BlueprintPure 関数（名前は `Get<変数名>Repository`）を生成し、グラフを開いて選択状態にします。Repository を動的に決定したい場合（条件分岐・別アセットからの取得など）に使用し、関数本体で解決ロジックを実装します。
+    - **Create Repository Variable**：`UDataIndexerRepository*` 型のメンバー変数（既定名 `Repository`）を新規追加し、それを Repository ソースとして選択します。最も手軽な方法で、参照する Repository を変数として外部から差し込めます。
+    - **Create Matching Function**：`UDataIndexerRepository*` を返す BlueprintPure 関数（名前は `Get<変数名>Repository`）を生成し、グラフを開いて選択状態にします。Repository を動的に決定したい場合（条件分岐・別アセットからの取得など）に使用し、関数本体で解決ロジックを実装します。
 
 ### `ReadOnlyKeys` メタデータ
 
@@ -70,12 +70,12 @@ struct DATAINDEXER_API FDataIndexerPrimaryKey : public FGuid { ... };
     // ロック — 行ピッカーを非表示
     FBlueprintEditorUtils::SetBlueprintVariableMetaData(
         Blueprint, VarName, nullptr,
-        DataIndexer::MetaDataKeys::ReadOnlyKeys, TEXT("true"));
+        TEXT("ReadOnlyKeys"), TEXT("true"));
 
     // ロック解除 — 行ピッカーを再表示
     FBlueprintEditorUtils::RemoveBlueprintVariableMetaData(
         Blueprint, VarName, nullptr,
-        DataIndexer::MetaDataKeys::ReadOnlyKeys);
+        TEXT("ReadOnlyKeys"));
     ```
 
 
@@ -101,10 +101,10 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 
 **主な特性：**
 
-- `IsValid()` — `Repository` と `PrimaryKey` の両方が null/ゼロでない場合に true を返す。
-- `FindRowEntity()` — `Repository->FindRowEntity(PrimaryKey)` に委譲する。
-- `GetRowDisplayName()` — Schema駆動の表示ラベルを `TOptional<FText>` で返す。ハンドルが無効な場合は empty。
-- エディタはこれを名前付き行ピッカーとしてレンダリングし、Schemaからの表示名を表示する。
+- `IsValid()`：`Repository` と `PrimaryKey` の両方が null/ゼロでない場合に true を返す。
+- `FindRowEntity()`：`Repository->FindRowEntity(PrimaryKey)` に委譲する。
+- `GetRowDisplayName()`：Schema駆動の表示ラベルを `TOptional<FText>` で返す。ハンドルが無効な場合は empty。
+- エディタはこのハンドルを名前付き行ピッカーとしてレンダリングし、Schemaからの表示名を表示する。
 
 **使うべき場面：** 特定の行を指したいアクター・データアセット・セーブゲーム構造体の UPROPERTY。行参照用の Blueprint 変数。
 
@@ -123,10 +123,10 @@ struct DATAINDEXER_API FDataIndexerRowHandle
 
 === "Blueprint"
 
-    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerRowHandle` 変数を選択すると **Schema** ピッカーが表示されます。Schema アセットを選択するとRepositoryピッカーが一致するRepositoryのみに絞り込まれます。ピッカーをクリアするとすべてのRepositoryが表示されます。
+    Blueprint 変数の **Details** パネルを開きます。`FDataIndexerRowHandle` 変数を選択すると **Schema** ピッカーが表示されます。Schema アセットを選択すると、Repositoryピッカーが一致するRepositoryのみに絞り込まれます。ピッカーをクリアするとすべてのRepositoryが表示されます。
 ## FDataIndexerKeysHandle
 
-`FDataIndexerKeysHandle` はセカンダリIndexを使って行のセットをアドレスします。RepositoryとIndex識別子を格納し、マッチする行のセットはクエリ時に部分的に埋めた行構造体を渡して決定します。
+`FDataIndexerKeysHandle` はセカンダリIndexを使って行のセットを指します。RepositoryとIndex識別子を格納し、マッチする行のセットはクエリ時に部分的に埋めた行構造体を渡して決定します。
 
 ```cpp
 USTRUCT(BlueprintType)
@@ -143,8 +143,8 @@ struct DATAINDEXER_API FDataIndexerKeysHandle
 
 **主な特性：**
 
-- `IsValid()` — Repository と IndexKey が null/ゼロでないことを確認する。
-- `ForEachPrimaryKeys(Query, Callback)` — `Repository->ForEachPrimaryKeys(IndexKey, Query, Callback)` に委譲する。`Query` は部分的に埋めた行構造体の `FConstStructView`。
+- `IsValid()`：Repository と IndexKey が null/ゼロでないことを確認する。
+- `ForEachPrimaryKeys(Query, Callback)`：`Repository->ForEachPrimaryKeys(IndexKey, Query, Callback)` に委譲する。`Query` は部分的に埋めた行構造体の `FConstStructView`。
 - Blueprint では `GetKeysByIndex` カスタム K2ノード を使って `TArray<FDataIndexerPrimaryKey>` を取得できる。
 
 **使うべき場面：** Blueprint やアセットがIndexを指定しておき、フィルター値（クエリ構造体）は呼び出し時に決める場合。正確なセットはランタイムにRepositoryの逆引きテーブルから解決される。

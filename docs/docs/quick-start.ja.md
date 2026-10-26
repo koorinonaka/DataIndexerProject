@@ -58,7 +58,7 @@ Schemaと Repository の作成から行のオーサリング、ランタイム�
 
     **行構造体を定義**{ .step-label }
 
-    行データを格納する構造体と、型安全なクエリ用のエイリアスを宣言します：
+    行データを格納する構造体と、型安全なクエリ用のエイリアスを宣言します。
 
     ```cpp title="ItemTypes.h"
     #pragma once
@@ -100,7 +100,7 @@ Schemaと Repository の作成から行のオーサリング、ランタイム�
 
     **C++ Schemaを実装**{ .step-label }
 
-    `RowStruct` を設定し、`GetRowDisplayName` をオーバーライドします：
+    `RowStruct` を設定し、`GetRowDisplayName` をオーバーライドします。
 
     ```cpp title="ItemSchema.h"
     #pragma once
@@ -148,7 +148,7 @@ Schemaと Repository の作成から行のオーサリング、ランタイム�
 
     1. **Content Browser** で右クリック → **Blueprints → Structure**
     2. 名前を付け（例：`S_Ability`）、ダブルクリックで開く
-    3. データフィールドごとに変数を追加 — `DisplayName`（Text）、`Description`（Text）、`AbilityType`（列挙型）、`TargetType`（列挙型）、`LevelData`（構造体配列）など
+    3. `DisplayName`（Text）、`Description`（Text）、`AbilityType`（列挙型）、`TargetType`（列挙型）、`LevelData`（構造体配列）など、データフィールドごとに変数を追加
 
     **Schema Blueprint を作成**{ .step-label }
 
@@ -158,11 +158,11 @@ Schemaと Repository の作成から行のオーサリング、ランタイム�
     2. 名前を付け（例：`BP_AbilitySchema`）、ダブルクリックで開く
     3. **Class Defaults → Row Struct** に作成した構造体（`S_Ability`）を設定
 
-    **Row Display Name Function** をバインドすると、Data View に各行の読みやすいラベルを表示できます。**Class Defaults** でバインドピッカーを開きます：
+    **Row Display Name Function** をバインドすると、Data View に各行の読みやすいラベルを表示できます。**Class Defaults** でバインドピッカーを開きます。
 
     ![Class Defaults で Row Display Name Function をバインド](assets/images/schema-row-display-name-binding.png)
 
-    バインドした関数は実際の row struct を直接受け取るので、Break してラベルに使うフィールドを返します：
+    バインドした関数は実際の row struct を直接受け取るので、Break してラベルに使うフィールドを返します。
 
     ![DisplayName フィールドを返す GetRowDisplayName の実装例](assets/images/schema-get-row-display-name.png)
 
@@ -208,9 +208,9 @@ Repository アセットをダブルクリックすると Data View が開きま�
 
 ![Insert キーで行を追加](assets/images/data-view-add-row.png)
 
-- **Insert** キーで行を追加 — GUID のPrimaryKeyが自動生成されます
+- **Insert** キーで行を追加すると、GUID のPrimaryKeyが自動生成されます
 - グリッドでインライン編集するか、行を選択して右側の **Selection Details** パネルで編集
-- **保存** — 逆引きテーブルが自動再構築されます
+- **保存** すると、逆引きテーブルが自動再構築されます
 
 エディタの詳細は [エディタガイド](editor-guide/index.md) を参照してください。
 
@@ -266,7 +266,7 @@ Repository アセットをダブルクリックすると Data View が開きま�
 
     **特定の行を参照する**{ .step-label }
 
-    **Get Row** ノードをグラフにスポーンします：
+    **Get Row** ノードをグラフにスポーンします。
 
     1. グラフ上で右クリック → **Get Row** を検索して追加
     2. **Handle Repository** に作成した Repository を設定

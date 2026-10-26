@@ -66,7 +66,7 @@ static const TRowType* FindRow(
     const FDataIndexerPrimaryKey& PrimaryKey);
 ```
 
-`Repository.FindRowEntity(PrimaryKey)` に委譲した後、`TRowType` へのポインタを返します。キーが見つからない場合・型が一致しない場合は `nullptr` を返します。
+`Repository.FindRowEntity(PrimaryKey)` に委譲した後、`TRowType` へのポインタを返します。キーが見つからない場合や型が一致しない場合は `nullptr` を返します。
 
 ```cpp
 if (const FItemRow* Row = FItemInterface::FindRow(Repository, Key))
@@ -87,7 +87,7 @@ static const TRowType* FindRow(
 
 ハンドルを検証してから `FindRow(*RowHandle.Repository, RowHandle.PrimaryKey)` に委譲します。ハンドルが無効な場合は `nullptr` を返します。
 
-行に保存されたRepository間リレーションを解決するときに使います。`FCharacterRow::DefaultWeapon`（ItemRepository を指す `FDataIndexerRowHandle`）を解決する例：
+行に保存されたRepository間リレーションを解決するときに使います。`FCharacterRow::DefaultWeapon`（ItemRepository を指す `FDataIndexerRowHandle`）を解決する例を次に示します。
 
 ```cpp
 // CharacterTypes.h
@@ -135,7 +135,7 @@ static void ForEachPrimaryKeys(
     const TFunctionRef<void(const FDataIndexerPrimaryKey&)>& Callback);
 ```
 
-`Row` からIndexKeyを計算し、そのキーに一致する PrimaryKey だけを走査します。「このクエリ行と同じフィールド値を持つ行をすべて取得する」意図でフィールドを部分的に埋めた行を渡します。
+`Query` からIndexKeyを計算し、そのキーに一致する PrimaryKey だけを走査します。フィールドを部分的に埋めた行を渡し、「このクエリ行と同じフィールド値を持つ行をすべて取得する」という意図を表します。
 
 ```cpp
 FItemRow Query;

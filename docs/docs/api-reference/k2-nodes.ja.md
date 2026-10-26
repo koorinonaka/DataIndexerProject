@@ -83,7 +83,7 @@ Blueprint で型付き行を取得する主要な方法です。
 
 `FDataIndexerPrimaryKey` の値に基づいて **実行** をルーティングするスイッチノードです。
 
-**目的：** PrimaryKey がどの行をアドレスしているかによって実行を分岐します。DataIndexer 行用の `Switch on Int` ノードに相当します。
+**目的：** PrimaryKey がどの行を指しているかによって実行を分岐します。DataIndexer 行用の `Switch on Int` ノードに相当します。
 
 **ノードプロパティ（Details パネルで設定）：**
 
@@ -106,7 +106,7 @@ Blueprint で型付き行を取得する主要な方法です。
 ---
 
 !!! tip "どのノードを使うか"
-    - **Get Row** — ハンドルを持っていて行データが欲しい場合
-    - **Get Keys by Index** — インデックスキーで行を検索してキー一覧が欲しい場合
-    - **Select by Primary Key** — キーを持っていて、どの行かによって値を選びたい場合
-    - **Switch on Primary Key** — キーを持っていて、どの行かによって実行を分岐したい場合
+    - Get Row：ハンドルを持っていて行データが欲しい場合
+    - Get Keys by Index：インデックスキーで行を検索してキー一覧が欲しい場合
+    - Select by Primary Key：キーを持っていて、どの行かによって値を選びたい場合
+    - Switch on Primary Key：キーを持っていて、どの行かによって実行を分岐したい場合

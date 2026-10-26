@@ -20,7 +20,7 @@ virtual TOptional<FText> GetRowDisplayName(
     const FConstStructView& RowEntity) const;
 ```
 
-行の人間可読な表示名を返します。利用できなければ `NullOpt` を返します。基底実装は `RowDisplayNameFunction` バインド（実際の row struct を直接受け取る関数）を解決して呼びます。C++ では `virtual` をオーバーライドして表示名を求めます — `RowEntity` を concrete row struct に unpack してフィールドを返します。
+行の人間可読な表示名を返します。利用できなければ `NullOpt` を返します。基底実装は `RowDisplayNameFunction` バインド（実際の row struct を直接受け取る関数）を解決して呼びます。C++ では `virtual` をオーバーライドして表示名を求めます。オーバーライドでは `RowEntity` を concrete row struct に unpack し、フィールドを返します。
 
 ```cpp
 TOptional<FText> UItemSchema::GetRowDisplayName(
@@ -31,7 +31,7 @@ TOptional<FText> UItemSchema::GetRowDisplayName(
 }
 ```
 
-Blueprint からは、Schema の Class Defaults で `RowDisplayNameFunction` を `(const FDataIndexerPrimaryKey&, const FRowStruct&) → FText` のシグネチャを持つ関数にバインドします。row は実際の row struct で渡るため `Get Instanced Struct Value` でアンパックするノードは不要です。
+Blueprint からは Schema の Class Defaults で `RowDisplayNameFunction` を `(const FDataIndexerPrimaryKey&, const FRowStruct&) → FText` のシグネチャを持つ関数にバインドします。row は実際の row struct で渡るため、`Get Instanced Struct Value` でアンパックするノードは不要です。
 
 ---
 
@@ -42,7 +42,7 @@ void ForEachIndex(
     const TFunctionRef<void(const FDataIndexerIndex&)>& Callback) const;
 ```
 
-登録されているすべてのIndexKeyを走査します（`BuildIndexFunctions` のキー）。`ReverseLookups` を構築する際にコンパイラがIndexを列挙するために使用します。
+登録されているすべてのIndexKey（`BuildIndexFunctions` のキー）を走査します。`ReverseLookups` を構築する際にコンパイラがIndexを列挙するために使用します。
 
 ---
 
@@ -54,7 +54,7 @@ TOptional<FGuid> BuildIndexCall(
     const FConstStructView& RowEntity) const;
 ```
 
-指定した行エンティティに対して `IndexKey` の登録済みビルダー関数を呼び出します。算出したIndexKey（`FGuid`）を返します。このIndexにビルダーが登録されていない場合は `NullOpt` を返します。
+指定した行エンティティに対して `IndexKey` の登録済みビルダー関数を呼び出し、算出したIndexKey（`FGuid`）を返します。このIndexにビルダーが登録されていない場合は `NullOpt` を返します。
 
 保存時にコンパイラから呼び出されます。通常、ゲームコードから直接呼び出すことはありません。
 
@@ -77,7 +77,7 @@ UItemSchema::UItemSchema()
 }
 ```
 
-`Func` は Schema クラスの `static UFUNCTION` で、実際の row struct を直接受け取り IndexKey を返すシグネチャである必要があります：  
+`Func` は Schema クラスの `static UFUNCTION` で、実際の row struct を直接受け取り IndexKey を返すシグネチャである必要があります。  
 `(const FRowStruct& Row) → FGuid`
 
 マクロはこのシグネチャを **コンパイル時** に `static_assert` で検証します。戻り値は `FGuid`、row は `const` 参照渡し、関数の row 型は `RowType` 引数と一致している必要があります。不整合はエディタ検証の警告ではなくコンパイルエラーになります。
@@ -105,7 +105,7 @@ virtual TSharedRef<SWidget> CustomizePropertyCellWidget(
 ```cpp
 #if WITH_EDITOR
 virtual EDataValidationResult IsDataValid(FDataValidationContext& Context) const override;
-virtual EDataValidationResult IsRowValid(
+virtual EDataValidationResult IsRowValid(const FDataIndexerPrimaryKey& PrimaryKey,
     FConstStructView RowEntity, FDataValidationContext& Context) const;
 #endif
 ```

@@ -1,6 +1,6 @@
 # Index
 
-Indexはセカンダリ検索軸で、カテゴリ・陣営・レアリティなど任意のドメイン属性で行のセットを取得できます。Repository全体を走査せず、直接マルチマップ参照によって O(マッチ数) で結果を返します。
+Indexはセカンダリ検索軸です。Indexを使うと、カテゴリ・陣営・レアリティなど任意のドメイン属性で行のセットを取得できます。Repository全体を走査せず、直接マルチマップ参照によって O(マッチ数) で結果を返します。
 
 ## 型
 
@@ -82,11 +82,11 @@ FGuid UItemSchema::BuildTypeIndex(const FItemRow& Row)
 ### Blueprint の場合
 
 1. Schema Blueprint を開いて **Class Defaults** へ
-2. **Build Index Functions** にエントリを追加：
-   - **キー**：`FDataIndexerIndex` 変数（固定 GUID を変数デフォルト値に設定）
-   - **Value**：実際の row struct を受け取る関数参照（`const FRowStruct& → FGuid`）。ピッカーは一致する関数のみ絞り込み、実際の row 引数のスタブを生成できます。
+2. **Build Index Functions** にエントリを追加
+   - キー：`FDataIndexerIndex` 変数（固定 GUID を変数デフォルト値に設定）
+   - Value：実際の row struct を受け取る関数参照（`const FRowStruct& → FGuid`）。ピッカーは一致する関数のみに絞り込み、実際の row 引数のスタブを生成できます。
 
-実装例（クラス別Index）：
+次の図はクラス別Indexの実装例です。
 
 ![BuildIndexByClass の実装例](../assets/images/build-index-by-class.png)
 
@@ -94,7 +94,7 @@ FGuid UItemSchema::BuildTypeIndex(const FItemRow& Row)
 
 ## Indexによるクエリ
 
-**C++** — クエリとして使いたいフィールドだけを埋めた行を渡します。
+**C++**：クエリとして使いたいフィールドだけを埋めた行を渡します。
 
 ```cpp
 // Weapon タイプのアイテムをすべて取得
@@ -105,7 +105,7 @@ TArray<FDataIndexerPrimaryKey> Keys =
     FItemInterface::GetPrimaryKeys(*Repository, UItemSchema::ByTypeIndex(), Query);
 ```
 
-逆引きIndex（例：特定のアイテムを `DefaultWeapon` に持つキャラクターを取得）:
+逆引きIndexの例として、特定のアイテムを `DefaultWeapon` に持つキャラクターを取得します。
 
 ```cpp
 FCharacterRow Query;
@@ -124,7 +124,7 @@ TArray<FDataIndexerPrimaryKey> Characters =
 
 ビルダー関数が返す GUID はエディタをまたいで不変でなければなりません。enum の序数・文字列ハッシュなど安定した値から導出してください。ビルダー内で `FGuid::NewGuid()` を使うのは NG です。
 
-`DI_DEFINE_INDEX` は `FGuid::NewDeterministicGuid(StaticClass()->GetPathName() + "." + Index名)` を使用するため、Index名やSchemaクラス名（`GetPathName()` が変わる）のリネームは GUID 変更を引き起こします。これらの名前は安定した API として扱ってください。
+`DI_DEFINE_INDEX` は `FGuid::NewDeterministicGuid(StaticClass()->GetPathName() + "." + Index名)` を使用するため、Index名をリネームするか、Schemaクラス名をリネームして `GetPathName()` が変わると、GUID が変わります。これらの名前は安定した API として扱ってください。
 
 !!! note "ReverseLookups の再構築タイミング"
     エディタでは参照時に自動構築されます。パッケージビルドではクック時に構築されるため、手動での再保存は不要です。
