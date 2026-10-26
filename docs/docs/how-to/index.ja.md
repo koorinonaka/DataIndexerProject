@@ -1,5 +1,7 @@
 ---
 title: How-to ガイド
+hide:
+  - navigation
 ---
 
 # How-to ガイド

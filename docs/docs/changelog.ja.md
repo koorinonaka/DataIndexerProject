@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # 変更履歴
 
 DataIndexer の注目すべき変更はすべてここに記録します。

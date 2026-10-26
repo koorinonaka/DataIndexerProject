@@ -1,5 +1,7 @@
 ---
 title: How-to Guides
+hide:
+  - navigation
 ---
 
 # How-to Guides

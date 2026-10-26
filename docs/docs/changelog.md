@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # Changelog
 
 All notable changes to DataIndexer are documented here.
