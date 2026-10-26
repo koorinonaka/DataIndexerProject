@@ -51,6 +51,32 @@
     </div>
   </section>
 
+  <section class="di-keymap" aria-label="{{ 'GUID キーと参照' if is_ja else 'GUID keys and references' }}">
+    <div class="di-home__inner di-keymap__body">
+      <div>
+        <span class="di-keymap__label">{{ '参照元' if is_ja else 'Referenced by' }}</span>
+        <ul class="di-keymap__refs">
+          <li><small>Blueprint</small>Get Row</li>
+          <li><small>C++</small>FindRow(Repository, PrimaryKey)</li>
+          <li><small>UPROPERTY</small>FDataIndexerPrimaryKey</li>
+        </ul>
+      </div>
+      <svg class="di-keymap__arrow" width="28" height="16" viewBox="0 0 28 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 8h22m-6-6 6 6-6 6"/></svg>
+      <div>
+        <div class="di-keymap__row">
+          <div class="di-keymap__head"><span>PrimaryKey</span><span>RowName</span></div>
+          <code class="di-keymap__key">A1B2C3D4-E5F6-7890-ABCD-EF1234567890</code>
+          <span class="di-keymap__name"><del>IronSword</del><svg width="20" height="12" viewBox="0 0 28 16" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M2 8h22m-6-6 6 6-6 6"/></svg><ins>Iron_Sword</ins></span>
+        </div>
+        {% if is_ja %}
+        <p class="di-keymap__note">キーは行を作ったときに一度だけ生成され、変わらない。表示名を変えても参照には影響しない。</p>
+        {% else %}
+        <p class="di-keymap__note">The key is generated once when a row is created and never changes. Renaming the row doesn't affect references.</p>
+        {% endif %}
+      </div>
+    </div>
+  </section>
+
   <section class="di-section">
     <div class="di-home__inner">
       <div class="di-section__head">

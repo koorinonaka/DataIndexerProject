@@ -23,8 +23,15 @@
   --accent: #0f6b45;
   --accent-hover: #0a4d31;
   --mark: #16b978;          /* キーの印。文字に使わない (2.2:1) */
-  --button-bg: #1c1a15;
-  --button-fg: #f3efe4;
+  --button-bg: #0f6b45;     /* 白字で 6.5:1 */
+  --button-fg: #ffffff;
+
+  /* トップの hero の帯 (深緑)。light / dark とも暗い帯にする */
+  --hero-bg: #0f2a1e;
+  --hero-fg: #f3efe4;       /* 13.3:1 */
+  --hero-muted: #b4c2b8;    /* 8.3:1 */
+  --hero-accent: #3ecf8e;   /* 7.7:1 */
+  --hero-rule: #3ecf8e;
 
   /* Code (measured on --bg-sunken) */
   --code-block-bg: var(--bg-sunken);
@@ -60,6 +67,12 @@
   --mark: #3ecf8e;
   --button-bg: #3ecf8e;
   --button-fg: #0f1411;
+
+  --hero-bg: #0a1f15;
+  --hero-fg: #f3efe4;       /* 15.0:1 */
+  --hero-muted: #b4c2b8;    /* 9.3:1 */
+  --hero-accent: #3ecf8e;   /* 8.6:1 */
+  --hero-rule: #3ecf8e;
 
   --code-block-bg: var(--bg-sunken);
   --hl-fg: #dfe6df;

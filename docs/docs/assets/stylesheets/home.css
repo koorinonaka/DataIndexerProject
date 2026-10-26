@@ -19,8 +19,12 @@
   margin: 0 auto;
 }
 
-/* ── hero: padding 40 80 56 ───────────────────────────────────────────────── */
-.di-hero { padding: 40px 80px 56px; }
+/* ── hero: padding 40 80 56。深緑の帯 (--hero-*) ────────────────────────────── */
+.di-hero {
+  padding: 40px 80px 56px;
+  background: var(--hero-bg);
+  color: var(--hero-fg);
+}
 .di-hero h1 {
   margin: 0;
   font-size: 40px;
@@ -38,17 +42,17 @@
   max-width: 880px;
   font-size: 18px;
   line-height: 28px;
-  color: var(--text-muted);
+  color: var(--hero-muted);
 }
 .di-lead code {
   font-size: 16px;
-  color: var(--accent);
+  color: var(--hero-accent);
 }
 
 /* 動画枠: 16:9 (内側)。枠線は outline 1px で外に描き、寸法に入れない */
 .di-hero__media {
   margin-top: 28px;
-  outline: 1px solid var(--text);
+  outline: 1px solid var(--hero-rule);
   background: #0f1411;
 }
 .di-hero__media img,
@@ -75,18 +79,117 @@
   gap: 6px;
   margin: 0;
   padding-top: 8px;
-  border-top: 2px solid var(--text);
+  border-top: 2px solid var(--hero-rule);
 }
 .di-home .di-points a {
   font-size: 14px;
   line-height: 20px;
   font-weight: 600;
-  color: var(--text);
+  color: var(--hero-fg);
 }
-.di-home .di-points a:hover { color: var(--accent); }
+.di-home .di-points a:hover { color: var(--hero-accent); }
 .di-points span {
   font-size: 13px;
   line-height: 19px;
+  color: var(--hero-muted);
+}
+
+/* ── 図版: 参照 → GUID キー → リネーム (B 案の hero の図を小さくしたもの) ───── */
+.di-keymap { padding: 40px 80px 0; }
+.di-keymap__body {
+  display: grid;
+  grid-template-columns: 300px 48px minmax(0, 1fr);
+  align-items: center;
+}
+.di-keymap__label {
+  display: block;
+  margin-bottom: 8px;
+  font: 400 12px/16px var(--font-mono);
+  color: var(--text-muted);
+}
+.di-keymap__refs {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.di-keymap__refs li {
+  margin: 0;
+  padding: 7px 12px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border-strong);
+  border-right: 3px solid var(--accent);
+  font: 400 13px/20px var(--font-mono);
+}
+.di-keymap__refs small {
+  display: block;
+  font-size: 11px;
+  line-height: 16px;
+  color: var(--text-muted);
+}
+.di-keymap__arrow {
+  justify-self: center;
+  color: var(--accent);
+}
+.di-keymap__row {
+  display: grid;
+  grid-template-columns: minmax(0, auto) minmax(0, 1fr);
+  border-top: 2px solid var(--accent);
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-alt);
+}
+.di-keymap__head {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: subgrid;
+  border-bottom: 1px solid var(--border);
+  font: 400 12px/28px var(--font-mono);
+  color: var(--text-muted);
+}
+.di-keymap__head span,
+.di-keymap__key,
+.di-keymap__name { padding: 0 20px 0 24px; }
+.di-keymap__key {
+  position: relative;
+  align-self: center;
+  font: 400 15px/24px var(--font-mono);
+  color: var(--accent);
+  overflow-wrap: anywhere;
+}
+.di-keymap__key::before {
+  content: "";
+  position: absolute;
+  left: 8px;
+  top: 1px;
+  width: 6px;
+  height: 22px;
+  border-radius: 3px;
+  background: var(--mark);
+}
+.di-keymap__name {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  min-height: 72px;
+  border-left: 1px solid var(--border);
+  font-size: 24px;
+  line-height: 32px;
+}
+.di-keymap__name del {
+  color: var(--text-muted);
+  text-decoration-thickness: 2px;
+}
+.di-keymap__name ins {
+  font-weight: 600;
+  text-decoration: none;
+}
+.di-keymap__note {
+  margin: 10px 0 0;
+  font-size: 14px;
+  line-height: 21px;
   color: var(--text-muted);
 }
 
@@ -99,7 +202,7 @@
   justify-content: space-between;
   gap: 24px;
   padding-top: 14px;
-  border-top: 2px solid var(--text);
+  border-top: 2px solid var(--accent);
 }
 .di-section__head h2 {
   margin: 0;
@@ -134,7 +237,7 @@
   color: var(--text);
 }
 .di-home .di-tile:hover {
-  border-color: var(--text);
+  border-color: var(--accent);
   color: var(--text);
 }
 .di-tile img {
@@ -299,12 +402,19 @@
 }
 @media screen and (max-width: 60em) {
   .di-hero { padding: 32px 40px 48px; }
+  .di-keymap { padding: 32px 40px 0; }
+  .di-keymap__body { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .di-keymap__arrow { transform: rotate(90deg); }
   .di-section { padding: 48px 40px; }
   .di-section--last { padding-bottom: 56px; }
   .di-practice { grid-template-columns: minmax(0, 1fr); }
 }
 @media screen and (max-width: 37.5em) {
   .di-hero { padding: 24px 16px 40px; }
+  .di-keymap { padding: 32px 16px 0; }
+  .di-keymap__row { grid-template-columns: minmax(0, 1fr); }
+  .di-keymap__head span + span { display: none; }
+  .di-keymap__name { border-left: 0; border-top: 1px solid var(--border); min-height: 0; padding-block: 12px; }
   .di-section { padding: 40px 16px; }
   .di-section--last { padding-bottom: 48px; }
   .di-hero h1 { font-size: 32px; line-height: 40px; }
