@@ -72,8 +72,11 @@ project 固有情報だけを持ち、ワークフロー仕様を重複記載し
 - **full** (run 終端と push 前に1回): quick と同じビルド + `Automation RunTests DataIndexerEd` (全群)。
 - ソース変更後は Editor ターゲットのビルドを成功させる。runtime 構造体のサイズ・`WITH_EDITORONLY_DATA`
   に触るタスクは Game ターゲット (`DataIndexerProject Win64 Development`) もビルドする。
-- 関連する自動テストを実行し、失敗を残さない。
+- 関連する自動テストを実行し、失敗を残さない。群の一覧は `rg 'IMPLEMENT_.*AUTOMATION_TEST' Plugins/DataIndexer/Source` で確認する。
 - 自動テストの追加・変更は `~/.claude/CLAUDE.md` の Tests 4 問を先に答える。既存テーブルに行を足せるなら足す。
+- **UE 5.7 も配布対象** (`Plugins/DataIndexer/Script/ArchivePlugin.bat` が 5.7 と 5.8 を両方ビルドする)。エンジン API に依存する変更は
+  `D:\Apps\Epic Games\UE_5.7\Engine\Source` で同じ挙動かを読んで確認し、差があれば `UE_VERSION_NEWER_THAN_OR_EQUAL(5,8,0)` で分岐する
+  (`AssetDefinition_DataIndexerRepository.cpp:37-47` に前例)。5.7 でのビルドは release 時の `ArchivePlugin.bat` が検出する。
 
 ### 証跡
 
