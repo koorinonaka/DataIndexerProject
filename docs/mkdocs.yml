@@ -56,6 +56,7 @@ extra_css:
 extra_javascript:
   - assets/javascripts/quick-start-progress.js
   - assets/javascripts/overview-tabs.js
+  - assets/javascripts/ue-highlight.js
 
 markdown_extensions:
   - admonition

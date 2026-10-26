@@ -659,6 +659,9 @@ nav.md-path {
 .md-typeset pre > code { background: var(--code-block-bg); }
 .md-typeset .highlight pre > code { background: transparent; }
 .md-typeset .highlight .nf { color: var(--hl-fg); }
+/* ue-highlight.js が付ける: UE のマクロと型名 */
+.md-typeset .highlight .ue-macro { color: var(--hl-macro); }
+.md-typeset .highlight .ue-type { color: var(--hl-type); }
 .md-typeset .highlight .hll {
   display: block;
   margin: 0 -16px;

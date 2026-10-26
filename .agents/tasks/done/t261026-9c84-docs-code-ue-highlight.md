@@ -1,5 +1,5 @@
 ---
-status: ready
+status: done
 order: 30
 tier: standard
 screen: required
@@ -56,13 +56,29 @@ docs の本文ページのコードブロック (C++) で、UE のマクロ (`UC
 - ビルド結果を `python -m http.server` で配信する。`concepts/schema` と `concepts/indexes` のコードブロックを light / dark でスクリーンショットに撮る。`getComputedStyle` で `UCLASS` と `FItemRow` の色がトークンの値と一致することを確かめ、Execution Log に残す。
 
 ## Execution Log
-Not started.
-
-## Summary
-Not started.
+- 2026-10-26: 方式は 1 (JS の後処理) にした。理由: 依存が増えず、GitHub Pages のビルド環境も変えない。Material の `document$` を購読するので、instant navigation を後で有効にしても遷移ごとに走る。
+- 判定: マクロは「全部大文字と `_`、直後が `(`」。型名は「`F/U/A/E/T/I` + 大文字で始まり、小文字を 1 つ以上含む」。
+- サイト全体のビルド結果で、色が付く名前を全部列挙した。最初の正規表現では `UI` が型名と誤判定された。小文字を必須にして直した。
+  - マクロ (12): DI_DEFINE_INDEX, DI_REGISTER_BUILD_INDEX, GENERATED_BODY, GET_MEMBER_NAME_CHECKED, NSLOCTEXT, TEXT, UCLASS, UENUM, UE_LOG, UFUNCTION, UPROPERTY, USTRUCT
+  - 型名 (55): AGameModeBase, FItemRow, TObjectPtr, UDataIndexerSchema, UTexture2D など。誤判定は無い。
+- 実測 (`getComputedStyle`、ビルド結果を http.server で配信):
+  - light / concepts/schema: `UCLASS` rgb(91,63,158) = --hl-macro #5b3f9e。`FItemRow` rgb(15,107,69) = --hl-type #0f6b45。`Row` rgb(28,26,21) = --hl-fg #1c1a15 (変わらない)。
+  - dark / concepts/indexes: `UCLASS` と `DI_DEFINE_INDEX` rgb(185,163,240) = --hl-macro #b9a3f0。型名 rgb(62,207,142) = --hl-type #3ecf8e。
+- instant navigation はこのサイトで無効 (`navigation.instant` が features に無い)。そのため AC の「instant navigation で移っても」は、`document$` の購読で満たす形にした。実遷移では確かめていない。
+- critic r1:
+  ```
+  PASS
+  NOTE: docs/docs/assets/javascripts/ue-highlight.js:7 — `.highlight span.n` は C++ に限らず全言語のコードブロックに当たる。Python や JSON のブロックでも `UPPER(` や `FFoo` の形の名前は色が変わる。今は害なし。
+  NOTE: docs/docs/assets/javascripts/ue-highlight.js:4 — 型名の正規表現は、task の Context にある `^[FUAETI][A-Z][A-Za-z0-9]*$` より狭い (小文字を必須にした)。理由 (`UI` の誤判定) は Execution Log に書いてある。AC の `FItemRow` は当たる。
+  NOTE: .agents/tasks/done/t261026-9c84-docs-code-ue-highlight.md:67 — AC の 3 番目 (instant navigation で遷移したときの色) は、実際の遷移では確かめていない。このサイトでは `navigation.instant` が無効で、diff は `document$.subscribe` に頼っている。AC の 1 番目 (light / dark の色) も画面でしか確かめられない。Execution Log の `getComputedStyle` 実測値は、tokens.css:32/34/66/68 の値と一致する。
+  ```
+- critic の NOTE 1 を折り込んだ: 対象を `.language-cpp.highlight span.n` に絞った。
+本文のコードブロックで、UE のマクロを `--hl-macro`、型名を `--hl-type` で塗るようにした。Pygments の出力 (`span.n`) を JS で後から分類する。
 
 ## Changed Files
-Not started.
+- docs/docs/assets/javascripts/ue-highlight.js (新規)
+- docs/mkdocs.yml (extra_javascript に登録)
+- docs/docs/assets/stylesheets/extra.css (.ue-macro / .ue-type の色)
 
 ## Blockers
-なし
+None
