@@ -1,0 +1,6 @@
+{#- 言語の切り替えを「EN · JA」の文字リンクにする (AB 統合案)。 -#}
+<div class="di-lang">
+  {% for alt in config.extra.alternate %}
+    <a href="{{ alt.link | url }}" hreflang="{{ alt.lang }}" lang="{{ alt.lang }}"{% if alt.lang == config.theme.language %} aria-current="true"{% endif %}>{{ alt.lang | upper }}</a>{% if not loop.last %}<span aria-hidden="true"> · </span>{% endif %}
+  {% endfor %}
+</div>

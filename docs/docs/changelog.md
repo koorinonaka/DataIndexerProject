@@ -1,3 +1,8 @@
+---
+hide:
+  - navigation
+---
+
 # Changelog
 
 All notable changes to DataIndexer are documented here.
@@ -6,7 +11,47 @@ Versions correspond to the `VersionName` field in `DataIndexer.uplugin`.
 
 ---
 
-## v1.0.1 { .release .release--current data-date="2026-06-07" }
+## v1.0.2 { .release .release--current data-date="2026-10-25" }
+
+Patch release that makes the NotOverridable lock usable from Blueprint, adds row validation and JSON import commands, and fixes Data View and compile robustness issues.
+
+### Added { .release-group .release-group--add }
+
+- NotOverridable lock in the schema's **Column Layout** — a lock icon next to each User Defined Struct field's visibility toggle. Locked fields are read-only in override rows.
+- **Validate** — a row context-menu command in the Data View that runs schema row validation on the selected rows and logs per-row results to the **Asset Check** message log.
+- `UDataIndexerEditorFunctionLibrary::ImportRowsFromJSON` — Blueprint-callable import of a DataIndexer-format JSON string into a repository. It replaces the repository's rows and can be undone.
+- Selection Details builds nested subcategories from `Parent|Child` category names and honors `ShowOnlyInnerProperties`. The category filter chips act on root categories.
+
+### Changed { .release-group .release-group--change }
+
+- **Breaking:** `UDataIndexerSchema::IsRowValid` now takes the row's `FDataIndexerPrimaryKey` as its first parameter. Update C++ overrides to the new signature.
+- NotOverridable fields in derived repositories always follow the nearest parent repository. The value is resolved on load, editor open, JSON import, and row override, is not stored in the derived asset, and is baked in at compile time. A tagged sub-struct becomes read-only as a whole in override rows.
+- Data View columns size from the text the schema's cells actually draw, including `CreateAsSimpleText`. The RowName column auto-sizes and keeps a manual resize. Object cells show the asset name; the full path stays searchable.
+- Shift + mouse wheel scrolls the Data View horizontally.
+- Validation issues for a row are prefixed with a link to its repository.
+- `AddRowFromView` / `UpdateRowFromView` accept a const repository.
+
+### Fixed { .release-group .release-group--fix }
+
+- The NotOverridable checkbox for User Defined Struct fields never appeared in the struct editor. It now lives in the schema's Column Layout (see Added).
+- Diamond-shaped parent graphs visited the shared ancestor once per path, duplicating its rows in the Data View. Each repository is now visited once.
+- Dragging rows to reorder dropped them at the wrong position while a filter hid rows or inherited rows were interleaved.
+- A compile with only warnings (for example, an unbound Build Index function) no longer fails.
+- Once one row failed validation, every later row was also reported Invalid. Each row is now judged by its own issues.
+- DataTable JSON import validates every element before replacing data, so a malformed file no longer leaves the asset half-imported.
+- Cell copy and paste escape tabs and newlines in values.
+- When a schema's RowStruct no longer matches a repository's stored rows, opening the repository offers to reset the rows instead of leaving every edit command disabled.
+- Custom K2 nodes no longer fall back to wildcard pins while a Blueprint loads, and the **Get Keys by Index** `OutKeys` pin is wired correctly.
+- `Repository` metadata now resolves through `TOptional` properties.
+- The repository picker in Data View cells falls back to the shared thumbnail pool.
+- Fixed crashes from a stale selection after undoing a row insert and from clearing a PrimaryKey combo selection.
+- Duplicating an inherited row appends the copy instead of inserting it at the top.
+- Data View UI: the editor tab is named "Data Indexer" (was "State Tree"), a fill-handle drag keeps the cell selection, **Show All** shows every column from a mixed state, and **Duplicate** works from a cell selection.
+- Reading column layout no longer adds entries to the per-user settings, and Selection Details category choices are saved to the user config instead of the project's Default config.
+
+---
+
+## v1.0.1 { .release data-date="2026-06-07" }
 
 Patch release focused on cell-widget customization and inline-editing fixes.
 

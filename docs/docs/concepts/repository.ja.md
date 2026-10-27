@@ -31,8 +31,15 @@ Repositoryは 1 つ以上の親Repositoryを参照できます。走査・クエ
 
 === "Blueprint"
 
-    !!! warning "未実装"
-        Blueprint からの `NotOverridable` 設定は現在対応していません。今後のリリースで UI を追加予定です。
+    Schema アセット（`UDataIndexerSchema`）を開き、**DataIndexer** カテゴリの **Column Layout** を表示します。Row Struct が **User Defined Struct** の場合、各フィールド行にトグルが 2 つ並びます。
+
+    - 目アイコン: そのフィールドを列として表示するか
+    - ロックアイコン: `NotOverridable`（ロック時、子のオーバーライド行で読み取り専用）
+
+    ロックアイコンをクリックすると、そのフィールドの `NotOverridable` メタデータが切り替わります。Row Struct がネイティブ C++ struct の場合、ロックトグルは表示されません（C++ 側で `meta = (NotOverridable)` を宣言してください）。
+
+    ![Column Layout の各フィールド行に並ぶ目（列表示）とロック（NotOverridable）のトグル](../assets/images/column-layout-not-overridable.png)
+
 ## Schemaによるピッカーの絞り込み
 
 クラスが `UDataIndexerRepository` UPROPERTY を持ち、特定のSchemaのRepositoryのみに制限したい場合は `meta = (Schema = "...")` を追加します。UPROPERTY のほかに UFUNCTION も指定できます。エディタはスキーマを解決し、アセットピッカーを対応するRepositoryのみに絞り込みます。

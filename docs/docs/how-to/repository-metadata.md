@@ -79,41 +79,28 @@ This is useful for base stats that the content team should never change per-regi
 
 ### Blueprint (User Defined Struct)
 
-1. Open the **User Defined Struct** editor for your row struct
-2. Select the variable you want to lock
-3. In the **Details** panel, enable **Not Overridable**
+1. Open the schema Blueprint that uses your row struct
+2. In **Class Defaults**, find the field in the **Column Layout** category
+3. Click the lock icon to the right of the eye icon to lock the field
 
-The field is now read-only in any child repository that overrides this row.
+The field is now read-only in any child repository that overrides this row, and always follows the value from the nearest parent repository. The value is not stored in the child repository's asset.
 
 ### C++ (native structs)
 
-For native structs, use `FStructureEditorUtils::SetMetaData` at editor-init time. The canonical place is a `UDataIndexerSchema` subclass or a dedicated editor subsystem:
+For native structs, add `meta = (NotOverridable)` to the UPROPERTY. The Column Layout lock icon only appears for User Defined Struct fields.
 
 ```cpp
-#if WITH_EDITOR
-void UMyItemSchema::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+USTRUCT(BlueprintType)
+struct FItemRow
 {
-    Super::PostEditChangeProperty(PropertyChangedEvent);
-}
+    GENERATED_BODY()
 
-// In your EditorModule StartupModule, or a schema subclass:
-void LockBaseStatFields(UUserDefinedStruct* ItemStruct)
-{
-    for (FGuid VariableGuid : FStructureEditorUtils::GetVarGuids(ItemStruct))
-    {
-        FName VarName = FStructureEditorUtils::GetVariableFriendlyNameForProperty(
-            ItemStruct, FStructureEditorUtils::GetVarDescription(ItemStruct, VariableGuid));
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (NotOverridable))
+    int32 BaseValue = 0;
 
-        if (VarName == GET_MEMBER_NAME_CHECKED(FItemRow, BaseValue) ||
-            VarName == GET_MEMBER_NAME_CHECKED(FItemRow, Rarity))
-        {
-            FStructureEditorUtils::SetMetaData(
-                ItemStruct, VariableGuid,
-                DataIndexer::MetaDataKeys::NotOverridable, TEXT("true"));
-        }
-    }
-}
-#endif
+    UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (NotOverridable))
+    EItemRarity Rarity;
+};
 ```
 
 ### Checking the flag in a property customization
@@ -132,13 +119,10 @@ void FMyRowCustomization::CustomizeChildren(
     for (uint32 i = 0; i < NumChildren; ++i)
     {
         TSharedPtr<IPropertyHandle> Child = StructHandle->GetChildHandle(i);
-        if (Child->GetProperty()->HasMetaData(DataIndexer::MetaDataKeys::NotOverridable))
+        IDetailPropertyRow& Row = Builder.AddProperty(Child.ToSharedRef());
+        if (Child->GetProperty()->HasMetaData(TEXT("NotOverridable")))
         {
-            Child->MarkHiddenByCustomization(); // or set SNew(STextBlock) as read-only
-        }
-        else
-        {
-            Builder.AddProperty(Child.ToSharedRef());
+            Row.IsEnabled(false);
         }
     }
 }
@@ -148,7 +132,7 @@ void FMyRowCustomization::CustomizeChildren(
 
 Scenario: a global item repository defines `BaseValue` and `Rarity`. Regional shop repositories may override items (e.g. to change a discount flag) but must never alter the base stats.
 
-1. Add `NotOverridable` to `BaseValue` and `Rarity` in the `FItemRow` UDStruct
+1. Mark `BaseValue` and `Rarity` in `FItemRow` as NotOverridable (see the Blueprint or C++ steps above)
 2. Create `DI_AllItems` as the global repository
 3. Create `DI_ShopA` with `DI_AllItems` as a parent (see [Parent Repository Hierarchy](parent-hierarchy.md))
 4. In `DI_ShopA`, open any parent-sourced row — `BaseValue` and `Rarity` are greyed out

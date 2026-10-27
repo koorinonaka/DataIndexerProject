@@ -1,9 +1,7 @@
 {#-
-  Custom path.html — URL ベースのパンくず。
-  index.md を持つセクション（first child.is_index == True）のみリンクとして表示。
-  index.md のないセクション（例: はじめに）はスキップ。
-  現在ページが section の index 自体の場合もスキップ（circular link 防止）。
-  現在ページはリンクなし最終アイテムとして追加。
+  Custom path.html — 本文ページの題の上に置くメタ行 (AB 統合案: 「concepts/schema」)。
+  親セクションが index.md を持てば、その段をリンクにする。現在ページはリンクなし。
+  ja のページも URL の段 (concepts / schema) をそのまま出す。
 -#}
 {% if page.meta and page.meta.hide %}
   {% set hidden = "hidden" if "path" in page.meta.hide %}
@@ -14,24 +12,21 @@
   {% if nav_item.children %}
     {% set first = nav_item.children | first %}
     {% if first.is_index and first.url != page.url %}
-      {% set ns.crumbs = ns.crumbs + [(nav_item, first.url)] %}
+      {% set ns.crumbs = ns.crumbs + [(first.url.rstrip('/').split('/') | last, first.url)] %}
     {% endif %}
   {% endif %}
 {% endfor %}
+{% set slug = (page.url or "").rstrip('/').split('/') | last %}
 
-{% if ns.crumbs %}
+{% if slug and slug != config.theme.language %}
 <nav class="md-path" aria-label="{{ lang.t('nav') }}" {{ hidden }}>
   <ol class="md-path__list">
-    {% for nav_item, href in ns.crumbs %}
+    {% for name, href in ns.crumbs %}
     <li class="md-path__item">
-      <a href="{{ href | url }}" class="md-path__link">
-        <span class="md-ellipsis">{{ nav_item.title }}</span>
-      </a>
+      <a href="{{ href | url }}" class="md-path__link">{{ name }}</a>
     </li>
     {% endfor %}
-    <li class="md-path__item md-path__item--active">
-      <span class="md-ellipsis">{{ page.title }}</span>
-    </li>
+    <li class="md-path__item md-path__item--active" aria-current="page">{{ slug }}</li>
   </ol>
 </nav>
 {% endif %}

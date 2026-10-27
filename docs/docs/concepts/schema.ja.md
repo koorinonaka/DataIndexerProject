@@ -1,14 +1,14 @@
 # Schema
 
-`UDataIndexerSchema` は Repository とエディタ動作の間のコントラクトです。抽象 `UObject` サブクラスであり、直接インスタンス化せず、特定のデータ型を定義するために Blueprint または C++ でサブクラス化します。
+`UDataIndexerSchema` は Repository とエディタ動作の間のコントラクトです。抽象 `UObject` サブクラスです。直接インスタンス化せず、特定のデータ型を定義するために Blueprint または C++ でサブクラス化します。
 
 ## 役割
 
 Schema は 3 つのことを担当します。
 
-1. **行構造体の宣言** — `RowStruct` は Repository の `LocalEntries` に格納される構造体型を識別する `TObjectPtr<const UScriptStruct>` です。
-2. **表示ロジックの提供** — `GetRowDisplayName` はバインドされた **Row Display Name Function**（または C++ オーバーライド）を解決し、任意の行に対して人間可読なラベルを返します。エディタ UI 全体で使用されます。
-3. **拡張関数の登録** — Index キー生成・プロパティのセルウィジェットをカスタマイズする関数を、実際の row struct を直接受け取る Blueprint または C++ の名前付き関数としてバインドします。
+1. 行構造体の宣言：`RowStruct` は Repository の `LocalEntries` に格納される構造体型を識別する `TObjectPtr<const UScriptStruct>` です。
+2. 表示ロジックの提供：`GetRowDisplayName` はバインドされた **Row Display Name Function**（または C++ オーバーライド）を解決し、任意の行に対して人間可読なラベルを返します。このラベルはエディタ UI 全体で使用されます。
+3. 拡張関数の登録：Index キーの生成・プロパティのセルウィジェットをカスタマイズする関数を、実際の row struct を直接受け取る Blueprint または C++ の名前付き関数としてバインドします。
 
 ## サブクラス化
 
@@ -88,15 +88,15 @@ Schema は 3 つのことを担当します。
 
     ### GetRowDisplayName
 
-    **Class Defaults** で **Row Display Name Function** を、行構造体のフィールドから意味のある `FText` を返す関数にバインドします。関数は**実際の row struct** を直接受け取るため `Get Instanced Struct Value` ノードは不要です。このラベルはエディタ UI 全体の行一覧・ピッカーで使用されます。
+    **Class Defaults** で **Row Display Name Function** を、行構造体のフィールドから意味のある `FText` を返す関数にバインドします。関数は**実際の row struct** を直接受け取るため、`Get Instanced Struct Value` ノードは不要です。このラベルはエディタ UI 全体の行一覧・ピッカーで使用されます。
 
     ### Build Index Functions
 
-    **Class Defaults** の **Build Index Functions** マップでIndex ビルダーを登録します。キーはIndex、値は**実際の row struct** を受け取り `FGuid` を返す関数です。ピッカーは一致する関数のみ絞り込み、「Create matching function」は実際の row 引数のスタブを生成します（[Index](indexes.md) 参照）。
+    **Class Defaults** の **Build Index Functions** マップでIndex ビルダーを登録します。キーはIndex、値は実際の row struct を受け取り `FGuid` を返す関数です。ピッカーは一致する関数のみに絞り込み、「Create matching function」は実際の row 引数のスタブを生成します（[Index](indexes.md) 参照）。
 
     ### Property Cell Widget Customizations
 
-    **Class Defaults** の **Property Widget Customizations** マップで、プロパティ名をキーに `UUserWidget*` を返す関数を登録します。Data View グリッドのセル表示をカスタマイズできます。
+    **Class Defaults** の **Property Widget Customizations** マップで、プロパティ名をキーに `UUserWidget*` を返す関数を登録すると、Data View グリッドのセル表示をカスタマイズできます。
 
     カスタマイズ関数が `nullptr` を返した場合は、デフォルトのセル表示にフォールバックします。
 
@@ -110,11 +110,11 @@ Schema は 3 つのことを担当します。
 
 ### C++
 
-`IsRowValid` をオーバーライド（エディタ専用）して各行のバリデーションロジックを追加します。戻り値が `EDataValidationResult::Invalid` の場合、`Context` に追加したエラーメッセージがエディタに表示され、保存・クックがブロックされます。
+エディタ専用の `IsRowValid` をオーバーライドして、各行のバリデーションロジックを追加します。戻り値が `EDataValidationResult::Invalid` の場合、`Context` に追加したエラーメッセージがエディタに表示され、保存・クックがブロックされます。
 
 ```cpp
 #if WITH_EDITOR
-EDataValidationResult UItemSchema::IsRowValid(
+EDataValidationResult UItemSchema::IsRowValid(const FDataIndexerPrimaryKey& PrimaryKey,
     FConstStructView RowEntity, FDataValidationContext& Context) const
 {
     if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())
@@ -136,13 +136,13 @@ Schema の Class Defaults で **RowValidationFunction** を `(const FRowStruct&,
 
 関数内では Context オブジェクトの `AddError` または `AddWarning` を呼び出して問題を報告します。
 
-- `AddError(FText)` — 行を無効としてマークし、エディタにメッセージを表示します。
-- `AddWarning(FText)` — 保存・クックをブロックせずに警告を報告します。
+- `AddError(FText)`：行を無効としてマークし、エディタにメッセージを表示します。
+- `AddWarning(FText)`：保存・クックをブロックせずに警告を報告します。
 
 | 結果 | バリデーション結果 |
 |---|---|
-| Error が1件以上 | `EDataValidationResult::Invalid` — 保存・クックがブロックされます |
-| Warning のみ | `EDataValidationResult::Valid` — 警告はエディタに表示されますがブロックなし |
+| Error が1件以上 | `EDataValidationResult::Invalid` で、保存・クックがブロックされます |
+| Warning のみ | `EDataValidationResult::Valid` で、警告はエディタに表示されますが、保存・クックはブロックされません |
 | Error/Warning ともになし | `EDataValidationResult::Valid` |
 
 !!! note "シグネチャ検証"

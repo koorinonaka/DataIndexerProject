@@ -70,12 +70,12 @@ Marks a `FDataIndexerPrimaryKey` Blueprint variable as read-only. The row-picker
     // Lock — hide the row-picker
     FBlueprintEditorUtils::SetBlueprintVariableMetaData(
         Blueprint, VarName, nullptr,
-        DataIndexer::MetaDataKeys::ReadOnlyKeys, TEXT("true"));
+        TEXT("ReadOnlyKeys"), TEXT("true"));
 
     // Unlock — show the row-picker again
     FBlueprintEditorUtils::RemoveBlueprintVariableMetaData(
         Blueprint, VarName, nullptr,
-        DataIndexer::MetaDataKeys::ReadOnlyKeys);
+        TEXT("ReadOnlyKeys"));
     ```
 
 

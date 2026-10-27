@@ -12,7 +12,7 @@ Schema Blueprint を作成する前に、使用する行構造体を定義しま
 2. クラスピッカーで `DataIndexerSchema` を検索する
 3. 選択して **Select** をクリックする
 4. アセット名を付けて（例：`BP_AbilitySchema`）ダブルクリックして開く
-5. **Class Defaults** パネルで：
+5. **Class Defaults** パネルで次のように設定する
    - **Row Struct** を行データを定義する `USTRUCT` 型に設定する
    - 必要に応じて **Row Display Name Function** を人間可読なラベルを返す関数にバインドする
 
@@ -23,7 +23,7 @@ Schema Blueprint を作成する前に、使用する行構造体を定義しま
 ![DisplayName フィールドを返す GetRowDisplayName の実装](../assets/images/schema-get-row-display-name.png)
 
 !!! tip "命名規則（推奨）"
-    Schema Blueprint には `BP_` プレフィックスと `Schema` サフィックスを付けることを推奨します — 例：`BP_AbilitySchema`、`BP_QuestSchema`。
+    Schema Blueprint には `BP_` プレフィックスと `Schema` サフィックスを付けることを推奨します（例：`BP_AbilitySchema`、`BP_QuestSchema`）。
 
 ## Repository アセットの作成
 
@@ -40,9 +40,9 @@ Schema Blueprint を作成する前に、使用する行構造体を定義しま
 
 Repository アセットをダブルクリックすると Data View が開きます。
 
-- **Insert** キーで行を追加 — GUID のPrimaryKeyが自動生成されます
-- グリッドでインライン編集するか、行を選択して右側の **Selection Details** パネルで編集
-- **保存** — 逆引きテーブルが自動再構築されます
+- **Insert** キーで行を追加すると、GUID のPrimaryKeyが自動生成されます
+- グリッドでインライン編集するか、行を選択して右側の **Selection Details** パネルで編集します
+- **保存**すると、逆引きテーブルが自動再構築されます
 
 ## 親 Repository の設定
 
@@ -50,21 +50,22 @@ Repositoryには 1 つ以上の親Repositoryを設定できます。親が持つ
 
 **代表的なパターン：**
 
-- グローバルアイテムRepositoryを親に、ショップやチェストRepositoryを子として独自のエントリーのみ定義する。
-- キャラクターステータスのベースRepositoryを親に、派閥ごとの子Repositoryで特定の行をオーバーライド・拡張する。
+- グローバルアイテム Repository を親にし、ショップやチェストの Repository を子にして独自のエントリーのみ定義する。
+- キャラクターステータスのベース Repository を親にし、派閥ごとの子Repositoryで特定の行をオーバーライド・拡張する。
 
 **設定手順：**
 
 1. 子Repository アセットを開く
 2. **Details → Parent Repositories** の **+** ボタンをクリックする
 3. 親Repository アセットを選択する
-4. 同様に繰り返して複数の親を追加できます — 実行時は配列全体を再帰的に走査します
+4. 同様に繰り返すと、複数の親を追加できます。実行時は配列全体を再帰的に走査します
 
 **動作：**
 
-- 継承行はデフォルトで表示されますが、子Repositoryでは編集できません — 編集するには親を開いてください。
+- 継承行はデフォルトで表示されますが、そのままでは子Repositoryで編集できません。親の値を変えるには、親を開いて編集してください。
 - 子Repositoryで継承行をオーバーライドすると、その行の継承元は子の Data View には表示されなくなります。
 - 子Repositoryで継承行を編集したい場合は、その行を選択して **Override**（`Shift+O`）を実行します。同じPrimaryKeyで行が子Repositoryにコピーされ、独立して編集できるようになります。
+- 親側の **Editor Flags** で、子の操作を制限できます。**Not Overridable in Children** は Override を禁止し、**Hidden in Children** は子の Data View から行を隠します。
 
 !!! warning "循環参照の検出"
     エディタは循環する親チェーン（`A → B → A`）をブロックします。循環参照を作成しようとすると、親フィールドが選択を拒否します。

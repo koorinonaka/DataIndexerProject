@@ -1,0 +1,16 @@
+{#- 1 行のフッター (AB 統合案)。著作権・版・変更履歴・Get on Fab。 -#}
+{% set changelog = nav.items | last %}
+<footer class="md-footer di-footer">
+  <div class="di-footer__inner">
+    <span>{{ config.copyright }}</span>
+    {% if config.extra.di_version %}
+      <span class="di-footer__version">{{ config.extra.di_version }}</span>
+    {% endif %}
+    {% if changelog and changelog.url %}
+      <a href="{{ changelog.url | url }}">{{ changelog.title }}</a>
+    {% endif %}
+    {% if config.repo_url %}
+      <a href="{{ config.repo_url }}" target="_blank" rel="noopener">{{ config.repo_name }}</a>
+    {% endif %}
+  </div>
+</footer>

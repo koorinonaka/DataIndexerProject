@@ -114,7 +114,7 @@ Override `IsRowValid` (editor-only) to add per-row validation logic. A return va
 
 ```cpp
 #if WITH_EDITOR
-EDataValidationResult UItemSchema::IsRowValid(
+EDataValidationResult UItemSchema::IsRowValid(const FDataIndexerPrimaryKey& PrimaryKey,
     FConstStructView RowEntity, FDataValidationContext& Context) const
 {
     if (const FItemRow* Row = RowEntity.GetPtr<const FItemRow>())

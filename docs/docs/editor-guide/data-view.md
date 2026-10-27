@@ -98,6 +98,11 @@ Right-click on the **drag-handle column**, or right-click when a full row is sel
 | **MoveDown** | `Ctrl+J` | Move the selected row down one position |
 | **Override** | `Shift+O` | Override an inherited parent-repository row in this repository |
 | **Toggle** | `Shift+T` | Toggle the DevOnlyRow flag |
+| **Validate** | — | Run schema row validation (`IsRowValid`) on the selected row(s) and log the results to the **Asset Check** message log |
+
+Besides **MoveUp** / **MoveDown**, you can drag the **drag handle** icon (`⠿`) at the left edge of a row to reorder it.
+
+![Drag to reorder rows](../assets/images/data-view-move-row.gif)
 
 ## Copy and paste
 
@@ -177,10 +182,6 @@ The **Development** category in the Selection Details panel exposes **Editor Fla
 | **Comment Out** | Disables the row. Not included at game runtime, but data is preserved. Use for rows you want to temporarily exclude. |
 | **Not Overridable in Children** | Prevents child repositories from overriding this row via the Override operation. |
 | **Hidden in Children** | Hides this row from child repositories' Data View to prevent accidental reference or editing. |
-
-You can also drag the **drag handle** icon (`⠿`) at the left edge of a row to reorder it.
-
-![Drag to reorder rows](../assets/images/data-view-move-row.gif)
 
 ## Column width and ordering
 

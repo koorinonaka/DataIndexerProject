@@ -10,8 +10,8 @@ Repositoryは 1 つ以上の*親*Repositoryを宣言できます。走査・ク�
 
 このガイドでは典型的なアイテムショップのシナリオを使います。
 
-- `DI_AllItems` — ゲーム内の全アイテムを持つグローバルアイテムマスター
-- `DI_ShopA` — 特定の NPC ショップの在庫。アイテムの一部を取り扱い、一部の価格をオーバーライドしている
+- `DI_AllItems`：ゲーム内の全アイテムを持つグローバルアイテムマスター
+- `DI_ShopA`：特定の NPC ショップの在庫。`DI_AllItems` の全アイテムを引き継ぎ、独自の行を追加し、一部の価格をオーバーライドしている
 
 ```
 DI_AllItems  （親）
@@ -31,7 +31,7 @@ DI_AllItems  （親）
 
 ![Asset Details パネルの Parent Repositories に親を追加した状態](../assets/images/parent-repositories-field.png)
 
-Data View に両Repositoryの行が表示されます。親由来の行はエディタテーマに応じて視覚的に区別されます（薄いテキストやロックアイコンなど）。
+Data View に両Repositoryの行が表示されます。親由来の行はエディタテーマに応じて薄いテキストやロックアイコンなどで視覚的に区別されます。
 
 ![親の行と子独自の行が並ぶ Data View](../assets/images/parent-hierarchy-data-view.png)
 
@@ -51,7 +51,7 @@ Data View に両Repositoryの行が表示されます。親由来の行はエデ
 
 1. `DI_ShopA` を開く
 2. グリッドで親由来の行をクリックする
-3. その行が**オーバーライドモード**に入る — フィールドを編集すると `DI_AllItems` を変更せずに `DI_ShopA` の `LocalEntries` にローカルコピーが作られる
+3. その行が**オーバーライドモード**に入る。フィールドを編集すると、`DI_AllItems` を変更せずに `DI_ShopA` の `LocalEntries` にローカルコピーが作られる
 
 オーバーライドされた行は両方に存在します。`DI_AllItems` は元の値を保持し、`DI_ShopA` のローカルコピーが変更後の値を持ちます。`DI_ShopA` をクエリするとオーバーライドされた値が返ります。
 
@@ -63,9 +63,9 @@ Data View に両Repositoryの行が表示されます。親由来の行はエデ
 
 ## 部分的な在庫管理 { #selective-override }
 
-ショップが `DI_AllItems` の*一部*のアイテムのみを扱いたい場合は、親階層を使わないことをお勧めします — 親の行は常に全件含まれます。
+ショップが `DI_AllItems` の*一部*のアイテムのみを扱いたい場合は、親階層を使わないことをお勧めします。親の行は常に全件含まれます。
 
-この場合は `DI_ShopA` をスタンドアロンのRepositoryとして管理し、`FDataIndexerRowHandle` の配列やセカンダリIndexでショップの在庫を明示的に定義してください。親階層は、全件の可視性とオプションのフィールドオーバーライドが必要なときに使用するものです。サブセット管理には適していません。
+この場合は `DI_ShopA` をスタンドアロンのRepositoryとして管理し、`FDataIndexerRowHandle` の配列やセカンダリIndexでショップの在庫を明示的に定義してください。親階層は全件の可視性とオプションのフィールドオーバーライドが必要なときに使用するものです。サブセット管理には適していません。
 
 ## ランタイムクエリ { #runtime-querying }
 
@@ -109,9 +109,9 @@ DI_AllItems
             └── DI_RegionSale
 ```
 
-`DI_RegionSale` をクエリすると全チェーンが走査されます。`DI_ShopA` のオーバーライドは `DI_AllItems` より優先され、`DI_RegionSale` のオーバーライドはさらにその上書きになります。
+`DI_RegionSale` をクエリすると全チェーンが走査されます。`DI_ShopA` のオーバーライドは `DI_AllItems` より優先され、`DI_RegionSale` のオーバーライドはさらにそれらより優先されます。
 
-循環した親参照を誤って作ってしまった場合もエディタのサイクル検出が無限ループを防ぎます。
+循環した親参照を誤って作ってしまった場合も、エディタのサイクル検出が無限ループを防ぎます。
 
 ## 関連ドキュメント
 
