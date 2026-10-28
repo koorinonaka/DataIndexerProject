@@ -1,5 +1,5 @@
 ---
-status: ready
+status: verify_pending
 order: 70
 tier: standard
 screen: required
@@ -57,16 +57,54 @@ Schema の Column Layout パネルで、NotOverridable のロック解除がト�
 - quick: `DataIndexerEd.NotOverridable`。
 
 ## Verification
-- Undo 後の lock icon と、UDS 編集後のツリーのスクリーンショット各 1 枚。
+- Undo 後の lock icon と、UDS 編集後のツリーのスクリーンショット各 1 枚。 (残: 両方。UE MCP 停止中)
 
 ## Execution Log
-Not started.
+- 2026-10-28 前提: 作業ブランチ `fix/audit-2026-10` (両 repo、main から)。`release/v1.0.2` は main にマージ済み (先行タスクと同じ)。
+- Step 1: `SetMetaData` の空 `Value` 分岐は 5.7 (`StructureEditorUtils.cpp:978-1007`) と 5.8 (`:930-958`) で同一
+  (Transaction + `ModifyStructData` + `VarDesc->MetaData.Remove` + `Property->RemoveMetaData` + `OnStructureChanged`)。版分岐なし。
+  `SetFieldNotOverridable` を `SetMetaData( UDS, Guid, Key, bEnabled ? TEXT( "true" ) : FString() )` の 1 呼び出しに統一し、誤コメントを削除。
+- Step 2: `FSchemaDetails` が `FStructureEditorUtils::INotifyOnStructChanged` を継承。登録/解除は基底
+  `InnerListenerType` の ctor/dtor が `AddListener`/`RemoveListener` を呼ぶ (`ListenerManager.h`、5.7/5.8 同一) ので明示呼び出しは書かない。
+  `CustomizeDetails` で RowStruct (UDS のときだけ) と `IPropertyUtilities` を weak で保持し、`PostChange` で一致時のみ更新。
+- 既定 (可逆): `ForceRefresh()` ではなく `RequestForceRefresh()` を使う。根拠: `PostChange` は `OnStructureChanged` の中から同期で呼ばれ、
+  ロック切替ではその呼び出し元がツリー内チェックボックスのハンドラ。同期 `ForceRefresh` は実行中ウィジェットを破棄する
+  (`IPropertyUtilities.h:27` の注記も同趣旨)。観測結果は同じ (次 tick で再構築)。変える費用: 1 行。
+  `PreChange` は何もしない (Steps 2 は PostChange のみ指定)。
+- Tests 行の差し替え: 指定の「unlock 後に `FProperty::HasMetaData` が false」は修正前コードでも通る。
+  `OnStructureChanged` の再コンパイル (`UserDefinedStructureCompilerUtils.cpp:351` `AppendMetaData(VarDesc.MetaData)`) が FProperty を作り直すため。
+  修正前ビルドで実測: その assert は緑、`Undo restores the lock` だけ赤。よって判別する行は undo:
+  lock → unlock → `GEditor->UndoTransaction()` → lock が戻る。`HasMetaData` は副 assert として残す。Acceptance Criteria は不変。
+  テストから届くよう `IsFieldNotOverridable` / `SetFieldNotOverridable` を匿名 namespace から出し、`DataIndexerDetailCustomization_Schema.h` に宣言
+  (本番の呼び手はツリーのチェックボックス。同じ関数をそのまま叩くので境界は本物)。
+- 修正前 (before-fix, ヘルパ公開+テストのみ): `DataIndexerEd.NotOverridable` 6 Success / 1 Fail
+  (`UnlockIsUndoable`: `Expected 'Undo restores the lock' to be true`、`DataIndexerNotOverridableTests.cpp(293)`)。
+- 修正後 (after-fix): `Automation RunTests DataIndexerEd.NotOverridable+DataIndexerEd.Schema+DataIndexerEd.SchemaLayout` → 16 Success / 0 Fail、EXIT CODE 0。
+  Editor ターゲット Build.bat 2 回とも `Result: Succeeded`。full は run 終端。runtime 構造体に触れないので Game ターゲットは不要。
+- 軽微 fold: `FSchemaStructNode` の NOTE コメント (「パネルは古いツリーを持ち続ける」) を「deferred refresh まで」に更新。対象ファイルは Scope 内、2 行。
+- 既知の副作用 (GUI 検証で確認): ロック切替のたびに `SSchemaStructTreeWidget` が再構築され、ツリーの展開状態が初期に戻る。
+- 範囲外の観察: RowStruct が内包する別 UDS を編集しても `PostChange` の `Changed` はその UDS なのでツリーは更新しない (Scope は「対象 UDS」)。
+- Self-review (stat): submodule 3 files (`DataIndexerDetailCustomization_Schema.cpp/.h`, `DataIndexerNotOverridableTests.cpp`)。Scope 外パスなし。
+- Critic r1 (task-critic, verbatim):
+  ```
+  PASS
+  NOTE: DataIndexerDetailCustomization_Schema.cpp:122 — AC1 は満たされる。このファイルで `MetaData.Remove|MetaData\.Empty` は 0 件。unlock 経路は `SetMetaData(..., FString())` だけ。
+  NOTE: DataIndexerDetailCustomization_Schema.cpp:631 — AC2 (Ctrl+Z でロックが戻る) と AC3 (UDS にフィールドを足すとツリーに即出る) は画面でしか確かめられない。この diff からは判定できない。AC2 は自動テストの `UnlockIsUndoable` (DataIndexerNotOverridableTests.cpp:293) が裏付ける。GUI のスクリーンショット 2 枚は未取得で、タスクの Blockers に記録済み。
+  NOTE: DataIndexerDetailCustomization_Schema.cpp:637 — Scope は `ForceRefresh` を指定しているが、実装は `RequestForceRefresh` (遅延) を使う。根拠は Execution Log にある。観測できる振る舞いは同じ。
+  NOTE: DataIndexerDetailCustomization_Schema.h:103 — Scope は「登録解除をデストラクタで」と書く。実装は明示的に呼ばず、基底 `INotifyOnStructChanged` (InnerListenerType) の ctor/dtor に任せる。基底が実際にそうするかは確かめていない。根拠は作者の Execution Log (`ListenerManager.h`) だけ。
+  NOTE: DataIndexerDetailCustomization_Schema.cpp:107 — `IsFieldNotOverridable` / `SetFieldNotOverridable` を匿名 namespace の外へ出し、ヘッダで公開した。今の呼び手は本番のチェックボックス (:233, :238) とテストの 2 つ。参照ゼロの定義は無い。
+  ```
+  回答 (NOTE 4): `E:/UE/UE_5.8/Engine/Source/Editor/UnrealEd/Public/Kismet2/ListenerManager.h` の `InnerListenerType()` が `AddListener(this)`、`~InnerListenerType()` が `RemoveListener(this)` を呼ぶことを本文で確認済み。5.7 の同ファイル先頭 90 行は 5.8 と差分なし。
+- 検証待ち: UE MCP (127.0.0.1:8001) がこの run で停止中。GUI スクリーンショット 2 枚は取れない。
 
 ## Summary
-Not started.
+unlock を `FStructureEditorUtils::SetMetaData(..., FString())` に置換し、トランザクション下で key 削除 (undo 可) にした。
+`FSchemaDetails` が UDS 変更を購読し、RowStruct の再コンパイル後 (undo 含む) に詳細パネルを再構築する。回帰テスト `UnlockIsUndoable` 追加。GUI 検証待ち。
 
 ## Changed Files
-Not started.
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerDetailCustomization_Schema.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerDetailCustomization_Schema.h`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/Core/DataIndexerNotOverridableTests.cpp`
 
 ## Blockers
-なし。
+検証待ち: GUI の Verification 2 枚 (Undo 後の lock icon、UDS にフィールド追加後のツリー)。UE MCP 停止中のため未実施。
