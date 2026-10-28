@@ -39,6 +39,7 @@ The exported file contains a JSON array of row objects:
 - `RowEntity` is the row struct serialized using UE's JSON property serialization
 - `EditorFlags` is a bitmask of editor-only row state (e.g. commented-out, hidden in children); `0` means none
 - The export includes only local rows — parent repository rows are not exported
+- `FText` values are written in UE's complex text format (a localized text becomes `NSLOCTEXT("Namespace", "Key", "Text")`), so the namespace and key survive a re-import. Files exported in the earlier plain-string form still import
 
 ## Importing
 
@@ -47,6 +48,8 @@ The exported file contains a JSON array of row objects:
 3. Select a JSON file
 
 The import performs a **full replacement** — all existing rows are deleted and replaced with the contents of the JSON file.
+
+If any row cannot be converted (a JSON syntax error, a row that does not match the row struct, or a duplicated or unparseable `PrimaryKey`), the import is cancelled and the existing rows stay unchanged. A message shows the reason.
 
 The format is auto-detected: files with a `RowEntity` field are read as native DataIndexer JSON, while flat row objects are treated as DataTable JSON. See [Migrate from DataTable](../how-to/migrate-from-datatable.md) for the DataTable path.
 
