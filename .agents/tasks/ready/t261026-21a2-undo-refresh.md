@@ -1,5 +1,5 @@
 ---
-status: ready
+status: verify_pending
 order: 10
 tier: standard
 screen: required
@@ -37,7 +37,7 @@ Ctrl+Z / Ctrl+Y の後、開いている Data View・派生 Repository の toolk
 ## Scope
 - `UDataIndexerEditorData::PostEditUndo()` を追加し、キャッシュ無効化 + `OnEditorRowsUpdated` broadcast を行う。
 - `PostEditChangeProperty` / `NotifyPostChange` / `PostEditUndo` が共通の private `NotifyRowsChanged()` を呼ぶ形にする。
-- `FViewModel::PostUndo/PostRedo` と `FEditorUndoClient` 継承を削除する (EditorData が broadcast すれば不要)。
+- `FViewModel` の undo client (`FSelfRegisteringEditorUndoClient` 継承と `PostUndo/PostRedo`) は残す。自分の Data View を undo 後に更新する唯一の経路 (Execution Log の advisor 判定参照)。
 - `FViewModel::UpdateVisibleRows` の末尾で無条件に `RebuildSelectionBounds()` を呼ぶ。
 
 ## Out of Scope
@@ -53,14 +53,14 @@ Ctrl+Z / Ctrl+Y の後、開いている Data View・派生 Repository の toolk
 1. `DataIndexerEditorData.h` に `virtual void PostEditUndo() override;` と private `void NotifyRowsChanged();` を宣言する。
 2. `DataIndexerEditorData.cpp` で `NotifyRowsChanged()` を実装 (現在の `PostEditChangeProperty` の dirty + broadcast 部分を移す)。
    `PostEditChangeProperty` / `NotifyPostChange` / `PostEditUndo` からそれを呼ぶ。`PostEditUndo` は `Super::PostEditUndo()` の後。
-3. `DataIndexerViewModel.h/.cpp` から `FEditorUndoClient` 継承と `PostUndo/PostRedo` を削除する。
+3. `DataIndexerViewModel.h/.cpp` の undo client は触らない (Scope 参照)。
 4. `DataIndexerViewModel_Visibility.cpp` `UpdateVisibleRows` の末尾で `RebuildSelectionBounds()` を無条件に呼ぶ。
    既存の「個数が変わった時だけ SetSelection」分岐はそのまま残す (選択集合の縮小はそこが担う)。
 5. `DataIndexerEd.EditorData` / `DataIndexerEd.ViewModel` 群の自動テストに回帰行を足す (Tests 参照)。
 
 ## Acceptance Criteria
 - `rg 'PostEditUndo' Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorData.cpp` が 1 件以上 (現在 0)。
-- `rg 'FEditorUndoClient' Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/` が 0 件 (現在 1)。
+- `rg 'FSelfRegisteringEditorUndoClient' Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/DataIndexerViewModel.h` が 1 件 (自分の Data View の undo 経路として残す)。
 - Data View で行を削除 → Ctrl+Z で行が戻り、派生 Repository の toolkit も同時に行が戻る (現在: 戻らない)。
 - 行を Move → セル範囲選択 → Ctrl+Z → Ctrl+C した内容が、見えている選択セルと一致する (現在: 別行が入る)。
 
@@ -75,13 +75,65 @@ Ctrl+Z / Ctrl+Y の後、開いている Data View・派生 Repository の toolk
 - Move → 範囲選択 → Ctrl+Z → Ctrl+C → テキストエディタに貼った内容のスクリーンショット。
 
 ## Execution Log
-Not started.
+- 1 回目 (2026-10-26 run) は main の Editor ビルド破損 (sample schema と新 `IsRowValid` シグネチャ) で deferred。親 c58b690 で解消後に再 dispatch。
+- PLAN-REPAIRABLE (advisor 判定、1 回目で取得): Context B-E1 「誰も `GEditor->RegisterForUndo` を呼ばない」は誤り。
+  `FViewModel` は `FSelfRegisteringEditorUndoClient` を継承し (`Views/DataIndexerViewModel.h:19`)、その ctor が `RegisterForUndo(this)` を呼ぶ。
+  `PostUndo → OnAssetChanged → SView::HandleModelAssetChanged` は生きている。`FEditorToolkit::HandleEditorDataUpdated`
+  (`DataIndexerEditorToolkit.cpp:566-567`) は自 repository を飛ばすので、自分の Data View を undo 後に更新するのはこの経路だけ。
+  削除すると自分の view が更新されなくなる。advisor: Scope 1/2/4 と Tests はそのまま、undo client は残す。
+  書き換えた計画欄 (原文):
+  - Scope 3: 「`FViewModel::PostUndo/PostRedo` と `FEditorUndoClient` 継承を削除する (EditorData が broadcast すれば不要)。」
+  - Steps 3: 「`DataIndexerViewModel.h/.cpp` から `FEditorUndoClient` 継承と `PostUndo/PostRedo` を削除する。」
+  - AC 2: 「`rg 'FEditorUndoClient' Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/` が 0 件 (現在 1)。」
+- 実装:
+  - `UDataIndexerEditorData::NotifyRowsChanged()` (private) = `MarkRepositoryDirty` + `OnEditorRowsUpdated` broadcast。
+    `NotifyPostChange` と新規 `PostEditUndo()` (`Super::PostEditUndo()` の後) が呼ぶ。`PostEditChangeProperty` は
+    `EditorRows` の時だけ `NotifyRowsChanged()`、それ以外は dirty のみ (broadcast 条件は従来どおり)。
+    `PostEditUndo` 内で Super 経由の dirty が二重になるが無害。
+  - `FViewModel::UpdateVisibleRows` の選択フィルタ後に無条件 `RebuildSelectionBounds()`。個数変化時の `SetSelection` 分岐は残した。
+- テスト (Tests 4 問): (1) undo で rows broadcast が出る / 行順変化で `SelectionBounds` が追随する。(2) `PostEditUndo` 削除・
+  `RebuildSelectionBounds` 呼び出し削除で落ちる。(3) 既存は undo 経路も並べ替え後の bounds も見ていない。(4) 追加の口なし
+  (`PostEditUndo` は UObject 経由で呼ぶ = transaction system と同じ境界)。
+  - 新規 `Tests/Core/DataIndexerEditorDataUndoTests.cpp`: `DataIndexerEd.EditorData.PostEditUndoBroadcastsRowsUpdated`。
+  - `DataIndexerViewModelTests.cpp`: `DataIndexerEd.ViewModel.Selection.BoundsFollowRowOrder`。1 回目の下書きは SchemaClass 未設定で
+    "Value" 列が作られず、対照 assert (並べ替え前の bounds) が落ちた。`UDataIndexerBuildIndexSchemaTests` と行ごとに別の値 (1/2/3) を
+    与えて修正。
+- 修正前の赤 (テストのみ適用、修正前ソース): `PostEditUndoBroadcastsRowsUpdated` Fail「expected 1, was 0」。
+  `BoundsFollowRowOrder` Fail、対照 3 件は通過し並べ替え後の 2 件 (「Bounds follow the selected row after reorder」
+  「Row now at the old index is not selected」) だけが落ちた。
+- 修正後 quick: `Automation RunTests DataIndexerEd.EditorData+DataIndexerEd.ViewModel` → Found 11、Success 11 / Fail 0、EXIT CODE 0。
+- 参考に全群 `Automation RunTests DataIndexerEd` → Found 56、Success 55 / Fail 1。落ちたのは
+  `DataIndexerEd.Migration.FailedImportKeepsExistingRows` (「Malformed import should fail」)。対照: submodule を stash したツリーで
+  同テストを実行 → Fail (54 件中 53 Success / 1 Fail)。このタスクの変更とは無関係。対象は t261026-25fc (JSON import atomic)。
+- ビルド: Editor ターゲット。途中 2 回 MSVC 内部コンパイラエラー (C1001、`SharedPointer.h` / `STableRow.h`) → 再実行で成功。一過性。
+- fold (軽微、ソース以外): `.agents/audit-2026-10-26.md` の X6 / B-E1 行の「`RegisterForUndo` 未呼び出し」を訂正 (2 行)。
+- 既定 (可逆): undo client は現状維持 (advisor 判定)。変更案は run 終端の 要ユーザー判断 として報告。
+- 自己レビュー: `git diff --stat` は Scope の 4 ソース + テスト 2 + task/audit のみ。Views/ の undo client は無変更。
+- 検証待ち: `screen: required` の GUI 2 項目。UE MCP server (`127.0.0.1:8001`) が ECONNREFUSED (エディタ未起動) で、この dispatch では
+  エディタ操作とスクリーンショットができない。
+- critic round 1: PASS
+  ```
+  PASS
+  NOTE: t261026-21a2-undo-refresh.md:40,56,63 — The author rewrote Scope 3, Steps 3 and Acceptance Criterion 2 inside this same diff. The old AC asked for `FEditorUndoClient` to have 0 hits under Views/. The new AC asks for `FSelfRegisteringEditorUndoClient` to have 1 hit. The diff meets the rewritten AC (`Views/DataIndexerViewModel.h:19`). It does not meet the original one. The reason for the change is in the Execution Log, but the user has not approved the rewritten plan.
+  NOTE: t261026-21a2-undo-refresh.md:64-65 — AC 3 and AC 4 can only be checked in the editor. The diff cannot show them. The GUI verification is still pending.
+  NOTE: DataIndexerEditorData.cpp:97-102 — `PostEditUndo` broadcasts `OnEditorRowsUpdated` on every undo/redo of this object, including undo of non-row properties. The repository is also marked dirty twice there (once through Super). Both are harmless; this is not a failure.
+  NOTE: DataIndexerEditorData.cpp:83-95 — `PostEditChangeProperty` behaves the same as before: dirty always, broadcast only for `EditorRows`. Removed-name sweep: no identifier was dropped. `NotifyPreChange` / `NotifyPostChange` were only moved. The new `NotifyRowsChanged` has 3 callers (lines 89, 101, 121), and `RebuildSelectionBounds` keeps its existing callers. Nothing listed in Out of Scope is touched.
+  ```
 
 ## Summary
-Not started.
+`UDataIndexerEditorData::PostEditUndo` を追加し、undo/redo で `OnEditorRowsUpdated` を broadcast するようにした
+(派生 toolkit・DrivenCollection が追随)。dirty + broadcast は `NotifyRowsChanged()` に集約。`UpdateVisibleRows` が毎回
+`SelectionBounds` を再構築するので、行順だけ変わっても Copy/Paste/FillDown が正しい行を指す。`FViewModel` の undo client は
+自分の Data View の更新経路なので残した。GUI 検証が残り verify_pending。
 
 ## Changed Files
-Not started.
+- `Plugins/DataIndexer/Source/DataIndexerEd/Public/DataIndexerEditorData.h`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorData.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/DataIndexerViewModel_Visibility.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/Core/DataIndexerEditorDataUndoTests.cpp` (新規)
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/ViewModel/DataIndexerViewModelTests.cpp`
+- `.agents/audit-2026-10-26.md` (fold: X6 / B-E1 訂正)
 
 ## Blockers
-なし。
+検証待ち。Verification の GUI 2 項目 (親+派生 Repository で行削除 → Ctrl+Z、Move → 範囲選択 → Ctrl+Z → Ctrl+C) が残る。
+UE MCP server がエディタ未起動で接続不可だったため。実装・テストは完了。
