@@ -1,5 +1,5 @@
 ---
-status: ready
+status: verify_pending
 order: 240
 tier: standard
 screen: required
@@ -70,13 +70,36 @@ created_by: task-create
 - 列の表示や並びは Saved/Config の SchemaLayouts に即時保存される。終わったら UI で戻す。一時アセットは消す。証跡は `.agents/tasks/evidence/t261028-10b1/`。
 
 ## Execution Log
-Not started.
+- 2026-10-28 (dispatch 2/3, run fix/audit-2026-10): 実装。
+  - LineNumber: `SView::UpdateLineNumberDigitCount` の桁数変化経路で `UpdateLineNumberWidth()` の後に
+    `ViewHeader->RefreshColumns()` (ヘッダだけ再生成、`ColumnsChanged` は出さない) と
+    `ViewModel->GetOnColumnsUpdated().Broadcast( {} )` (購読中の全 `SViewRow::RebuildCells`) を呼ぶ。`ClearColumns` は使わない。
+    `UpdateLineNumberWidth` 自体には入れていない: `HandleDisplayNameColumnWidthChanged` (グリップドラッグ中) からも呼ばれ、
+    そこでヘッダを再生成するとドラッグ中のスプリッタを壊すため。
+  - 挿入位置: `ComputeDropInsertIndex` は位置を持たない (非表示) 列を `continue` で飛ばし、マウスより右に中心がある最初の表示列で止まる。
+    `ComputeDropIndicatorX` は挿入位置の左・右それぞれで最も近い表示列の境界を探し、両方→中点 / 右だけ→左端 / 左だけ→右端 (TotalWidth-1 で clamp)。
+    非表示列が無いときは旧実装の 3 分岐と同じ値になる。
+  - 既定 (可逆): 行の作り直しは `OnColumnsUpdated` の broadcast を選んだ (SView から `WidgetFromItem` を回すより短く、生成済みの全行に届く)。
+    桁が変わるとき (10/100/1000 境界) だけ走る。変えるコストは数行。
+- quick: `Build.bat DataIndexerProjectEditor Win64 Development` → `Result: Succeeded` (31s, 1 回目で成功)。
+  `Automation RunTests DataIndexerEd.View+DataIndexerEd.ViewModel` (-nullrhi) → 15 件 Success / 0 Fail (View 1, ViewModel 14)。full は run 終端。
+- GUI Verification は未実施: ユーザーが PC を使用中で、dispatch の指示により実マウスを動かす UE MCP SlateInspector は使えない (エディタも閉じたまま)。
+- 自己レビュー: `git diff --stat` は submodule の `SDataIndexerView.cpp` / `SDataIndexerViewHeader.cpp` の 2 ファイルだけ。Scope 内。
+- critic r1:
+  ```
+  PASS
+  NOTE: SDataIndexerView.cpp:591-592 — AC1 は画面でしか確かめられない。GUI Verification 1 は未実施なので diff だけでは判定できない。`OnColumnsUpdated` の購読は `SDataIndexerViewRow.cpp:31` (`RebuildCells`) だけ。broadcast の副作用は行の作り直しだけ。
+  NOTE: SDataIndexerViewHeader.cpp:424-482 — AC2〜AC4 は GUI 未検証。非表示列が無いとき新実装は旧実装の 3 分岐と同じ値。[A, 非表示 H, B] では挿入位置とインジケータの左右境界が正しく決まる。
+  NOTE: 消えた識別子はローカルかエンジン API のみ。参照 0 件の定義・消えた文字列なし。Out of Scope への変更なし。
+  ```
 
 ## Summary
-Not started.
+LineNumber 列幅は桁数変化時にヘッダ (`RefreshColumns`) と生成済み全行 (`OnColumnsUpdated` → `RebuildCells`) を作り直して揃える。
+列ドラッグの挿入位置とインジケータは非表示列を飛ばして表示列だけで決める。ビルドと View/ViewModel テストは通過。GUI 検証待ち。
 
 ## Changed Files
-Not started.
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerView.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerViewHeader.cpp`
 
 ## Blockers
-なし
+検証待ち: Verification 1–3 (GUI、実マウスでのヘッダドラッグと撮影) が残り。ユーザーが PC を使用中のため未実施。
