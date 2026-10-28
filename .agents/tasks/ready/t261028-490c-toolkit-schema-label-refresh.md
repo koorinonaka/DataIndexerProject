@@ -1,5 +1,5 @@
 ---
-status: ready
+status: verify_pending
 order: 250
 tier: standard
 screen: required
@@ -58,13 +58,31 @@ Repository エディタで SchemaClass を変えたとき、または Ctrl+Z で
 - 一時アセットは終わりに消す。証跡は `.agents/tasks/evidence/t261028-490c/`。
 
 ## Execution Log
-Not started.
+- 2026-10-28 実装 (dispatch 3/3、ブランチ `fix/audit-2026-10`):
+  - `PostRegenerateMenusAndToolbars` の overlay 組み立てを `FEditorToolkit::RefreshSchemaOverlay()` に切り出した。`PostRegenerateMenusAndToolbars` はそれを呼ぶだけ。
+  - `RefreshSchemaOverlay` は組んだ schema クラスを `OverlaySchemaClass` (`TWeakObjectPtr<const UClass>`) に記録する。Schema が null なら `SetMenuOverlay( SNullWidget::NullWidget )` で overlay を消す (以前は return するだけで古い overlay が残り得た)。
+  - `HandleSchemaClassChanged` (詳細パネルの変更) の末尾で `RefreshSchemaOverlay()` を呼ぶ。
+  - `RebindSchemaDelegatesIfChanged` (Undo / Redo) は、Blueprint 比較の early return の前に、現在の schema クラスと `OverlaySchemaClass` をクラスで比べ、違えば `RefreshSchemaOverlay()` を呼ぶ。ネイティブ schema 同士の切り替え (Blueprint が両方 null) もこれで拾う。delegate の rebind 判定 (Blueprint 比較) は変えていない。
+  - `SetMenuOverlay` はエンジン側で `MenuOverlayWidgetContent->SetContent` による置き換え。UE 5.8 / 5.7 の `SStandaloneAssetEditorToolkitHost.cpp` で同じ実装を確認した。StandaloneHost が未生成の時期 (InitEditor 中) は no-op で、その後の `PostRegenerateMenusAndToolbars` が無条件に組み直す。
+- quick: `Build.bat DataIndexerProjectEditor Win64 Development` → `Result: Succeeded` (30s、1 回、C1001 なし。`UnrealEditor-DataIndexerEd.dll` 21:29:46 更新)。`Automation RunTests DataIndexerEd.Repository` → Success 3 / Fail 0、`EXIT CODE: 0`。full は run 終端。
+- 自動テストなし (Tests の 4 問どおり: overlay を読む口が無く、足すと本番が要らない口になる)。
+- verify_pending の理由: ユーザーが PC を使用中で、dispatch 指示により GUI 検証 (UE MCP SlateInspector が実カーソルを動かす) を禁止されている。Verification 1-3 が残る。
+- 自己レビュー: `git diff --stat` = `DataIndexerEditorToolkit.cpp` +17/-4、`.h` +3。どちらも Scope の対象ファイル。
+
+- critic r1 (task-critic):
+  ```
+  PASS
+  NOTE: DataIndexerEditorToolkit.cpp:606 — AC 1-3 は diff だけでは確かめられない (GUI 検証が要る)。配線は揃っている: HandleSchemaClassChanged が RefreshSchemaOverlay() を呼ぶ (630)。Undo/Redo は OnAssetChanged → RebindSchemaDelegatesIfChanged (245) がクラスを比べて RefreshSchemaOverlay() を呼ぶ。ボタンの lambda は組み直しごとに新しい ClassGeneratedBy を捕まえる (166, 189)。
+  NOTE: DataIndexerEditorToolkit.cpp:117 — RefreshSchemaOverlay は Repository->GetSchema()、602 は EditorData->GetSchema() を使うが、後者は GetRepository().GetSchema() を返すだけで同じ値。
+  NOTE: diff が消すのは check( SchemaClass ) だけ。新しい名前は両方使われている。Out of Scope (ResolveStructureMismatch、overlay の見た目・文言) は触っていない。
+  ```
 
 ## Summary
-Not started.
+Repository エディタ右上の「Schema: <名前>」overlay を `RefreshSchemaOverlay()` に切り出し、詳細パネルでの SchemaClass 変更と Undo / Redo (クラス比較、ネイティブ同士も可) で組み直すようにした。Schema が null なら overlay を消す。ビルドと `DataIndexerEd.Repository` は緑。GUI での確認は未実施 (verify_pending)。
 
 ## Changed Files
-Not started.
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.h`
 
 ## Blockers
-なし
+検証待ち: ユーザーが PC を使用中のため GUI 検証を行っていない (dispatch 指示)。残りは Verification 1-3 (Schema 変更後の名前、「エディタで開く」の行き先、`TRANSACTION UNDO` 後の名前) のスクリーンショット確認のみ。実装は残っていない。
