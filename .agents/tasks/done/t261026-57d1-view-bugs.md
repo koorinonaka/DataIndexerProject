@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 40
 tier: standard
 screen: required
@@ -77,6 +77,7 @@ created_by: task-create
 
 ## Verification
 - 上の AC 6 項目をエディタで操作し、各 1 枚スクリーンショット (削除後の選択行、Paste 後の表、リサイズ後の選択、Undo 履歴、横スクロール端、貼り付け CSV)。
+- 済 (2026-10-28 sweep): AC 1〜6。証跡 `.agents/tasks/evidence/t261026-57d1/`。
 
 ## Execution Log
 - 2026-10-28 着手。前提: `release/v1.0.2` は main にマージ済み (run 開始時に確認済み、作業ブランチ `fix/audit-2026-10` は両 repo とも main から)。git status は両 repo とも clean だった。
@@ -114,6 +115,19 @@ created_by: task-create
   ```
 - verify sweep 2026-10-28 16:55 (環境不可、verify_pending 継続): エディタ (PID 9372) は HEAD のビルドで起動中、UE MCP に接続できた。ユーザーが作業中だった (最終入力 0.8 秒前、前面は Chrome リモート デスクトップ)。dispatch の条件は「ユーザーの作業を妨げない」。SlateInspectorToolset の Click / Hover / Drag は実カーソルを動かす (`SetCursorPos`)。PressKey は Slate へキーを注入する。AC 1〜6 の確認は Delete・Paste・ヘッダのドラッグ・Ctrl+V・列の非表示・Ctrl+C を要するので、6 枚とも未実施のまま残した。
 
+### verify sweep 2026-10-28 18:44 (ALICE、合格 → done)
+- 環境: エディタ PID 9372 (15:50 ビルド = submodule 0f651e4)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセットは `/Game/__Verify` に作り、終了時に削除した。証跡は `.agents/tasks/evidence/t261026-57d1/`。
+- 一時アセット: DI_VAbility_Mage (21a2 と共用。Defence は継承行で読み取り専用)。
+- AC1: 行 4 Fireball を選んで Delete → 行 4 (旧 5 FrostBolt) が選択された (01-after-delete-row4.png)。21a2 の検証でも、行 2 削除後に行 2 (旧 3 Heal) が選択された。削除は Ctrl+Z で戻した。
+- AC2: Fireball / FrostBolt の Description 2 セルをコピー → Attack の Description (直下が継承行 Defence) を 1 セル選択して Ctrl+V → Attack は "A weak melee attack." のまま。トースト "Paste aborted: selection contains read-only rows." が出た (02-paste-readonly.png)。未保存マークも付かなかった。
+- AC3: Fireball..FrostBolt の Description..AbilityType を矩形選択した状態で、ヘッダの Description|AbilityType 境界を実マウスで +100px ドラッグ → 列幅が広がり、選択枠は残った (03a / 03b)。
+- AC4: Fireball 行を Ctrl+C (行形式) → Esc で選択を消す → Ctrl+V → 編集メニューの履歴は「元に戻す (以降は元に戻せません …)」「やり直す Move Row」のまま (04)。Paste Row は積まれず、redo も消えなかった。
+- AC5: Slate Snapshot の List 幅で測った。列幅変更後の 2131 → AbilityType と TargetType を非表示で 1943 (−188 = 83 + 91 + 余白 7×2)。Reset Layout 後の 2031 → AbilityType だけ非表示で 1941 (−90)。横スクロールのつまみ長からの推定 (1940、05b) も合う。つまみ推定は既知幅 2031 に対し 2023 (誤差 0.4%) で較正した。
+- AC6: AbilityType を非表示にし、Fireball..FrostBolt の Description..TargetType を矩形選択して Ctrl+C → ヘッダは Description / TargetType の 2 列。AbilityType は無い (06-clipboard.txt、06-rect-across-hidden-column.png)。
+- 後片付け: Reset Layout で列レイアウトを既定に戻した。副作用: DIS_Ability の保存済み列レイアウト (Saved/Config、git 管理外) が既定に戻った。
+- ハーネス: MCP の Click で Reset Layout の確認 modal を開いたら game thread が止まり、MCP が 300 秒で切れた (KNOWLEDGE「UE MCP GUI ハーネス」)。
+- 所要 約 12 分 (MCP 停止の 5 分を含む)。
+
 ## Summary
 Data View の 8 件 (B-V1, B-V3, B-V4, B-V5, B-V6, B-V7, B-V9, B-V10) を修正した。
 - 削除後の選択: 削除前の最小 index で決める。
@@ -124,6 +138,7 @@ Data View の 8 件 (B-V1, B-V3, B-V4, B-V5, B-V6, B-V7, B-V9, B-V10) を修正�
 - Fill ドラッグ: 元の行をキーで持つ。
 - 列ソート API: 削除した。
 自動テスト 3 本を足し、DataIndexerEd 全 67 本が通る。GUI での確認 (AC 1〜6 のスクリーンショット) は残っている。
+GUI 検証は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/DataIndexerViewModel.h`
@@ -139,7 +154,7 @@ Data View の 8 件 (B-V1, B-V3, B-V4, B-V5, B-V6, B-V7, B-V9, B-V10) を修正�
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerViewHeader.h`
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.cpp`
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/ViewModel/DataIndexerViewModelTests.cpp`
-- `.agents/tasks/ready/t261026-57d1-view-bugs.md`
+- `.agents/tasks/done/t261026-57d1-view-bugs.md`
 
 ## Blockers
-検証待ち。理由: UE MCP server (127.0.0.1:8001) がこの run では接続できない (ECONNREFUSED)。エディタの GUI 操作とスクリーンショットが撮れない。残りは Verification の 6 枚だけ。AC 4 は上記のとおりエンジン側で成り立っているので、Undo 履歴のスクリーンショットは確認用。
+None

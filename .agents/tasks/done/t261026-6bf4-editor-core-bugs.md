@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 60
 tier: standard
 screen: required
@@ -68,6 +68,7 @@ SchemaClass 差し替え後の未追随、誤った tooltip、無駄な再構築
   2. 無効値を持つ `CommentOut` 行だけの Repository を Validate → Valid のスクリーンショット (自動テスト `DataIndexerEd.Schema.ValidatorSkipsCommentOutRows` では確認済み)。
   3. Asset Details で `SchemaClass` を RowStruct 違いに変える → 不一致ダイアログのスクリーンショット。
   4. 未ロード BP が多いフォルダで右クリック → log に対象 BP の `LoadPackage` が出ない抜粋。
+  - 済 (2026-10-28 sweep): 1〜4 すべて。証跡 `.agents/tasks/evidence/t261026-6bf4/`。
 
 ## Execution Log
 - 2026-10-28 dispatch 7/18 (branch `fix/audit-2026-10`、両 repo)。前提 `release/v1.0.2` の main マージは run 前提として満たされている (前タスク群と同じ branch 上)。
@@ -96,8 +97,18 @@ SchemaClass 差し替え後の未追随、誤った tooltip、無駄な再構築
 - critic NOTE 2 (undo 後の delegate 不整合) は follow-up `task化` 候補として report に回す (PostUndo で RowStruct 変化を検知して再 bind する設計判断が要るため fold しない)。
 - verify sweep 2026-10-28 16:55 (環境不可、verify_pending 継続): エディタ (PID 9372) は HEAD のビルドで起動中、UE MCP に接続できた。ユーザーが作業中だった (最終入力 0.8 秒前、前面は Chrome リモート デスクトップ)。dispatch の条件は「ユーザーの作業を妨げない」。SlateInspectorToolset の Click / Hover / Drag は実カーソルを動かす (`SetCursorPos`)。Verification 1〜4 はダイアログの「Yes」・Ctrl+Z・Validate・Asset Details の編集・Content Browser の右クリックを要するので、未実施のまま残した。
 
+### verify sweep 2026-10-28 18:44 (ALICE、合格 → done)
+- 環境: エディタ PID 9372 (15:50 ビルド = submodule 0f651e4)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセットは `/Game/__Verify` に作り、終了時に削除した。証跡は `.agents/tasks/evidence/t261026-6bf4/`。
+- 一時アセット: DI_ItemRarity の複製 (DI_VItemRarity, DI_VMismatch, DI_VCommentOutOnly, DI_VLiveInvalid)。
+- V3 / AC4: DI_VItemRarity を開き、Asset Details の Schema Class 行を右クリック「ペースト」で DIS_Item_C に変えた (クラスピッカーは RowStruct 互換のスキーマしか出さない)。"'DI_VItemRarity' has a structural mismatch …" のダイアログが出た (03)。
+- V1 / AC2: そのダイアログで「はい」→ 全行が消えた (01a、DIS_Item の列で 0 行)。Ctrl+Z → VCommon / VUncommon の 2 行と ItemRarity スキーマが戻った (01b)。OpenAssets 経路も確認した: SchemaClass を DIS_Item_C にした複製 DI_VMismatch を開く → ダイアログ (01c) →「はい」で 0 行 (01d) → Ctrl+Z で 5 行が戻った (01e、構造不一致なので読み取り専用表示)。
+- V2 / AC3: DisplayName が空の行 (ItemRaritySchema の IsRowValid がエラーにする) を 1 行だけ持つ複製を 2 つ作り、EditorFlags だけを変えた。コンテンツブラウザ「アセットを検証」→ DI_VCommentOutOnly (CommentOut) は「有効なデータが入っています」。対照の DI_VLiveInvalid (フラグなし) は「無効なデータが含まれています」と DisplayName のエラー (02b)。
+- V4: 再起動直後 (PID 40584) にコンソール `obj list class=Blueprint` → 10 objects。`/Game/__Verify` の BP 3 個は未ロード。コンテンツドロワーで BP_VSwitch / BP_VGetRow / BP_VGetRow_Dup を順に右クリック (メニューは出た、04a) → もう一度 obj list → 同じ 10 objects。3 個とも未ロードのまま (04b)。対照: その後 BP を開いて回したあとの obj list は 20 objects に増えた (計器はロードを数えている)。エンジンには LoadPackage の行ログが無いので、Verification の「log に LoadPackage が出ない」を obj list の差分に置き換えた。限界: 右クリックした 3 個はスキーマ BP ではない。未ロードのスキーマ BP が手元に無かった。
+- 所要 約 10 分。
+
 ## Summary
 B-E4/E7/E8/E14/E15/E17 を実装。右クリックはタグ判定でロードしない、全行リセットは undo 可能、Validator は CommentOut 行を飛ばし Info を Info で報告、SchemaClass 変更で delegate を再束縛して不一致警告を出す、tooltip 修正、reimport 失敗/キャンセルで再構築しない。自動テストは全群 68/68 通過。GUI の証跡が残り (verify_pending)。
+GUI 検証は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/AssetDefinition_DataIndexerSchema.cpp`
@@ -109,4 +120,4 @@ B-E4/E7/E8/E14/E15/E17 を実装。右クリックはタグ判定でロードし
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/Core/DataIndexerRowValidationTests.cpp`
 
 ## Blockers
-検証待ち: GUI Verification 4 項目 (上の Verification 残り)。UE MCP server (127.0.0.1:8001) がこの run で停止しており、エディタ GUI を操作・撮影できない。実装の残りは無い。
+None

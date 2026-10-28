@@ -1,0 +1,11 @@
+# Follow-up evidence (found during verify sweep 2026-10-28, after editor restart, PID 40584)
+# BP_VSwitch: Switch on Primary Key, Repository = /Game/__Verify/DI_VItemRarity, PinKeys = [2B8F0001-..., 2B8F0002-...]
+# Both keys exist in DI_VItemRarity (ExportRepositoryJSON right after load returned VCommon / VUncommon rows).
+# Opening the BP (first load after restart; DI_VItemRarity loaded as the BP's import) logged:
+[2026.10.28-10.25.13:327] LogBlueprint: Error: [AssetLog] ...\Content\__Verify\BP_VSwitch.uasset：[コンパイラ] PrimaryKey 2B8F0001-0000-4000-8000-000000000001 is not in DI_VItemRarity in  Switch on Primary Key .
+[2026.10.28-10.25.13:327] LogBlueprint: Error: [AssetLog] ...\Content\__Verify\BP_VSwitch.uasset：[コンパイラ] PrimaryKey 2B8F0002-0000-4000-8000-000000000002 is not in DI_VItemRarity in  Switch on Primary Key .
+# compile_blueprint on the same BP a few seconds later: no error.
+# The Select node in the same BP (Repository = /Game/GameData/DI_ItemRarity, already loaded at startup) logged no error.
+# Case pins show raw GUIDs instead of VCommon / VUncommon after the load and stay so after the recompile
+# (followup-after-restart-pins-show-guid.png). Before the restart the same node showed VCommon / VUncommon
+# (05b-switch-repo-DI_VItemRarity.png).

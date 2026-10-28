@@ -1,0 +1,16 @@
+# Editor restarted 19:23 (PID 40584). Console: obj list class=Blueprint
+# Before right-click (10.24.09 UTC) and after right-clicking BP_VSwitch / BP_VGetRow / BP_VGetRow_Dup
+# in the Content Drawer (10.24.56 UTC). Both lists are identical: 10 objects, none of the three BPs.
+[10.24.09] Cmd: obj list class=Blueprint
+  WidgetBlueprint /Game/UI/WBP_InventoryRowCard.WBP_InventoryRowCard
+  LevelScriptBlueprint /Game/Boot.Boot:PersistentLevel.Boot
+  WidgetBlueprint /Game/GameData/CustomWidget/WBP_PawnClassCell.WBP_PawnClassCell
+  EditorUtilityWidgetBlueprint /Game/GameData/CustomWidget/EUW_CharacterClassIcon.EUW_CharacterClassIcon
+  Blueprint /Game/UI/VM_InventoryRowCard.VM_InventoryRowCard
+  Blueprint /Game/GameData/DIS_Character.DIS_Character
+  Blueprint /Game/GameData/DIS_Ability.DIS_Ability
+  Blueprint /Game/GameData/DIS_Item.DIS_Item
+  10 Objects
+[10.24.56] Cmd: obj list class=Blueprint   (after 3 right-clicks)
+  (same 8 Blueprint lines as above)
+  10 Objects

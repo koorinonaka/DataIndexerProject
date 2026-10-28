@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 50
 tier: standard
 screen: required
@@ -78,6 +78,7 @@ Repository に無いキーをコンパイルエラーで報告し、Repository �
 4. Select の `PinKeys` に Repository に無いキー → コンパイルエラー (`PrimaryKey ... is not in ...`)。スクリーンショット。
 5. Switch の `Repository` を別 Repository に変える → case ピン表示名が新 Repository の行名。スクリーンショット。
 6. Switch の Add pin ボタン: Repository 未使用キーが 1 本ずつ増える。Repository 未設定なら何も増えない。
+済 (2026-10-28 sweep): 1〜6 すべて。証跡 `.agents/tasks/evidence/t261026-5a97/`。
 
 ## Execution Log
 - 2026-10-28 11:52 着手 (branch `fix/audit-2026-10`、前提 release/v1.0.2 マージ済みは run 開始時に orchestrator が確認)。
@@ -111,10 +112,24 @@ Repository に無いキーをコンパイルエラーで報告し、Repository �
   - Verification 3〜5 はスクリーンショットを要する。BP エディタを開くとウィンドウが前面に出る恐れがあるので、実施していない。
   - 次の sweep への手がかり: 3〜6 の判定は MCP の BlueprintTools で画面なしに取れる見込み (`create` → `create_node` → ObjectTools `set_properties` で `PinKeys` / `Repository` → `compile_blueprint` → `get_node_infos`、6 は `add_node_pin`)。コンパイルが通知トーストを出すか未確認なので、ユーザー作業中には実行しなかった。
 
+### verify sweep 2026-10-28 18:44 (ALICE、合格 → done)
+- 環境: エディタ PID 9372 (15:50 ビルド = submodule 0f651e4)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセットは `/Game/__Verify` に作り、終了時に削除した。証跡は `.agents/tasks/evidence/t261026-5a97/`。
+- 一時 BP: `/Game/__Verify/BP_VSwitch` (BlueprintTools `create`)。
+- V1: 保存前の BP に Switch on Primary Key と Select by Primary Key を `create_node` で置いた → 落ちなかった。限界: `create` は BP をコンパイルするので SkeletonGeneratedClass は null ではなかった。null 経路そのものは通っていない。根拠は AC1 (override 削除) とエンジン側の 2 ガード。
+- V6: Repository 未設定で `add_node_pin` → ピンは増えず PinKeys は [] のまま。DI_ItemRarity を設定して `add_node_pin` ×2 → PinKeys = 2B8F0001…, 2B8F0002… (未使用のキーを 1 本ずつ)。
+- V3 / AC2: Switch の PinKeys に同じキーを 2 つ → exec の case ピンは 1 本。`compile_blueprint` はエラー 1 件 "duplicate PrimaryKey 2B8F0002-… in Switch on Primary Key" (03)。
+  - 注: ノードが exec に繋がっていないと、コンパイラが孤立ノードとして刈り取り、検証が走らない (初回は素通りした)。BeginPlay → Switch を繋いで再実行した。
+- V4 / AC3: Select (DI_ItemRarity) の PinKeys が有効キーだけ → コンパイル成功 (対照)。Repository に無いキー AAAAAAAA-… を足す → "PrimaryKey AAAAAAAA-… is not in DI_ItemRarity in Select by Primary Key" (04)。
+- V5 / AC4: Switch の PinKeys = [Common, Uncommon]。Repository を DI_ItemRarity から複製 DI_VItemRarity (同じキー、行名 VCommon / VUncommon) に変えた → case ピンの表示名が Common / Uncommon から VCommon / VUncommon に変わった (05a / 05b)。
+- V2: BP_VSwitch を保存 → エディタを閉じて再起動 (PID 9372 → 40584、MCP は再接続できた) → BP を開いて Switch ノードを Ctrl+C。T3D の関数ピン `NotEqual_PrimaryKeyPrimaryKey` は `DefaultObject="/Script/DataIndexer.Default__DataIndexerFunctionLibrary"` (02-after-restart-function-pin-defaultobject.txt)。再起動前にも同じ値を確認した。限界: ロード時のコンパイルがノードを作り直すので、読み込んだ値か作り直した値かは区別できない。どちらでも PostLoad は要らない。
+- 新しく見つけた不具合 (follow-up、このタスクの変更で見えるようになった。sweep では直さない): 再起動後に BP_VSwitch を開くと、ロード時のコンパイルが "PrimaryKey 2B8F0001… is not in DI_VItemRarity" を 2 件出した。キーは DI_VItemRarity にある (直後の Export で確認)。直後の `compile_blueprint` はエラーを出さなかった。case ピンの表示名も GUID のまま残った (followup-02b-load-time-false-compile-error.txt、followup-after-restart-pins-show-guid.png)。同じ BP の Select ノード (起動時に既にロード済みの DI_ItemRarity を参照) はエラーを出さなかった。Repository が BP の import としてロードされる途中で `ValidatePinKeys` / `CreateCasePins` が走っている疑いがある。
+- 所要 約 11 分 (再起動を含む)。
+
 ## Summary
 Switch の `CreateFunctionPin` / `PostLoad` override を削除しエンジン実装 (5.7/5.8 とも null ガード有り) に戻した。
 共通 `DataIndexerK2NodePinKeys` に `GetValidUniquePinKeys` / `ValidatePinKeys` を置き、Switch と Select のコンパイル時検証で使う。
 Switch は有効一意キーだけでピンを作り、Repository 変更でも再構築する。ビルドと Compiler テストは通過、GUI 検証待ち。
+GUI 検証は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerK2NodePinKeys.h` (新規)
@@ -124,4 +139,4 @@ Switch は有効一意キーだけでピンを作り、Repository 変更でも�
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerSelectPrimaryKey.cpp`
 
 ## Blockers
-検証待ち: UE MCP 停止のため GUI の Verification 1-6 が未実施。実装は残っていない。
+None

@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 80
 tier: standard
 screen: required
@@ -67,6 +67,7 @@ created_by: task-create
 ## Verification
 - 残り: Reference Viewer のスクリーンショット (undo/redo 後の保存、Duplicate 後)。
 - 済: Game ターゲットのビルド (修正前 static_assert 赤 → 修正後 Succeeded)。
+- 済 (2026-10-28 sweep): Reference Viewer (undo/redo 後の保存、Duplicate 後)。証跡 `.agents/tasks/evidence/t261026-91cd/`。
 
 ## Execution Log
 2026-10-28 (dispatch 9/18、branch `fix/audit-2026-10`、両 repo)。
@@ -151,17 +152,24 @@ verify sweep 2026-10-28 16:55 (環境不可、verify_pending 継続):
 - AC (b) は Ctrl+Z / Ctrl+Y と Reference Viewer を要する。MCP に undo/redo の手段は無い。SlateInspectorToolset の PressKey は Slate へキーを注入する。よって AC (b) は未実施のまま残した。Tier 2 の判定 (Tier 1 への後退) はまだ出ていない。
 - 次の sweep への手がかり: 保存と Duplicate の部分は画面なしで取れる (BlueprintTools `create` → GetRow の `create_node` → `set_pin_value` → AssetTools `save_assets` → `get_dependencies` → `duplicate` → `get_dependencies` → 一時アセットを `delete`)。undo/redo の部分は GUI が要る。
 
+### verify sweep 2026-10-28 18:44 (ALICE、合格 → done)
+- 環境: エディタ PID 9372 (15:50 ビルド = submodule 0f651e4)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセットは `/Game/__Verify` に作り、終了時に削除した。証跡は `.agents/tasks/evidence/t261026-91cd/`。
+- 一時 BP: `/Game/__Verify/BP_VGetRow` (GetRow ノード、Handle Repository = DI_ItemRarity)。
+- AC (b): Handle Primary Key をピンのコンボで Common に設定 (01a) → Ctrl+Z でピン値が空に戻った (01b、get_pin_value でも確認) → Ctrl+Y で 2B8F0001… に戻った → 保存 → Reference Viewer に DI_ItemRarity (ハード参照) と searchable name ノード "2B8F0001-0000-4000-8000-000000000001 In Data Indexer Repository: DI_ItemRarity" が出た (02)。複製 BP_VGetRow_Dup も同じ (03)。
+- Tier 2 はそのまま採用 (AC (b) が通ったので Tier 1 へは戻さない)。
+- 所要 約 5 分。
+
 ## Summary
 `FDataIndexerPrimaryKey::OwnerRepository` を削除し (Tier 2)、全構成で 16 byte に戻した (`static_assert`)。graph pin の default は
 `PostSerialize` で persistent 保存時だけ `SerializedObject` から都度解決するので、間に transient 保存アーカイブが挟まっても
 searchable name が落ちない。Reference Viewer での GUI 確認 (AC b) は MCP 停止のため検証待ち。
+GUI 検証は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexer/Public/DataIndexerTypes.h`
 - `Plugins/DataIndexer/Source/DataIndexer/Private/DataIndexerTypes.cpp`
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/Core/DataIndexerSearchableNameTests.cpp`
-- `.agents/tasks/ready/t261026-91cd-primarykey-owner-hack.md`
+- `.agents/tasks/done/t261026-91cd-primarykey-owner-hack.md`
 
 ## Blockers
-検証待ち: AC (b) の GUI 確認だけが残る。UE MCP (`http://127.0.0.1:8001/mcp`) がこの run で停止。残り: GetRow ノードの PrimaryKey ピンに
-default → Ctrl+Z → Ctrl+Y → 保存 → Reference Viewer に Repository、Duplicate した BP でも同じ、をスクリーンショットで残す。
+None

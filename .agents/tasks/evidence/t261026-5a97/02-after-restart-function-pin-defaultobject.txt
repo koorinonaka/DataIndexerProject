@@ -1,0 +1,3 @@
+# Editor restarted 19:23 (PID 40584). BP_VSwitch opened, Switch node selected, Ctrl+C; extracted from clipboard T3D:
+OBJ /Script/DataIndexerEd.K2Node_DataIndexerSwitchPrimaryKey K2Node_DataIndexerSwitchPrimaryKey_0
+PIN NotEqual_PrimaryKeyPrimaryKey DefaultObject="/Script/DataIndexer.Default__DataIndexerFunctionLibrary"

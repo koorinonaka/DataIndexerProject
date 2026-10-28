@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 10
 tier: standard
 screen: required
@@ -73,6 +73,7 @@ Ctrl+Z / Ctrl+Y の後、開いている Data View・派生 Repository の toolk
 ## Verification
 - エディタで親 Repository と派生 Repository を両方開き、親で行削除 → Ctrl+Z。両 Data View のスクリーンショット。
 - Move → 範囲選択 → Ctrl+Z → Ctrl+C → テキストエディタに貼った内容のスクリーンショット。
+- 済 (2026-10-28 sweep): 上の 2 項目。証跡 `.agents/tasks/evidence/t261026-21a2/` (01-04 削除と Undo、05-06 Move と範囲選択と Copy)。
 
 ## Execution Log
 - 1 回目 (2026-10-26 run) は main の Editor ビルド破損 (sample schema と新 `IsRowValid` シグネチャ) で deferred。親 c58b690 で解消後に再 dispatch。
@@ -130,11 +131,20 @@ Ctrl+Z / Ctrl+Y の後、開いている Data View・派生 Repository の toolk
 - SlateInspectorToolset の Click / Hover / Drag は `FSlateApplication::SetCursorPos` で実カーソルを動かす (`SlateInspectorToolset.cpp:115, 317, 589`)。PressKey / Type は Slate へキーを注入する。`OpenEditorForAsset` はエディタのウィンドウを前面に出す恐れがある。
 - Verification の 2 項目は Data View を開き、行削除・Ctrl+Z・範囲選択・Ctrl+C を要する。上の制限の下では実施できないので、未実施のまま残した。
 
+### verify sweep 2026-10-28 18:44 (ALICE、合格 → done)
+- 環境: エディタ PID 9372 (15:50 ビルド = submodule 0f651e4)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセットは `/Game/__Verify` に作り、終了時に削除した。証跡は `.agents/tasks/evidence/t261026-21a2/`。
+- 一時アセット: DI_Ability → DI_VAbility、DI_Ability_Mage → DI_VAbility_Mage (ParentRepositories を DI_VAbility に差し替え)。
+- AC3: 親で Defence 行を Delete → 親は Attack / Heal、派生からも Defence が消えた (01, 02)。親で Ctrl+Z → 親に Defence が戻った (03)。派生タブにも Defence が戻った (04)。
+- AC4: 親で Attack を Ctrl+J で 1 つ下へ (Defence / Attack / Heal)。Attack 行の Description..AbilityType を Ctrl+クリック → Shift+クリックで矩形選択 (05)。Ctrl+Z で行順が Attack / Defence / Heal に戻り、選択枠も Attack 行 (行 1) に移った (06)。Ctrl+C の中身は Attack のセル ("A basic physical attack." / NewEnumerator0、06-clipboard-after-undo.txt)。旧 index の行 (Defence) ではない。テキストエディタへの貼り付けの代わりに、クリップボード本文をファイルに残した。
+- 限界: 2 つの Data View は同じウィンドウのタブで、同時には表示していない。派生はタブを切り替えて撮った。タブ有効化で view を作り直すコードは無い (`rg OnTabActivated` 0 件)。
+- 所要 約 6 分。
+
 ## Summary
 `UDataIndexerEditorData::PostEditUndo` を追加し、undo/redo で `OnEditorRowsUpdated` を broadcast するようにした
 (派生 toolkit・DrivenCollection が追随)。dirty + broadcast は `NotifyRowsChanged()` に集約。`UpdateVisibleRows` が毎回
 `SelectionBounds` を再構築するので、行順だけ変わっても Copy/Paste/FillDown が正しい行を指す。`FViewModel` の undo client は
 自分の Data View の更新経路なので残した。GUI 検証が残り verify_pending。
+GUI 検証は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Public/DataIndexerEditorData.h`
@@ -145,5 +155,4 @@ Ctrl+Z / Ctrl+Y の後、開いている Data View・派生 Repository の toolk
 - `.agents/audit-2026-10-26.md` (fold: X6 / B-E1 訂正)
 
 ## Blockers
-検証待ち。Verification の GUI 2 項目 (親+派生 Repository で行削除 → Ctrl+Z、Move → 範囲選択 → Ctrl+Z → Ctrl+C) が残る。
-UE MCP server がエディタ未起動で接続不可だったため。実装・テストは完了。
+None

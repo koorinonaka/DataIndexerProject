@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 70
 tier: standard
 screen: required
@@ -58,6 +58,7 @@ Schema の Column Layout パネルで、NotOverridable のロック解除がト�
 
 ## Verification
 - Undo 後の lock icon と、UDS 編集後のツリーのスクリーンショット各 1 枚。 (残: 両方。UE MCP 停止中)
+- 済 (2026-10-28 sweep): 2 枚とも。証跡 `.agents/tasks/evidence/t261026-72fc/`。
 
 ## Execution Log
 - 2026-10-28 前提: 作業ブランチ `fix/audit-2026-10` (両 repo、main から)。`release/v1.0.2` は main にマージ済み (先行タスクと同じ)。
@@ -98,9 +99,17 @@ Schema の Column Layout パネルで、NotOverridable のロック解除がト�
 - 検証待ち: UE MCP (127.0.0.1:8001) がこの run で停止中。GUI スクリーンショット 2 枚は取れない。
 - verify sweep 2026-10-28 16:55 (環境不可、verify_pending 継続): エディタ (PID 9372) は HEAD のビルドで起動中、UE MCP に接続できた。ユーザーが作業中だった (最終入力 0.8 秒前、前面は Chrome リモート デスクトップ)。dispatch の条件は「ユーザーの作業を妨げない」。SlateInspectorToolset の Click / Hover / Drag は実カーソルを動かす (`SetCursorPos`)。2 枚とも Schema エディタを開き、lock icon のクリック・Ctrl+Z・UDS へのフィールド追加を要するので、未実施のまま残した。
 
+### verify sweep 2026-10-28 18:44 (ALICE、合格 → done)
+- 環境: エディタ PID 9372 (15:50 ビルド = submodule 0f651e4)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセットは `/Game/__Verify` に作り、終了時に削除した。証跡は `.agents/tasks/evidence/t261026-72fc/`。
+- 一時アセット: S_Ability → S_VAbility、DIS_Ability → DIS_VAbility (RowStruct を S_VAbility に差し替え)。
+- AC2: DIS_VAbility の Column Layout で DisplayName の lock をクリック (lock、01a) → もう一度クリック (unlock、01b) → Ctrl+Z → lock が戻った (01c)。
+- AC3: パネルを開いたまま S_VAbility を開き「変数を追加」(02a) → DIS_VAbility タブに戻ると Column Layout に MemberVar_32 が出ていた (02b)。閉じて開き直していない。限界: 2 つのエディタは同じウィンドウのタブなので、同時には見ていない。
+- 所要 約 6 分。
+
 ## Summary
 unlock を `FStructureEditorUtils::SetMetaData(..., FString())` に置換し、トランザクション下で key 削除 (undo 可) にした。
 `FSchemaDetails` が UDS 変更を購読し、RowStruct の再コンパイル後 (undo 含む) に詳細パネルを再構築する。回帰テスト `UnlockIsUndoable` 追加。GUI 検証待ち。
+GUI 検証は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerDetailCustomization_Schema.cpp`
@@ -108,4 +117,4 @@ unlock を `FStructureEditorUtils::SetMetaData(..., FString())` に置換し、�
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/Core/DataIndexerNotOverridableTests.cpp`
 
 ## Blockers
-検証待ち: GUI の Verification 2 枚 (Undo 後の lock icon、UDS にフィールド追加後のツリー)。UE MCP 停止中のため未実施。
+None
