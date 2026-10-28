@@ -1,5 +1,5 @@
 ---
-status: ready
+status: done
 order: 200
 tier: standard
 screen: none
@@ -78,13 +78,45 @@ created_by: task-create
 - 上の AC を `rg` の出力で証跡に残す。計測値は任意 (`TRACE_CPUPROFILER_EVENT_SCOPE` を付けられれば添える)。
 
 ## Execution Log
-Not started.
+- 2026-10-28 (dispatch 21/21、ブランチ `fix/audit-2026-10` 両 repo)。開始時 両 repo とも clean。前提の計測ループと `MakeRowSelection` は木にあった (ed01 後も関数名どおり、行番号もほぼ同じ)。
+- (a) `SViewHeader::BuildColumns` 先頭の `if ( !bDisplayNameColumnWidthResized ) {...}` を `MeasureDisplayNameColumnWidth()` (public) へそのまま移した。`SView::RepopulateEntries` の first/SetChanged 分岐だけが `BuildColumns()` の直前に呼ぶ。OrderChanged 分岐と `HandleColumnReordered` は変えていない。
+- (b) `FSelectionState` に private `TSet<FPrimaryKey> RowPrimaryKeys` と public `ContainsPrimaryKey()` を足し、`MakeRowSelection` で埋める。`SViewRow::GetRowTextColor` の `Algo::AnyOf` を置き換え、使い手が無くなった `#include "Algo/AnyOf.h"` を消した。
+- テスト (Tests 4 問: 守る契約 = 行選択の PrimaryKey 判定は Repository を問わず真・セル/空選択は偽、並べ替え経路は RowName 幅を測り直さない。回帰 = `RowPrimaryKeys` を埋め忘れる / 計測を `BuildColumns` に戻す。既存テストはどちらも見ていない。本番に無い口は要らない — 両関数とも本番が呼ぶ):
+  - `DataIndexerEd.ViewModel.Selection.Lifecycle` に `ContainsPrimaryKey` の真1・偽3 を追加。
+  - `DataIndexerEd.View.RowNameColumn.AutoWidthAndManualResize` は `BuildColumns` だけで自動幅を期待していたため、分離後に落ちた (期待値 >200 が 200)。期待値は変えず、呼び順を本番の first/SetChanged 分岐と同じ `MeasureDisplayNameColumnWidth()` + `BuildColumns()` に直した (3 箇所)。そのうえで「`BuildColumns` 単独では 200 のまま」の assert を 1 行足した。手動幅後の再構築も Measure 経由にしたので、`bDisplayNameColumnWidthResized` を尊重することも見ている。
+- 赤の確認 (hollow):
+  - `MakeRowSelection` の `RowPrimaryKeys.Add` を空にしたビルド → `Selection.Lifecycle` が `Expected 'Row selection contains its PrimaryKey' to be true` の 1 件だけで Fail (Selection 群の他 2 本は Success)。
+  - `BuildColumns` 先頭に `MeasureDisplayNameColumnWidth()` を戻したビルド → `RowNameColumn.AutoWidthAndManualResize` が `Expected 'Column reorder (BuildColumns alone) does not re-measure RowName' to be 200.000000, but it was 466.000000` の 1 件だけで Fail。
+  - どちらも元に戻して再ビルド (`rg HOLLOW` 0 件)。
+- quick: `Build.bat DataIndexerProjectEditor Win64 Development` Succeeded (C1001 内部コンパイラエラー 1 回 → 再実行で成功、`DataIndexerNotOverridableTests.cpp(265)` で本タスク無関係)。`Automation RunTests DataIndexerEd.View+DataIndexerEd.ViewModel` → Found 15、Success 15 / Fail 0。full は run 終端。
+- AC の証跡 (`rg`):
+  - AC1: `SDataIndexerViewHeader.cpp` の `FontMeasure` は 170/186 (`ComputeLineNumberWidth`、行番号列の 1 文字列だけ。既存) と 220/226 (`MeasureDisplayNameColumnWidth`)。`BuildColumns` (231 行〜) の本体には 0 件。DisplayName の計測は `MeasureDisplayNameColumnWidth` にだけある。
+  - AC2: 本番の呼び手は `SDataIndexerView.cpp:557` (first/SetChanged 分岐) の 1 件だけ。ほかはテスト 3 件 (`DataIndexerViewModelTests.cpp:84/101/116`)。
+  - AC3: `rg 'Algo::AnyOf' SDataIndexerViewRow.cpp` 0 件 (rc=1)。
+  - AC4: `ContainsPrimaryKey` 2 件 (`DataIndexerViewTypes.h:159` 宣言、`SDataIndexerViewRow.cpp:253` 呼び出し)。
+- 自己レビュー: `git diff --stat` は Scope の 6 ファイル + テスト 1 ファイル、計 +32/-4。テストファイルは Scope 外だが、Tests 節が名指ししているファイルで、(a) の API 分離に呼び順を合わせる変更 (期待値は不変)。
+- 計測値は付けていない (README「証跡」: perf は構造で受ける)。
+- critic r1 (task-critic):
+  ```
+  PASS
+  NOTE: DataIndexerViewModelTests.cpp:84 — AC2 says MeasureDisplayNameColumnWidth must be called only from the first/SetChanged branch. The only production caller is that branch (SDataIndexerView.cpp:557). The other 3 callers are tests (lines 84/101/116), so I read AC2 as met.
+  NOTE: DataIndexerViewModelTests.cpp:721 — This test calls BuildColumns() alone. It only checks column order and selection, not RowName width, so the split does not break it.
+  NOTE: DataIndexerViewModelTests.cpp — This file is outside Scope, but Out of Scope does not list it and the Tests section names it, so it is not a FAIL.
+  NOTE: Removed-name sweep: Algo::AnyOf and Algo/AnyOf.h have 0 hits in SDataIndexerViewRow.cpp. GetRowSelection still has many other callers, so nothing became unreferenced. RowSelection is set only in MakeRowSelection (DataIndexerViewTypes.cpp:22), so RowPrimaryKeys stays in sync.
+  NOTE: The performance gain can only be measured at runtime. The diff shows the structure only, which is what the task asks for.
+  ```
 
 ## Summary
-Not started.
+列の並べ替え (`HandleColumnReordered` / OrderChanged) は RowName 幅を測らなくなった。全行の DisplayName 計測は `SViewHeader::MeasureDisplayNameColumnWidth()` に移り、first/SetChanged 分岐だけが呼ぶ。`GetRowTextColor` の上書き先マークは `FSelectionState::ContainsPrimaryKey` (TSet 引き) で O(1) になった。
 
 ## Changed Files
-Not started.
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerViewHeader.h`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerViewHeader.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerView.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/DataIndexerViewTypes.h`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/DataIndexerViewTypes.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerViewRow.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/ViewModel/DataIndexerViewModelTests.cpp`
 
 ## Blockers
-なし
+None
