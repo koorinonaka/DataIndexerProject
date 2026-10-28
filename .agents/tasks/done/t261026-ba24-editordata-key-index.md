@@ -128,6 +128,11 @@ created_by: task-create
   ```
   NOTE 4 の扱い: 重複キーは `SetRows` の呼び手が検証する前提 (header コメント) で、正しさは保たれ性能だけが落ちる。KNOWLEDGE 行にも task にもしない (要ユーザー判断 として報告)。
 
+### ユーザー決定 2026-10-28
+- 重複キー時の再構築は放置 (critic r1 NOTE 4)。コードもタスクも足さない。
+- BP コンパイル時のキャッシュ無効化は新タスク (critic r1 NOTE 2、schema BP の BuildIndex 本体が `ComputeHash` に入らない件):
+  t261028-d591 (`ready/t261028-d591-schema-bp-compile-cache-invalidate.md`)。このタスクの status は done のまま。
+
 ## Summary
 `UDataIndexerEditorData` にキー→index マップを持たせ、行検索 6 か所を O(1) にした。キー不一致の `UpdateRow` / `DeleteRows` / `SetRowsCommentOut` は何もしない。
 祖先の EditorData が null でも `FindRepository` は落ちない。`MoveRow` は 1 行の移動。Subsystem のキャッシュは `FObjectKey` キーになり、Reload / 削除 / 改名で entry を落とす。

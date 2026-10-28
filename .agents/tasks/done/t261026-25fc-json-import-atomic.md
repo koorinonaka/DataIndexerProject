@@ -124,6 +124,11 @@ FText / `Name` 列 / 重複 PrimaryKey が黙って落ちない。
 - critic NOTE への対応: Reimport の `AssetImportData` は関数冒頭 (`!Repository->AssetImportData` で Failed) で null を除いているので追加の検査は不要。changelog:22 は過去の版 (1.0.x) の記録なので書き換えない。Toolset の `LogTemp` は Scope 外のため触っていない。
 - time: build 3 回 (23.55 s / 20.44 s 失敗 / 23.32 s)。
 
+### ユーザー決定 2026-10-28
+- RowEntity は non-strict + 未知キー検査 (新タスクで実装)。engine の `bStrictMode=true` (JSON に無いフィールドで失敗) をやめ、
+  JSON object に row struct に無いキーがあれば失敗させる。row struct にフィールドを足しても古い native export が入るようにするため。
+- 新タスク: t261028-21b3 (`ready/t261028-21b3-rowentity-json-nonstrict.md`)。このタスクの status は done のまま。
+
 ## Summary
 JSON import 4 経路 (`ImportAsJSON` / `ImportFromDataTableJSON` / `ImportRowsFromJSON` / Reimport) はローカル配列に全行を組み、成功時だけ `UDataIndexerEditorData::SetRows` で 1 回入れ替える。失敗時は `FScopedTransaction::Cancel()` し、理由を `OutFailReason` で返す。`ImportFromFile` はダイアログ、Reimport は notification で理由を出す。JSON のパースは 1 回。FText は complex string で export し、namespace/key が往復する。DataTable 経路は重複 / 不正な PrimaryKey を拒否し、`Name` は束縛時だけ剥がす。friend 2 行、`LogTemp`、Factory の import 主張、手動の `TArray<uint8>` を消した。既知の赤 `FailedImportKeepsExistingRows` は緑になった。
 

@@ -63,7 +63,7 @@ created_by: task-create
 
 ## Acceptance Criteria
 - `wc -l K2Node_DataIndexerGetRow.cpp K2Node_DataIndexerGetKeysByIndex.cpp` の合計が現在 (567+556=1123) の半分以下。
-- `rg 'IsSplitPinNameMatch|FindSubPinByLeafName' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_*.cpp` が 0 件 (現在 2 ファイル)。
+- `rg 'IsSplitPinNameMatch|FindSubPinByLeafName'` が GetRow/GetKeysByIndex の .cpp (`K2Node_DataIndexerGetRow.cpp` / `K2Node_DataIndexerGetKeysByIndex.cpp`) で 0 件、定義は `DataIndexerK2NodeUtils.cpp` だけ (現在 2 ファイル)。
 - `rg 'GetPinMetaData' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerGetRow.*` が 0 件 (現在 2)。
 - `rg 'BreakAllPinLinks' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/` が 0 件 (現在 2)。
 - Repository ピンを繋ぐ → Ctrl+Z でキーピンの参照性 (`bIsReference`) が繋ぐ前に戻る (現在: 戻らない)。
@@ -128,6 +128,11 @@ created_by: task-create
   NOTE: P-C7 は GRAPHACTION_Default だけで絞った。理由は Execution Log。Verification (4) で確認。
   ```
   2 round で残った 1 件は Follow-ups の 要ユーザー判断 (条件文の言い直しを受け入れるか、改名するか) としてコミットを進める。
+
+### ユーザー決定 2026-10-28 (AC 文言の修正)
+- 条件文の言い直しを受け入れた。コードは変えない。status は変えない。
+- 旧文言: 「`rg 'IsSplitPinNameMatch|FindSubPinByLeafName' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_*.cpp` が 0 件 (現在 2 ファイル)。」
+- 新文言: GetRow/GetKeysByIndex の .cpp で 0 件、定義は `DataIndexerK2NodeUtils.cpp` だけ。
 
 ## Summary
 GetRow / GetKeysByIndex の共通部分を `UK2Node_DataIndexerHandleNodeBase` (abstract) に集め、自由関数と PinKeys を `DataIndexerK2NodeUtils` に統合した。B-C3 / B-C4 / B-C5 / B-C11 / P-C7 / R-C11 を基底で直した。ビルドと `DataIndexerEd.Compiler` 5/5 は通過。既存 Boot Level BP はヘッドレスで警告なしにコンパイルできた。undo の GUI 確認は MCP 停止のため未実施。

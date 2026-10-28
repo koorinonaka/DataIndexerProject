@@ -74,7 +74,7 @@ R-V1〜R-V13。
 - `rg 'StructViewDataProvider' Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/` のクラス定義が 1 件 (現在 2)。
 - `rg 'ExportTextItem|ImportTextItem' Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/DataIndexerViewModel_{Clipboard,FillHandle}.cpp` が
   `ResolveCellValue` 経由の 2 関数内だけ (現在 4 箇所)。
-- `rg 'SelectCellRect'` が 1 定義 + 3 呼び手。
+- `rg 'SelectCellRect'` が 1 定義 + 2 呼び手 (`PasteCells`, `CommitFillHandleDrag`)。Clipboard/FillHandle は範囲選択の状態を直接書かない。
 - `SDataIndexerDictionaryComboBox.cpp` の `clang-format off/on` が対になる。
 - 全自動テスト (`DataIndexerEd` 全群) が通る。
 
@@ -169,6 +169,13 @@ R-V1〜R-V13。
   2. 同上 (executor.md の fold 規則はタスクの Out of Scope を無効にしない。行を外すか Out of Scope を直すかはユーザー判断)。
   NOTE: PasteRow の PreDragSelection クリア、CollectVisibleRows の IsValid ガード追加 (無害)、削除名 grep 0 件、LOCTEXT ラベル同一、見た目は GUI smoke 待ち。
 - 2 round で閉じない 2 件は 要ユーザー判断 (run 終端) として orchestrator に渡し、commit は進める (executor.md step 8-4)。
+
+### ユーザー決定 2026-10-28
+- critic 1 件目: AC の文言を直した。コードは変えない。status は変えない。
+  - 旧文言: 「`rg 'SelectCellRect'` が 1 定義 + 3 呼び手。」
+  - 新文言: 1 定義 + 2 呼び手 (`PasteCells`, `CommitFillHandleDrag`)。Clipboard/FillHandle は範囲選択の状態を直接書かない。
+- critic 2 件目: fold した t261026-57d1 由来の 1 行 (`SViewHeader::HandleColumnWidthChanged` の `RecomputeMinContentWidth();`) は受け入れる。
+  Out of Scope の「挙動変更」は「リファクタ由来の挙動変更」と読む。Out of Scope の文言は変えない。
 
 ## Summary
 Views の重複・責務漏れ・死にコードを整理した (R-V1〜R-V13)。セル値の Export/Import、行の読取専用検査、Fill Down の書込み、列レイアウトの走査、ドラッグの Op/Handle、セル枠の描画を、それぞれ 1 つにまとめた。挙動は変えない意図で、自動テストは 75/75。GUI smoke 5 操作が残る。

@@ -62,11 +62,11 @@ CDO fallback が無関係な Repository を拾わない。
 6. GUI で Verification。既存 3 fix のシナリオ (Data View セルの Repository ピッカー、TOptional プロパティ、PostLoad 中) が回帰しないことを確認。
 
 ## Acceptance Criteria
-- `rg 'FEditorScriptExecutionGuard' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/` の呼び出し元が `EvaluateRepositoryPath` 1 箇所 (現在: Resolver 内 1 箇所だが Tick から到達)。
+- Repository 解決での `FEditorScriptExecutionGuard` は `EvaluateRepositoryPath` 1 箇所 (`rg 'FEditorScriptExecutionGuard' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/` の他の hit は Repository 解決ではないので数えない。`rg ResolveFromObject` = 0 件)。
 - `SDataIndexerGraphPin_PrimaryKey::Tick` から `EvaluateRepositoryPath` への経路が、兄弟ピン変化時以外に無い (ログカウンタ: グラフを開いて静止で 0 回/秒。現在: 3 回/フレーム)。
 - `Repository` 未設定の Select ノードの PrimaryKey ピッカーが、BP 変数 `Repository` の行を出さない (現在: 出す)。
 - `rg 'GraphPinObj->' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerGraphPin_*Key.cpp` の各行が null ガード後 (読みで確認)。
-- `rg 'ResolveSiblingRepository'` が 1 定義 + 2 呼び手。
+- `rg 'ResolveSiblingRepository'` が定義 1 + 宣言 1 + 呼び手 2。
 
 ## Tests
 - 自動テストなし (Slate/GraphPin は BP エディタ経由)。Tests 4 問: 既存テーブルなし、Slate 起動 fixture は本番の呼び手が要らない口。
@@ -145,6 +145,13 @@ NOTE: DataIndexerPrimaryKeyRepositoryResolver.cpp:260 — AC2 (静止時のロ�
 NOTE: K2Node_DataIndexerGetRow.cpp:83 — Out of Scope には「`ResolveRepositoryFromPin` は新 API を呼ぶだけに変える」とある。今回の diff はこの関数に触れていない。範囲違反ではない。
 ```
 (3 つ目の NOTE は「既定」に記録済み。外側プロパティに Repository meta が付いた RowHandle では Repository 未設定時にその meta 先へ落ちうる。)
+
+### ユーザー決定 2026-10-28 (AC 文言の修正)
+- AC1・AC5 を実行者の案 (a) で書き直した。status は変えない。
+- AC1 旧文言: 「`rg 'FEditorScriptExecutionGuard' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/` の呼び出し元が `EvaluateRepositoryPath` 1 箇所 (現在: Resolver 内 1 箇所だが Tick から到達)。」
+- AC1 新文言: Repository 解決での guard は `EvaluateRepositoryPath` 1 箇所。
+- AC5 旧文言: 「`rg 'ResolveSiblingRepository'` が 1 定義 + 2 呼び手。」
+- AC5 新文言: 定義 1 + 宣言 1 + 呼び手 2。
 
 ## Summary
 Repository 解決を純粋なメタパス探索 (`FindRepositoryMetaPath` / `FindSiblingRepositoryPin`) とスクリプト実行つき評価 (`EvaluateRepositoryPath`) に分けた。

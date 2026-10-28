@@ -73,12 +73,12 @@ details の毎フレーム `LoadObject` / グローバル関数検索 / ハン�
 7. GUI で Verification。
 
 ## Acceptance Criteria
-- `rg '"ShowOnlyInnerProperties"|"AllowFunctionLibraries"' Plugins/DataIndexer/Source/DataIndexerEd/` が 0 件 (現在 3)。
+- `rg '"ShowOnlyInnerProperties"|"AllowFunctionLibraries"' Plugins/DataIndexer/Source/DataIndexerEd/ --glob '!DataIndexerMetaDataKeys.h'` が 0 件 (現在 3)。
 - `rg 'TryFindTypeSlow' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/` が 1 件 (`SchemaFilter` 内、現在 2)。
 - `rg 'LoadObject<UClass>' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerVariableCustomization_RepositorySchema.cpp` の
   呼び出しが lambda 内に無い (現在 2 箇所 lambda 内)。
 - `rg 'IClassViewerFilter' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/` の派生クラスが 1 つ (現在 2)。
-- `rg 'DisplayStrings' Plugins/DataIndexer/Source/DataIndexerEd/` が 0 件 (現在 1)。
+- `rg 'DisplayStrings' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerGraphPin_PrimaryKey.h` が 0 件 (現在 1)。
 - `rg 'TODO' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerDetailCustomization_EditorRow.cpp` が 0 件 (現在 1)。
 - 1000 行 Repository の行を選択して details を開いたとき、`HandleIsResetToDefaultVisible` 1 回あたり `GetChildHandle` が呼ばれない (カウンタ)。
 
@@ -154,6 +154,13 @@ details の毎フレーム `LoadObject` / グローバル関数検索 / ハン�
   NOTE: PTC_Repository の親ハンドル meta へのフォールバック削除は R-C3 の単一 MetaPath 署名に沿う。PTC_Schema が abstract 等を隠すのは R-C6 の和。
   ```
 - 2 round 後も開いている 2 件 (AC 文言) は要ユーザー判断 (run 終端) へ。コミットは進める。
+
+### ユーザー決定 2026-10-28 (AC 文言の修正)
+- 2 件とも AC の文言を直した。コードは変えない。status は変えない。
+- 旧文言 1: 「`rg '"ShowOnlyInnerProperties"|"AllowFunctionLibraries"' Plugins/DataIndexer/Source/DataIndexerEd/` が 0 件 (現在 3)。」
+- 新文言 1: 同じ rg に `--glob '!DataIndexerMetaDataKeys.h'` を足して 0 件。
+- 旧文言 2: 「`rg 'DisplayStrings' Plugins/DataIndexer/Source/DataIndexerEd/` が 0 件 (現在 1)。」
+- 新文言 2: 対象を `DataIndexerGraphPin_PrimaryKey.h` に絞って 0 件。
 
 ## Summary
 Customizations の重複を `DataIndexerSchemaFilter` / `DataIndexerKeyOptions` に集約し、schema クラスピッカーのフィルタを 1 クラスにした。

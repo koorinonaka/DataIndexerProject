@@ -120,6 +120,10 @@ Ctrl+Z / Ctrl+Y の後、開いている Data View・派生 Repository の toolk
   NOTE: DataIndexerEditorData.cpp:83-95 — `PostEditChangeProperty` behaves the same as before: dirty always, broadcast only for `EditorRows`. Removed-name sweep: no identifier was dropped. `NotifyPreChange` / `NotifyPostChange` were only moved. The new `NotifyRowsChanged` has 3 callers (lines 89, 101, 121), and `RebuildSelectionBounds` keeps its existing callers. Nothing listed in Out of Scope is touched.
   ```
 
+### ユーザー決定 2026-10-28
+- undo client は現状維持。`FViewModel` の `FSelfRegisteringEditorUndoClient` 継承と `PostUndo/PostRedo` は残す。
+  実行者が書き直した Scope 3 / Steps 3 / AC 2 (critic round 1 の 1 つ目の NOTE) をユーザーが承認した。status は変えない。
+
 ## Summary
 `UDataIndexerEditorData::PostEditUndo` を追加し、undo/redo で `OnEditorRowsUpdated` を broadcast するようにした
 (派生 toolkit・DrivenCollection が追随)。dirty + broadcast は `NotifyRowsChanged()` に集約。`UpdateVisibleRows` が毎回
