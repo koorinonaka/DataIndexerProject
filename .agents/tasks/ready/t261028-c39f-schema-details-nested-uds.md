@@ -1,5 +1,5 @@
 ---
-status: ready
+status: verify_pending
 order: 190
 tier: standard
 screen: required
@@ -66,16 +66,35 @@ Schema asset editor の Column Layout パネルを開いたまま、RowStruct �
 - quick: Editor ターゲットのビルド + `Automation RunTests DataIndexerEd.Schema` と `DataIndexerEd.SchemaLayout` と `DataIndexerEd.NotOverridable`。
 
 ## Verification
-- 上の GUI 項目を UE MCP か `windows-screenshot` で撮る (フィールド追加前後のツリー各 1 枚)。
+- 残り (未実施): 上の GUI 項目を UE MCP か `windows-screenshot` で撮る (フィールド追加前後のツリー各 1 枚)。
 
 ## Execution Log
-Not started.
+- 2026-10-28 実装 (fix/audit-2026-10、executor 20/21)。
+  - `.h`: `WatchedStruct` → `TSet<TWeakObjectPtr<const UUserDefinedStruct>> WatchedStructs`。クラスコメントを「RowStruct とそれが FStructProperty で内包する UDS」に更新。
+  - `.cpp`: 匿名 namespace に `CollectNestedUserDefinedStructs` (ノード木を再帰で走り `bIsStruct` かつ `ChildStructType` が UDS なら追加)。
+    `CustomizeDetails` 冒頭で `WatchedStructs.Reset()` + RowStruct が UDS なら追加 (ノード木を作らない早期 return 分岐でも RowStruct だけは入る)。
+    `BuildNodes` 後、ツリー作成前に収集。`PostChange` は `Changed && WatchedStructs.Contains( Changed )`。
+  - 循環で子を展開しなかった struct ノードも `ChildStructType` は入るので監視対象に含む (害なし)。
+- quick:
+  - `Build.bat DataIndexerProjectEditor Win64 Development` → `Result: Succeeded` (22 秒、1 回。C1001 なし)。`UnrealEditor-DataIndexerEd.dll` 更新時刻 14:58:55 > cpp 編集 14:58:28。
+  - `Automation RunTests DataIndexerEd.Schema+DataIndexerEd.SchemaLayout+DataIndexerEd.NotOverridable` → Found 16、`Result={Success}` 16 / 失敗 0。full は run 終端。
+- Acceptance grep: `rg 'WatchedStructs'` → .h 1 + .cpp 4 = 5 件 (≥3)。`rg '\bWatchedStruct\b'` → 0 件。
+- 自己レビュー (stat): Plugin 側 2 ファイル (+29/-4)。Scope 内のみ。
+- Critic r1 (fallback 経由、verbatim):
+  ```
+  PASS
+  NOTE: E:\workspace\DataIndexerProject\Plugins\DataIndexer\Source\DataIndexerEd\Private\Customizations\DataIndexerDetailCustomization_Schema.cpp:642 — GUI 受入項目 (S_Inner にフィールドを足すと、ツリーにすぐ出る) は diff だけでは確かめられない。画面での検証待ち。コードの流れは要件を満たす。RowStruct は 561-564 行で常に集合へ入り、ネストした UDS は 642 行で入り、657 行で Contains 判定する。
+  NOTE: E:\workspace\DataIndexerProject\Plugins\DataIndexer\Source\DataIndexerEd\Private\Customizations\DataIndexerDetailCustomization_Schema.cpp:657 — 削除名 `WatchedStruct` を repo 全体で grep した。残りは 0 件。追加した `CollectNestedUserDefinedStructs` の参照は 642 行と 112 行 (再帰) の 2 件。`WatchedStructs` は .h に 1 件、.cpp に 4 件ある。Acceptance の grep 条件は 2 つとも満たす。
+  ```
+- GUI 検証は未実施: UE MCP (127.0.0.1:8001) が本 run で停止中 (ECONNREFUSED)。→ verify_pending。
+
 
 ## Summary
-Not started.
+Column Layout の監視対象を RowStruct + FStructProperty で到達できる全 UDS の集合にした。ネストした UDS の編集でもツリーが RequestForceRefresh で作り直される。GUI 確認待ち。
 
 ## Changed Files
-Not started.
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerDetailCustomization_Schema.h
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerDetailCustomization_Schema.cpp
 
 ## Blockers
-なし
+検証待ち: GUI 項目 (S_Row が S_Inner をネストする Schema で、S_Inner にフィールド追加後ツリーに出る) の前後スクリーンショット。UE MCP 停止中のため未実施。
