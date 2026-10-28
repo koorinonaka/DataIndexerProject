@@ -21,9 +21,9 @@ void UItemTypeSchema::InitializeExpandedStructEntries()
 	}
 }
 
-EDataValidationResult UItemTypeSchema::IsRowValid( FConstStructView RowEntity, FDataValidationContext& Context ) const
+EDataValidationResult UItemTypeSchema::IsRowValid( const FDataIndexerPrimaryKey& PrimaryKey, FConstStructView RowEntity, FDataValidationContext& Context ) const
 {
-	EDataValidationResult Result = Super::IsRowValid( RowEntity, Context );
+	EDataValidationResult Result = Super::IsRowValid( PrimaryKey, RowEntity, Context );
 
 	const auto AddError = [&]( const FText& Msg )
 	{
