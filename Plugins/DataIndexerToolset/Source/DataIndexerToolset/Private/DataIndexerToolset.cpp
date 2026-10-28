@@ -86,9 +86,11 @@ bool UDataIndexerToolset::ImportRepositoryJSON( const FString& RepositoryPath, c
 		return false;
 	}
 
-	if ( !FDataIndexerSerializer::ImportAsJSON( *Repository, JSONString ) )
+	FText FailReason;
+	if ( !FDataIndexerSerializer::ImportAsJSON( *Repository, JSONString, FailReason ) )
 	{
-		UE_LOG( LogTemp, Warning, TEXT( "DataIndexerToolset::ImportRepositoryJSON: import failed for '%s'" ), *RepositoryPath );
+		UE_LOG( LogTemp, Warning, TEXT( "DataIndexerToolset::ImportRepositoryJSON: import failed for '%s': %s" ), *RepositoryPath,
+			*FailReason.ToString() );
 		return false;
 	}
 
