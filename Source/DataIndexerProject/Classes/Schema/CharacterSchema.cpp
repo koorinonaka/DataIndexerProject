@@ -63,9 +63,9 @@ TSharedRef<SWidget> UCharacterSchema::CustomizePropertyCellWidget( DataIndexer::
 	return Super::CustomizePropertyCellWidget( Context );
 }
 
-EDataValidationResult UCharacterSchema::IsRowValid( FConstStructView RowEntity, FDataValidationContext& Context ) const
+EDataValidationResult UCharacterSchema::IsRowValid( const FDataIndexerPrimaryKey& PrimaryKey, FConstStructView RowEntity, FDataValidationContext& Context ) const
 {
-	EDataValidationResult Result = Super::IsRowValid( RowEntity, Context );
+	EDataValidationResult Result = Super::IsRowValid( PrimaryKey, RowEntity, Context );
 
 	const auto AddError = [&]( const FText& Msg )
 	{

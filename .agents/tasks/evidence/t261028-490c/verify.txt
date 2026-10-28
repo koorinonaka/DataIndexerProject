@@ -1,0 +1,11 @@
+# t261028-490c verify sweep (ALICE, 2026-10-29 05:22-05:26 JST, UE 5.8, editor DLL 2026-10-28 21:29 = submodule c9ca5c7 tree)
+# Driver: _harness/mcp.py (SlateInspector Snapshot/Click/Type), real click via click.ps1 for the class picker item
+setup: AssetTools.duplicate /Game/GameData/DIS_Item -> /Game/__Verify/DIS_VItem2 (same RowStruct ItemRow -> listed by the Schema Class picker, no reset modal)
+       CreateRepository /Game/__Verify/DI_V490 schema=DIS_Item_C ; OpenEditorForAsset
+1 overlay: text "Schema: " + text "DIS_Item" [pos=1802,32] + 2 buttons (01-initial-schema-DIS_Item.png)
+2 Asset Details drawer > Schema Class combobox > picker lists DIS_Item / DIS_VItem2 / ItemSchema > real click DIS_VItem2 (bgyes guard: "no dialog found")
+  overlay: text "DIS_VItem2" [pos=1787,32]  (AC1, editor not reopened; 02-after-change-schema-DIS_VItem2.png)
+  click 2nd overlay button (pencil, pos 1880,28): GetOpenAssets -> ['/Game/__Verify/DI_V490', '/Game/__Verify/DIS_VItem2']  (AC3; 03-open-in-editor-opened-DIS_VItem2.png)
+3 back to DI_V490 tab; py end_transaction() -> 0 ; Cmd "TRANSACTION UNDO" -> LogEditorTransaction: Undo Schema Class を編集
+  overlay: text "DIS_Item" [pos=1802,32]  (AC2; 04-after-undo-schema-DIS_Item.png)
+teardown: editors closed, AssetTools.delete DI_V490 / DIS_VItem2 -> exists false

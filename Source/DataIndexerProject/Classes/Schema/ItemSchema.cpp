@@ -135,9 +135,9 @@ TSharedRef<SWidget> UItemSchema::CustomizePropertyCellWidget( DataIndexer::IProp
 	return Super::CustomizePropertyCellWidget( Context );
 }
 
-EDataValidationResult UItemSchema::IsRowValid( FConstStructView RowEntity, FDataValidationContext& Context ) const
+EDataValidationResult UItemSchema::IsRowValid( const FDataIndexerPrimaryKey& PrimaryKey, FConstStructView RowEntity, FDataValidationContext& Context ) const
 {
-	EDataValidationResult Result = Super::IsRowValid( RowEntity, Context );
+	EDataValidationResult Result = Super::IsRowValid( PrimaryKey, RowEntity, Context );
 
 	const auto AddError = [&]( const FText& Msg )
 	{

@@ -1,0 +1,47 @@
+== 10 rows (A)
+header: LineNumber-col text x=62 RowName x=102
+row  1 Row 01: button x=75 name x=103 rowref=g46 numref=x81
+row  2 Row 02: button x=75 name x=103 rowref=g47 numref=x89
+row  3 Row 03: button x=75 name x=103 rowref=g48 numref=x97
+row  4 Row 04: button x=75 name x=103 rowref=g49 numref=x105
+row  5 Row 05: button x=75 name x=103 rowref=g50 numref=x113
+row  6 Row 06: button x=75 name x=103 rowref=g51 numref=x121
+row  7 Row 07: button x=75 name x=103 rowref=g52 numref=x129
+row  8 Row 08: button x=75 name x=103 rowref=g53 numref=x137
+row  9 Row 09: button x=75 name x=103 rowref=g54 numref=x145
+row 10 Row 10: button x=75 name x=103 rowref=g55 numref=x153
+== 9 rows after Delete of Row 05
+header: LineNumber-col text x=61 RowName x=100
+row  1 Row 01: button x=73 name x=101 rowref=g46 numref=x218
+row  2 Row 02: button x=73 name x=101 rowref=g47 numref=x226
+row  3 Row 03: button x=73 name x=101 rowref=g48 numref=x234
+row  4 Row 04: button x=73 name x=101 rowref=g49 numref=x242
+row  5 Row 06: button x=73 name x=101 rowref=g51 numref=x250
+row  6 Row 07: button x=73 name x=101 rowref=g52 numref=x258
+row  7 Row 08: button x=73 name x=101 rowref=g53 numref=x266
+row  8 Row 09: button x=73 name x=101 rowref=g54 numref=x274
+row  9 Row 10: button x=73 name x=101 rowref=g55 numref=x282
+== after single-row edit (details: DisplayName 'Row 06' -> 'Row 66')
+header: LineNumber-col text x=61 RowName x=100
+row  1 Row 01: button x=73 name x=101 rowref=g46 numref=x218
+row  2 Row 02: button x=73 name x=101 rowref=g47 numref=x226
+row  3 Row 03: button x=73 name x=101 rowref=g48 numref=x234
+row  4 Row 04: button x=73 name x=101 rowref=g49 numref=x242
+row  5 Row 66: button x=73 name x=101 rowref=g51 numref=x298
+row  6 Row 07: button x=73 name x=101 rowref=g52 numref=x258
+row  7 Row 08: button x=73 name x=101 rowref=g53 numref=x266
+row  8 Row 09: button x=73 name x=101 rowref=g54 numref=x274
+row  9 Row 10: button x=73 name x=101 rowref=g55 numref=x282
+# Instrument: SlateInspector Snapshot pos (screen px). Same 10-row view snapshotted twice -> identical (diff SAME).
+# AC1: after Delete (10 -> 9 rows) header RowName 102->100, every row's first button 75->73 and name 103->101 (all moved 2px together).
+# Row widgets kept (g46..g55), cells rebuilt for all rows (numref changed) = OnColumnsUpdated -> RebuildCells.
+# Single-row rebuild after that (details: DisplayName Row 06 -> Row 66): only row 5 got a new numref (x250 -> x298), still x=73/101 like the rest.
+# Before the fix (t261026-bd46 06-after-delete-move-insert.png) the rebuilt row sat 2px left of the others.
+
+# Column drag (real mouse, _harness/dragcap.ps1), header y=150
+## Subtitle hidden (Filters > Properties > Subtitle). Order before: RowName, Description(300), Type(392), Rarity(666), Base Value(940), Metadata Tags
+drag Description 342 -> 950 (between Rarity and Base Value); indicator while held: blue column at screen x 935-936 (Rarity/Base Value boundary ~936)
+after drop: RowName 100, Type 300, Rarity 574, Description 848, Base Value 940, Metadata Tags 1030   -> moved to the drop position (before fix: insert index 0)
+## all columns visible (Subtitle shown again). Order: RowName, Subtitle(300), Type(372), Rarity(646), Description(920), Base Value, Metadata Tags
+drag Description 962 -> 350 (between Subtitle and Type); indicator at screen x 367-368 (Subtitle 300+64 / Type 372 boundary)
+after drop: RowName 100, Subtitle 300, Description 372, Type 462, Rarity 736, Base Value 1010, Metadata Tags 1102  (= original order)

@@ -1,0 +1,4 @@
+__DI_CELLS__
+Description_15_366C2CCD4F9852A25FA56FBC5D11E2B0	TargetType_25_316133A54699B75290F80682366B423C
+NSLOCTEXT("", "AA8A51414F80182F3981B399A385DEF3", "Launches a fireball at a single target.")	NewEnumerator1
+NSLOCTEXT("", "684783494955DA10F0A1FDB7B5AD9562", "Shoots a bolt of ice, slowing the target.")	NewEnumerator1

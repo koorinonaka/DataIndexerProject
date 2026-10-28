@@ -39,6 +39,7 @@ DataIndexer Repositoryは JSON によるエクスポート・インポート・D
 - `RowEntity` は UE の JSON プロパティシリアライズで行構造体をシリアライズしたもの
 - `EditorFlags` はエディタ専用の行状態（コメントアウト・子で非表示など）のビットマスク。`0` は無し
 - エクスポートにはローカル行のみ含まれ、親Repositoryの行はエクスポートされません
+- `FText` は UE の複合テキスト形式で書き出されます。ローカライズされたテキストは `NSLOCTEXT("Namespace", "Key", "Text")` の形になり、再インポートしても namespace と key が残ります。以前の平文の形式で書き出したファイルもインポートできます
 
 ## インポート
 
@@ -47,6 +48,8 @@ DataIndexer Repositoryは JSON によるエクスポート・インポート・D
 3. JSON ファイルを選択する
 
 インポートは**完全置換**として実行されます。既存の行はすべて削除され、JSON ファイルの内容で置き換えられます。
+
+1 行でも変換できない場合（JSON の構文エラー、行構造体に合わない行、重複した `PrimaryKey`、GUID として読めない `PrimaryKey`）、インポートは取り消されます。既存の行は変わりません。失敗の理由はメッセージで表示されます。
 
 形式は自動判定されます。`RowEntity` フィールドを持つファイルはネイティブの DataIndexer JSON、フラットな行オブジェクトは DataTable JSON として扱われます。DataTable 経由の手順は [DataTable から移行する](../how-to/migrate-from-datatable.md) を参照してください。
 

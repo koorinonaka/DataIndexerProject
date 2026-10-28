@@ -82,9 +82,6 @@ UItemSchema::UItemSchema()
 
 The macro validates this signature at **compile time** via `static_assert`: the return type must be `FGuid`, the row must be passed by `const` reference, and the function's row type must match the `RowType` argument. A mismatch is a compile error, not a deferred editor-validation warning.
 
-!!! warning "Deprecated overload"
-    The earlier `void RegisterFunction_BuildIndex(const FDataIndexerIndex&, FName)` overload is deprecated. It still binds by name but performs no compile-time signature checking. Migrate to `DI_REGISTER_BUILD_INDEX`.
-
 When binding from Blueprint, the Schema details panel filters candidate functions to this signature and "Create matching function" generates a stub with a `const FRowStruct&` parameter — the row is already the concrete struct, so no `Get Instanced Struct Value` node is needed.
 
 ---
