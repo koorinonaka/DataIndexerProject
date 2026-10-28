@@ -67,7 +67,7 @@ created_by: task-create
 - `rg 'GetPinMetaData' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerGetRow.*` が 0 件 (現在 2)。
 - `rg 'BreakAllPinLinks' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/` が 0 件 (現在 2)。
 - Repository ピンを繋ぐ → Ctrl+Z でキーピンの参照性 (`bIsReference`) が繋ぐ前に戻る (現在: 戻らない)。
-- Repository ピンを繋ぎ替えてワイルドカード型が変わる → Ctrl+Z で相手ノードのリンクも戻る (現在: 片側だけ)。
+- Repository ピンを繋ぎ替えてワイルドカード型が変わっても、リンクは両側とも切れない (リンクを保つ分岐は dfba 以前から在る)。Ctrl+Z で型が戻り、リンクは両側とも残る。リンクが切れるのは PinSubCategoryObject が無効なときだけ (ユーザー決定 2026-10-28 で書き直し、旧文言は Execution Log)。
 - `rg 'RowsHandle.IndexKey|Handle.IndexKey' Plugins/DataIndexer/Source/DataIndexerEd/` が 0 件 (現在 2)。
 - 既存 BP を開いてもピン欠落・再接続なし。
 
@@ -77,7 +77,7 @@ created_by: task-create
 
 ## Verification
 - undo 2 シナリオのスクリーンショット (繋ぐ前 / 繋いだ後 / Ctrl+Z 後)。既存 BP のコンパイル結果。
-- 残り (2026-10-28): (1) Repository ピンを繋ぐ → Ctrl+Z でキーピンの参照性が戻る。(2) Repository を繋ぎ替えて型が変わる → Ctrl+Z で相手ノードのリンクも戻る。(3) Boot Level BP をエディタで開き、ピン欠落・再接続がないこと (ヘッドレスのコンパイルは済)。(4) Handle の Split / Recombine で出力型が追従すること (P-C7 のフィルタ変更の確認)。
+- 残り (2026-10-28): (1) Repository ピンを繋ぐ → Ctrl+Z でキーピンの参照性が戻る。(2) Repository を繋ぎ替えて型が変わる → リンクは両側とも残り、Ctrl+Z で型が戻ってもリンクは両側とも残る。(3) Boot Level BP をエディタで開き、ピン欠落・再接続がないこと (ヘッドレスのコンパイルは済)。(4) Handle の Split / Recombine で出力型が追従すること (P-C7 のフィルタ変更の確認)。
 - 済 (2026-10-28 verify sweep、ALICE): (1)〜(4)。(2) は型が変わってもリンクが切れない経路だった (Execution Log)。証跡 `.agents/tasks/evidence/t261026-dfba/` (ピンの状態はクリップボード T3D を `_harness/t3dpins.ps1` で読んだ数値)。
 
 ## Execution Log
@@ -144,6 +144,16 @@ created_by: task-create
 - (3) Boot の Level BP をエディタで開いた (03)。GetRow ×2 と GetKeysByIndex ×1 のピンと結線はそろっていた (`get_node_infos`)。開いた後のログに Warning / Error は無い。保存はしていない。
 - (4) Handle を右クリックで「構造体ピンを再結合」→ Handle 1 本、Out Row は ItemRow 型、リンクは残った (04a)。「構造体ピンを分割」→ Handle_Repository / Handle_PrimaryKey、型とリンクは同じ (04b)。限界: この経路では型が変わる理由が無いので、「追従しない」場合との区別はつかない。
 - 所要 約 6 分 (20:00〜20:06)。
+
+### ユーザー決定 2026-10-28 (AC / Verification の文言を実挙動に合わせる)
+- verify sweep (c51d89a) の 要ユーザー判断 への回答。文言を実挙動に合わせた。コードは変えない。status は変えない。
+- 旧 AC: 「Repository ピンを繋ぎ替えてワイルドカード型が変わる → Ctrl+Z で相手ノードのリンクも戻る (現在: 片側だけ)。」
+- 旧 Verification 残り (2): 「Repository を繋ぎ替えて型が変わる → Ctrl+Z で相手ノードのリンクも戻る。」
+- 旧文言の前提 (繋ぎ替え → 型変化でリンクが切れ、Ctrl+Z で片側だけ戻る) は実挙動と違う。
+  - 型が変わってもリンクは切れない。リンクを保つ分岐は dfba 以前から在る。
+  - リンクが切れるのは PinSubCategoryObject が無効なときだけ。
+  - Undo で型が戻り、リンクは両側とも残る (verify sweep c51d89a で確認)。
+- 新文言は Acceptance Criteria と Verification の該当行。
 
 ## Summary
 GetRow / GetKeysByIndex の共通部分を `UK2Node_DataIndexerHandleNodeBase` (abstract) に集め、自由関数と PinKeys を `DataIndexerK2NodeUtils` に統合した。B-C3 / B-C4 / B-C5 / B-C11 / P-C7 / R-C11 を基底で直した。ビルドと `DataIndexerEd.Compiler` 5/5 は通過。既存 Boot Level BP はヘッドレスで警告なしにコンパイルできた。undo などの GUI 確認は 2026-10-28 の verify sweep で合格した。

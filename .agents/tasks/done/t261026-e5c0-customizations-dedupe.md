@@ -90,7 +90,9 @@ details の毎フレーム `LoadObject` / グローバル関数検索 / ハン�
 
 ## Verification
 - 残り (GUI。UE MCP がこの run では停止している):
-  - Repository ピッカー (ピンと details) が同じ候補を出すスクリーンショット。Schema クラスピッカー 2 箇所が同じ候補を出すスクリーンショット。
+  - Repository ピッカー: Schema Filter なしで、ピンと details の先頭候補が一致するスクリーンショット。Schema Filter ありでは、変数ノードのピンに Schema meta が届かない (エンジン `UK2Node_Variable::GetPinMetaData` は `AllowAbstractClasses` だけを返す。e5c0 以前から) ので、ピンは全件を出す。
+  - Schema クラスピッカー 2 箇所: 除外の基準は共通。PTC_Schema は RowStruct で絞るので、候補は VariableCustomization の候補の部分集合になる (設計どおり。実測 15 件 vs 2 件)。2 箇所のスクリーンショット。
+  - (上の 2 行はユーザー決定 2026-10-28 で書き直し、旧文言は Execution Log)
   - Schema Filter 付き BP 変数 details を開いて静止 → log に `LoadObject` 警告が出ない。
   - 1000 行 Repository の行を選択して details を開き、`HandleIsResetToDefaultVisible` 1 回あたり `GetChildHandle` が呼ばれないことをカウンタで確かめる (AC)。
 - 済 (2026-10-28 verify sweep、ALICE): 上の 3 項目。カウンタはビルドが要るので使わず、README の perf 規則どおり構造 (`GetChildHandle` は `CustomizeDetails` の 1 箇所だけ) で代えた。1000 行 Repository の行 details は開いて問題なし。証跡 `.agents/tasks/evidence/t261026-e5c0/`。
@@ -172,6 +174,15 @@ details の毎フレーム `LoadObject` / グローバル関数検索 / ハン�
 - LoadObject 警告: Schema Filter = DIS_Item の変数 details を表示したまま操作した間、`LoadObject` / `LogUObjectGlobals: Warning` / `Failed to find` は 0 件 (起動時の無関係な GameDataSettings 1 件だけ)。古いパスでの対照 (旧コードなら毎フレーム警告) は、変数メタを古いパスに書き換える手段が無く未実施。
 - AC (GetChildHandle カウンタ): カウンタはビルドが要るので使わなかった。README の perf 規則に従い構造で確認: `GetChildHandle` は EditorRow.cpp の `CustomizeDetails` 1 箇所だけ (critic round 1/2 も確認)。1000 行の DI_V1000 で行を選び details を開いた (bd46 / dd8a の作業中)。警告・停止は無い。
 - 所要 約 4 分 (20:06〜20:10、Boot の追加確認を含む)。
+
+### ユーザー決定 2026-10-28 (Verification の文言を実挙動に合わせる)
+- verify sweep (c51d89a) の 要ユーザー判断 への回答。文言を実挙動に合わせた。コードは変えない。status は変えない。
+- 旧文言: 「Repository ピッカー (ピンと details) が同じ候補を出すスクリーンショット。Schema クラスピッカー 2 箇所が同じ候補を出すスクリーンショット。」
+- 「同じ候補」は 2 点で実挙動と違う。
+  1. Schema Filter ありでは、変数ノードのピンに Schema meta が届かない。エンジン `UK2Node_Variable::GetPinMetaData` は `AllowAbstractClasses` だけを返す。e5c0 以前からの挙動。
+  2. Schema クラスピッカーは、PTC_Schema 側が RowStruct で絞る (15 件 vs 2 件、設計どおり)。
+- Schema Filter なしでは、details とピンの先頭候補が一致した (verify sweep c51d89a)。
+- 新文言は Verification の「残り」の該当行。
 
 ## Summary
 Customizations の重複を `DataIndexerSchemaFilter` / `DataIndexerKeyOptions` に集約し、schema クラスピッカーのフィルタを 1 クラスにした。
