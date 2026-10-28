@@ -1,5 +1,5 @@
 ---
-status: ready
+status: done
 order: 210
 tier: standard
 screen: none
@@ -82,13 +82,46 @@ row struct にフィールドを足しても、足す前に書き出した nativ
 - 自動テストの結果 (`Saved/Logs/DataIndexerProject.log` の `Automation Test Succeeded/Failed`) だけで閉じる。GUI は要らない。
 
 ## Execution Log
-Not started.
+- 2026-10-28 前提: t261026-25fc は done/ に status: done。作業ブランチ fix/audit-2026-10 (両 repo)。開始時 git status clean。
+- Step 1 (照合規則): 5.8 `JsonObjectConverter.cpp` `JsonAttributesToUStructWithContainer` は `TFieldIterator<FProperty>` で回し、
+  `StructDefinition->GetAuthoredNameForField(Property)` を `JsonAttributes.Find` で引く。5.7 (`D:\Apps\Epic Games\UE_5.7`、同関数 1140 行) も同じ。
+  キーの型は 5.8 `UE::FSharedString` / 5.7 `FString`。型に依らないよう、JSON の Values を写した `FJsonObject` から
+  各プロパティの authored name を `RemoveField(FStringView)` で消し、残ったキーを未知とした (5.8 の `RemoveField` は
+  `Values.RemoveByHash(GetTypeHash(FieldName), FieldName)` で engine の Find と同じ map 照合。5.7 も `RemoveField(FStringView)` がある)。
+  SkipFlags は掛けないので Transient / Deprecated の名前も既知になる。
+- 発見: engine の strict は「JSON の全キーを claim したら打ち切る」(`--NumUnclaimedProperties <= 0` で break、5.8 1366 行付近)。
+  だから strict でも、最後に現れるキーより後ろのフィールドの欠落は見逃していた。新規テストは最後のフィールド (`Value`) を抜くと
+  修正前でも緑だった (1 回目の修正前ラン)。そこで先頭フィールド `RowName` を抜く形に直し、修正前で赤を確認した。テスト内コメントに理由を残した。
+- Step 2-3: `ImportRowEntityFromJson` に未知キー検査を追加、`bStrictMode` を `false` に、関数上コメントを新規則に書き換え。
+  理由文 `JsonImport.RowEntityUnknownKeys`: 「RowEntity has keys that {RowStruct名} does not have: {キー列}」。
+- Step 4 修正前 (テストだけ入れた木、build 23s、C1001 1 回で再ビルド): `Automation RunTests DataIndexerEd.Serializer+DataIndexerEd.Migration`
+  → Success 13 / Fail 2。
+  - `ImportKeepsRowWithMissingEntityField`: `Expected 'Import should succeed' to be true` + `LogJson: JsonObjectToUStruct - Missing JSON value named RowName`。
+  - `FailedNativeImportKeepsExistingRows`: `RowEntity with an unknown key: import should fail` / `fail reason is filled` / `reason names the key` /
+    `row count unchanged ... it was 3`。
+- Step 5 修正後 (build 23s): 同コマンド → Success 15 / Fail 0。ログ: `Saved/Logs/DataIndexerProject.log`
+  (`Test Completed. Result={Success}` 15 行)。full は run 終端。
+- Game ターゲット: runtime 構造体・`WITH_EDITORONLY_DATA` に触れないのでビルドしていない。シグネチャ変更なし、submodule 外の呼び手への影響なし。
+- 自己レビュー (stat): submodule 3 ファイル +91/-3 (JsonSupport.cpp 28、テスト 9 + 57)。Scope どおり。親は task file と submodule pointer のみ。
+
+- Critic round 1:
+  ```
+  PASS
+  NOTE: E:\workspace\DataIndexerProject\Plugins\DataIndexer\Source\DataIndexerEd\Private\DataIndexerJsonSupport.cpp:57 — `*Pair.Key` compiles for both 5.8 `UE::FSharedString` and 5.7 `FString` keys. The Execution Log records builds and test runs on 5.8 only. Nobody has compiled this change on 5.7.
+  NOTE: E:\workspace\DataIndexerProject\Plugins\DataIndexer\Source\DataIndexerEd\Private\DataIndexerJsonSupport.cpp:48 — the unknown-key check runs before `JsonObjectToUStruct`. A RowEntity with both an unknown key and a malformed value therefore reports only the unknown key. This does not break any criterion.
+  NOTE: E:\workspace\DataIndexerProject\Plugins\DataIndexer\Source\DataIndexerEd\Private\Tests\Core\DataIndexerSerializerTests.cpp:123 — the new test drops `RowName` on purpose. With strict mode, the engine stops checking after the last JSON key, so dropping the last field would pass even before the fix. The test comment explains this, so the test does catch a switch back to `bStrictMode=true`.
+  ```
+  5.7 ビルドは README どおり release 時の `ArchivePlugin.bat` が検出する。
 
 ## Summary
-Not started.
+RowEntity の JSON import を non-strict (`bStrictMode=false`) にし、row struct に無いトップレベルキーをキー名つきで失敗にした。
+フィールド追加前の export は入り、欠けたフィールドは struct 既定値になる。照合は engine と同じ `GetAuthoredNameForField` + map 照合。
 
 ## Changed Files
-Not started.
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerJsonSupport.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/Core/DataIndexerImportAtomicityTests.cpp` (`FCase` に `ReasonMustContain` 列と未知キー行)
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/Core/DataIndexerSerializerTests.cpp` (`DataIndexerEd.Serializer.ImportKeepsRowWithMissingEntityField`)
+- `.agents/tasks/done/t261028-21b3-rowentity-json-nonstrict.md`
 
 ## Blockers
-なし
+None
