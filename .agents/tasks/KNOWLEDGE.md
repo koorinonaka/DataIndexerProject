@@ -31,3 +31,9 @@
 - `_harness/dragcap.ps1`: 実マウスのドラッグを押したまま CopyFromScreen で撮ってから離す (ドラッグのデコレータ・フィルのプレビュー用)。`_harness/t3dpins.ps1`: ノードを選んで MCP `PressKey Ctrl+C` した後のクリップボード T3D から、ピンごとの `bIsReference` / `bIsConst` / LinkedTo 数 / 型を出す。`_harness/cursor.ps1`: 実カーソルを置いて OS カーソルの形 (SIZENS など) を返す。
 - Data View の列ドラッグは、前に非表示のデータ列があると挿入位置が常に 0 になる (既存の不具合)。列の並べ替えを検証するときは全列を表示する。列の表示や並びは Saved/Config の SchemaLayouts に即時保存されるので、終わったら UI で戻す。
 - このプロジェクトのスキーマには Repository 型・RowHandle 型の列が無い。Data View のセルの Repository ピッカー (PTC_Repository) を GUI で見るには、そういう列を持つ一時 UDS とスキーマが要る。
+- (2026-10-28 3 回目の sweep) `end_transaction()` が 1 を返す件の一因: ProgrammaticToolset の `execute_tool_script` は実行中ずっとトランザクションを開いている。スクリプトの中から打った `TRANSACTION UNDO` は黙って何もしない。UNDO / REDO と `end_transaction` の確認は、スクリプトの外で SlateInspector `Type` を直接呼んで打つ (直接なら詳細パネルのペースト直後も 0 だった、2/2)。
+- UDS に足した新しいフィールドは Schema の Column Layout で未チェックなので、Data View の列にならない (開き直しても出ない)。Data View が UDS の変更に追随するかを見るときは、チェック済みのフィールドを struct エディタで改名する (列が消える)。
+- Repository の Schema Class ピッカーは RowStruct が同じ schema しか出さない。RowStruct の違う schema へ変えるには、Schema Class 行を右クリック → ペースト (クリップボードに `/Game/…/X.X_C`)。リセット確認は modal なので、先に `bgyes.ps1` を background で走らせる。
+- Python で Schema CDO の `row_struct` を `set_editor_property` すると「Changing RowStruct will reset …」の modal が出る。`py` を `Type` する前に `bgyes.ps1` を background で走らせる。済んだら残った `bgyes.ps1` を止める (Data View の青い UI を誤クリックしうる)。
+- UDS の型ピッカー: 型コンボを実マウスで開くと、検索欄が別ウィンドウの textbox として Snapshot に出る。Slate `Type` で絞り込み、候補を実マウスで押す。
+- Schema BP のエディタを閉じた直後の `EditorAssetLibrary.delete_asset` は「使用中」で失敗することがある。`unreal.SystemLibrary.collect_garbage()` の後に再試行すると消える。

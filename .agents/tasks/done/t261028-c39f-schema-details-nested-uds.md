@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 190
 tier: standard
 screen: required
@@ -66,7 +66,11 @@ Schema asset editor の Column Layout パネルを開いたまま、RowStruct �
 - quick: Editor ターゲットのビルド + `Automation RunTests DataIndexerEd.Schema` と `DataIndexerEd.SchemaLayout` と `DataIndexerEd.NotOverridable`。
 
 ## Verification
-- 残り (未実施): 上の GUI 項目を UE MCP か `windows-screenshot` で撮る (フィールド追加前後のツリー各 1 枚)。
+- 済 (2026-10-28 sweep、ALICE)。S_V39Row が S_V39Inner をネストする Schema `DIS_V39` の Column Layout を開いたまま S_V39Inner に変数を足すと、ツリーが作り直され、`S_V39Inner` ノードの下に新フィールドが出た。
+  - 1 回目: `01-before-add-inner-field.png` → `02-after-add-inner-field.png` → `03-after-add-expanded.png`。
+  - 対照 (編集なしでタブを往復): `04-control-tab-switch-no-edit.png`。
+  - 2 回目: `05-second-add-rebuilt.png` → `06-second-add-expanded.png`。
+  - 証跡は `evidence/t261028-c39f/`。
 
 ## Execution Log
 - 2026-10-28 実装 (fix/audit-2026-10、executor 20/21)。
@@ -87,14 +91,20 @@ Schema asset editor の Column Layout パネルを開いたまま、RowStruct �
   NOTE: E:\workspace\DataIndexerProject\Plugins\DataIndexer\Source\DataIndexerEd\Private\Customizations\DataIndexerDetailCustomization_Schema.cpp:657 — 削除名 `WatchedStruct` を repo 全体で grep した。残りは 0 件。追加した `CollectNestedUserDefinedStructs` の参照は 642 行と 112 行 (再帰) の 2 件。`WatchedStructs` は .h に 1 件、.cpp に 4 件ある。Acceptance の grep 条件は 2 つとも満たす。
   ```
 - GUI 検証は未実施: UE MCP (127.0.0.1:8001) が本 run で停止中 (ECONNREFUSED)。→ verify_pending。
+- 2026-10-28 verify sweep (ALICE、UE MCP 127.0.0.1:8001、ユーザー許可の GUI 操作)。一時資産は `/Game/__Verify` に作り、終了時に全部消した。
+  - 準備: Python で UDS `S_V39Inner` / `S_V39Row` を作った。struct エディタで S_V39Row の MemberVar_0 の型を S_V39Inner に変えた (型ピッカーを実マウスで開き、検索欄に Slate `Type`)。Python で Schema BP `DIS_V39` (RowStruct=S_V39Row) を作った。
+  - 手順: DIS_V39 を開き、Column Layout の MemberVar_0 (S_V39Inner) ノードを展開した。子は MemberVar_0 の 1 件 (01)。S_V39Inner のエディタで「変数を追加」を押し、DIS_V39 のタブへ戻った。ツリーは作り直されてノードが閉じた (02)。展開すると子は MemberVar_0 / MemberVar_1 (03)。
+  - 対照: 展開した状態で、編集なしで S_V39Inner タブと往復した。ノードは開いたままだった (04)。閉じたのはタブ切替ではなく、作り直しによる。
+  - 再現: もう一度変数を足すと、また閉じた (05)。展開すると子は MemberVar_0 / 1 / 2 (06)。
+  - 観察 (範囲外): 作り直しでツリーの展開状態が失われる。72fc の `RequestForceRefresh` の挙動で、本タスクの Out of Scope。
 
 
 ## Summary
-Column Layout の監視対象を RowStruct + FStructProperty で到達できる全 UDS の集合にした。ネストした UDS の編集でもツリーが RequestForceRefresh で作り直される。GUI 確認待ち。
+Column Layout の監視対象を RowStruct + FStructProperty で到達できる全 UDS の集合にした。ネストした UDS の編集でもツリーが RequestForceRefresh で作り直される。2026-10-28 の sweep で GUI 確認済み。
 
 ## Changed Files
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerDetailCustomization_Schema.h
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerDetailCustomization_Schema.cpp
 
 ## Blockers
-検証待ち: GUI 項目 (S_Row が S_Inner をネストする Schema で、S_Inner にフィールド追加後ツリーに出る) の前後スクリーンショット。UE MCP 停止中のため未実施。
+None

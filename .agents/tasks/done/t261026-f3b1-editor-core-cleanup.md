@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 170
 tier: standard
 screen: none
@@ -68,7 +68,7 @@ created_by: task-create
 
 ## Verification
 - full の log: 済 (DataIndexerEd 75 Success / 0 Fail)。
-- 残: Repository を開く → 閉じる → 開くで toolbar が 1 組 (Reimport 1 + Data 5 ボタン) であることのエディタ目視。UE MCP (127.0.0.1:8001) 停止中のため未実施。
+- toolbar 1 組: 済 (2026-10-28 sweep、ALICE)。`/Game/GameData/DI_Items` を開く → 閉じる → 開くを 2 周。各回の toolbar は Reimport 1 + Insert / Copy / Paste / Duplicate / Delete の 5 個。証跡 `evidence/t261026-f3b1/reopen1-toolbar.png`、`reopen2-toolbar.png`。
 
 ## Execution Log
 - 前提: t261026-6bf4 は verify_pending (検証未完) の上に構築。release/v1.0.2 は main マージ済み (ブランチ fix/audit-2026-10 は main から)。
@@ -100,9 +100,15 @@ created_by: task-create
   NOTE: BugReport.md:304 — this doc still mentions HandleMessageTokenClicked. No code depends on it.
   Sweeps: no removed names remain except that BugReport.md line; AssetDefinition_DataIndexerSchema has no references; LOCTEXT "AssetTypeActions" keys are unchanged; every new definition has a caller; Out of Scope modules are untouched; the R-E16 #else is kept.
   ```
+- 2026-10-28 verify sweep (ALICE、UE MCP 127.0.0.1:8001、ユーザー許可の GUI 操作):
+  - 手順: MCP `OpenEditorForAsset /Game/GameData/DI_Items` → 状態バー Cmd 欄で `py …AssetEditorSubsystem.close_all_editors_for_asset(…)` → `GetOpenAssets` で閉じたことを確認 → 再度 `OpenEditorForAsset`。これを 2 周した。
+  - 1 周目: `cap.ps1` の撮影で toolbar は Reimport / Insert / Copy / Paste / Duplicate / Delete が 1 組 (`reopen1-toolbar.png`)。
+  - 2 周目: SlateInspector Snapshot で y=50–95 の button を数えた。`保存, ブラウズ, Reimport, Insert, Copy, Paste, Duplicate, Delete` で、Reimport 1 件・Insert 1 件 (`reopen2-toolbar.png`)。
+  - critic NOTE (起動時の拡張と `GenerateToolbar` の両立) は、再オープン後も Reimport と Data の 5 ボタンが出ることで答えが出た。
+  - 観察 (範囲外・既存): toolbar 右上の「Schema: <名前>」は Toolkit 生成時の静的テキストで、SchemaClass を変えても更新されない。f3b1 の親コミットでも `FText::FromName( ClassGeneratedBy->GetFName() )` の静的テキストだったので、本タスクの回帰ではない。
 
 ## Summary
-Editor core の死にコード (R-E4/5/7/8/9)、style FName の static init (P-E6)、overlay 重複 (R-E10)、toolbar / Content Browser メニューの毎 open・個別 auto-register (R-E11/13 → モジュール起動時 1 回 + UnregisterOwner)、Toolkit 閉時の SaveConfig (R-E17 → SchemaLayout 書き込み側) を整理。R-E16 はコメントのみ。全 75 テスト通過。toolbar 1 組の GUI 目視だけ残る。
+Editor core の死にコード (R-E4/5/7/8/9)、style FName の static init (P-E6)、overlay 重複 (R-E10)、toolbar / Content Browser メニューの毎 open・個別 auto-register (R-E11/13 → モジュール起動時 1 回 + UnregisterOwner)、Toolkit 閉時の SaveConfig (R-E17 → SchemaLayout 書き込み側) を整理。R-E16 はコメントのみ。全 75 テスト通過。toolbar 1 組は 2026-10-28 の sweep で GUI 確認済み (開く → 閉じる → 開くを 2 周)。
 
 ## Changed Files
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/AssetDefinition_DataIndexerRepository.cpp
@@ -120,4 +126,4 @@ Editor core の死にコード (R-E4/5/7/8/9)、style FName の static init (P-E
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/DataIndexerSchemaLayout.h
 
 ## Blockers
-検証待ち: Repository を開く → 閉じる → 開くで toolbar が 1 組であることの GUI 目視。UE MCP (127.0.0.1:8001) が停止中で撮れない。
+None

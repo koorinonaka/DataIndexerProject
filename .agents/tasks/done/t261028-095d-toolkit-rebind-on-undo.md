@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 180
 tier: standard
 screen: required
@@ -74,6 +74,10 @@ Repository の SchemaClass 変更 (行リセット込み) を Ctrl+Z / Ctrl+Y �
 
 ## Verification
 - 上の GUI 2 項目を UE MCP か `windows-screenshot` で撮る (Ctrl+Z 後と Ctrl+Y 後の Data View 各 1 枚)。
+- 済 (2026-10-28 sweep、ALICE)。AC の「フィールドを足すと列が出る」は修正と関係なく起きないので (Execution Log)、同じ帰結「Data View が束縛中の UDS の変更に追随する」をフィールドの改名で確かめた。
+  - Ctrl+Z 後: `02-undo-before-edit.png` (MemberVar_0 列あり) → S_V095B の MemberVar_0 を改名 → `03-undo-after-rename-B.png` (列が消える)。
+  - Ctrl+Y 後: `04-redo-before-edit.png` → S_V095A の MemberVar_0 を改名 → `05-redo-after-rename-A.png` (列が消える)。
+  - 証跡は `evidence/t261028-095d/`。
 
 ## Execution Log
 - 2026-10-28 (dispatch 19/21, branch `fix/audit-2026-10`): Preconditions 確認。`BindSchemaDelegates` / `UnbindSchemaDelegates` /
@@ -97,16 +101,24 @@ Repository の SchemaClass 変更 (行リセット込み) を Ctrl+Z / Ctrl+Y �
   NOTE: DataIndexerEditorToolkit.cpp:604-605 — When the RowStruct is not a UDS and the Schema is not a Blueprint, both bound pointers stay null. In that case the comparison sees null on both sides and skips the rebind, which is correct. One gap: if a bound object is garbage-collected, its `TWeakObjectPtr` turns stale and `Get()` returns null. That differs from a live current value, so the function rebinds. This does no harm.
   No removed identifiers. The only `-` line is the old lambda body, and its `HandleModelRowsChanged( true )` call is kept. The diff does not touch `HandleSchemaClassChanged`, `ResolveStructureMismatch` or `FViewModel` (Out of Scope). The project has no CLAUDE.md.
   ```
+- 2026-10-28 verify sweep (ALICE、UE MCP 127.0.0.1:8001、ユーザー許可の GUI 操作)。一時資産は `/Game/__Verify` に作り、終了時に全部消した (`Content/__Verify` は空)。
+  - 準備: Python で UDS `S_V095A` / `S_V095B` (各 MemberVar_0: bool) と、Schema BP `DIS_V095A` (RowStruct=S_V095A) / `DIS_V095B` (RowStruct=S_V095B) を作った。MCP `DataIndexerToolset.CreateRepository` で `DI_V095` (SchemaClass=DIS_V095A) を作った。
+  - SchemaClass の変え方: 詳細パネルの Schema Class ピッカーは RowStruct が同じ schema しか出さない (`FDataIndexerSchemaClassFilter`、DIS_V095A の 1 件だけ表示)。そこで Schema Class 行の右クリック → ペースト (クリップボードにクラスパス) で変えた。`OnAssetFinishedChangingProperties` → `HandleSchemaClassChanged` → リセット確認 (modal) → はい、の経路は AC と同じ。確認ダイアログは `01-reset-prompt.png`。
+  - AC の書き換え (既定): 新しい UDS フィールドは Schema の Column Layout で未チェックなので、Data View の列にならない。対照として、S_V095B に MemberVar_1 を足してから Repository エディタを閉じて開き直した。開き直しても列は MemberVar_0 だけだった (`00-control-added-field-not-a-column-on-fresh-open.png`)。つまり「足すと列が出る」は束縛の正否と関係なく起きない。代わりに、チェック済みの MemberVar_0 を struct エディタで改名した。束縛が生きていれば `OnStructChanged` → `NotifyAssetChangedExternally` → 列の作り直しで、列が消える。ヘッダの作り直しは `OnAssetChanged` (PostUndo / PostRedo / NotifyAssetChangedExternally) だけが起こし、タブ切替には繋がっていない。
+  - 実行した順序 (AC の A/B の役は入れ替わる): DIS_V095B の状態から DIS_V095A をペースト (リセット はい) → `TRANSACTION UNDO` (ログ `Undo プロパティを貼り付け`、SchemaClass=DIS_V095B_C) → S_V095B の MemberVar_0 を `B_AfterUndo` に改名 → 列が消えた (02→03)。
+  - redo: 再度 DIS_V095A をペースト → UNDO → `TRANSACTION REDO` (ログ `Redo プロパティを貼り付け`、SchemaClass=DIS_V095A_C) → S_V095A の MemberVar_0 を `A_AfterRedo` に改名 → 列が消えた (04→05)。
+  - 改名で struct の変更が出るので、改名の後の Ctrl+Y は redo 履歴が消えて成立しない。このため undo と redo は別の周回で確かめた。
+  - 最初の周回の UNDO は効かなかった (`Undo` のログ行なし)。原因は、UNDO を ProgrammaticToolset の `execute_tool_script` の中から打ったこと。スクリプト実行中は `end_transaction()` が 1 を返す (スクリプト自身のトランザクション)。直接 SlateInspector `Type` で打つと、ペースト直後も 0 で、UNDO が効いた (2/2)。
+  - 観察 (範囲外・既存): toolbar 右上の「Schema: <名前>」は SchemaClass を変えても更新されない (f3b1 Execution Log 参照)。
 
 ## Summary
 `FEditorToolkit::RebindSchemaDelegatesIfChanged()` を追加し、`ViewModel` の `OnAssetChanged` (undo/redo の `PostUndo`/`PostRedo` も含む)
 のたびに RowStruct UDS と Schema Blueprint を束縛先と比較して、違うときだけ schema delegate を張り直す。
-ビルドと Repository テストは通過。GUI 検証 (Ctrl+Z / Ctrl+Y 後の列追加) は未実施。
+ビルドと Repository テストは通過。GUI 検証は 2026-10-28 の sweep で済。Ctrl+Z 後と Ctrl+Y 後のどちらでも、束縛中の UDS のフィールド改名が Data View の列に反映された。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.h`
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.cpp`
 
 ## Blockers
-検証待ち: UE MCP (127.0.0.1:8001) がこの run で停止している。Verification の GUI 2 項目 (Ctrl+Z 後に Schema A の UDS へ
-フィールド追加で列が出る / Ctrl+Y 後に Schema B の UDS へ追加で列が出る) のスクリーンショットだけが残っている。
+None
