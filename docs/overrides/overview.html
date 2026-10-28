@@ -6,8 +6,22 @@
   動画: mkdocs.yml の extra.hero_video に mp4 のパスを書くと <video> に替わる。空なら poster 画像だけを出す。
 -#}
 
+{#- 検索結果の見出し。既定の「title - site_name」は「DataIndexer - DataIndexer」と重複するので置き換える。 -#}
+{% block htmltitle %}
+<title>{{ page.meta.seo_title }}</title>
+{% endblock %}
+
+{#- og / WebSite 構造化データ: 検索結果とリンクプレビューのサイト名を DataIndexer にする -#}
 {% block extrahead %}{{ super() }}
 <link rel="stylesheet" href="{{ 'assets/stylesheets/home.css' | url }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ config.site_name }}">
+<meta property="og:title" content="{{ page.meta.seo_title }}">
+<meta property="og:description" content="{{ page.meta.description }}">
+<meta property="og:url" content="{{ page.canonical_url }}">
+<meta property="og:image" content="{{ config.site_url }}assets/images/editor-overview.png">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":{{ config.site_name | tojson }},"url":{{ config.site_url | tojson }}}</script>
 {% endblock %}
 
 {% block container %}
