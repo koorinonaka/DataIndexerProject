@@ -37,3 +37,4 @@
 - Python で Schema CDO の `row_struct` を `set_editor_property` すると「Changing RowStruct will reset …」の modal が出る。`py` を `Type` する前に `bgyes.ps1` を background で走らせる。済んだら残った `bgyes.ps1` を止める (Data View の青い UI を誤クリックしうる)。
 - UDS の型ピッカー: 型コンボを実マウスで開くと、検索欄が別ウィンドウの textbox として Snapshot に出る。Slate `Type` で絞り込み、候補を実マウスで押す。
 - Schema BP のエディタを閉じた直後の `EditorAssetLibrary.delete_asset` は「使用中」で失敗することがある。`unreal.SystemLibrary.collect_garbage()` の後に再試行すると消える。
+- (2026-10-28 t261028-12a6) 「再起動直後の読み込み時コンパイル」は GUI なしで再現できる。`UnrealEditor-Cmd … -ExecutePythonScript=<py> -nullrhi -unattended` の新しいプロセスで BP を `load_asset` すると、読み込み時のコンパイルの `LogBlueprint` エラーがログに出る。`DI_ItemRarity` / `DI_ItemType` は起動時に `VM_InventoryRowCard` 経由で読み込まれるので、未読み込みの Repository が要るときは複製する。K2Node の UPROPERTY (Repository 等) は `unreal.ObjectIterator(unreal.K2Node)` で見つけて `set_editor_property` で変えられる (PostEditChange が走る)。スクリプトは `evidence/t261028-12a6/`。

@@ -1,0 +1,77 @@
+# t261028-12a6 headless repro (ALICE, UE 5.8, UnrealEditor-Cmd -nullrhi -ExecutePythonScript)
+# setup.py: DI_ItemRarity -> /Game/__Verify/DI_VItemRarity, VM_InventoryRowCard -> /Game/__Verify/BP_VSelect, Select nodes retargeted. repro.py: fresh process, load BP_VSelect (DI_VItemRarity not loaded before).
+## before1 (HEAD binaries, before fix)
+LogPython: DIAG12a6 before-load /Game/__Verify/DI_VItemRarity.DI_VItemRarity False
+LogPython: DIAG12a6 before-load /Game/GameData/DI_ItemRarity.DI_ItemRarity True
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0001-0000-4000-8000-000000000001 is not in DI_VItemRarity in  Select by Primary Key .
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0002-0000-4000-8000-000000000002 is not in DI_VItemRarity in  Select by Primary Key .
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0003-0000-4000-8000-000000000003 is not in DI_VItemRarity in  Select by Primary Key .
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0004-0000-4000-8000-000000000004 is not in DI_VItemRarity in  Select by Primary Key .
+LogPython: DIAG12a6 loaded True
+## before2 (HEAD binaries, before fix)
+LogPython: DIAG12a6 before-load /Game/__Verify/DI_VItemRarity.DI_VItemRarity False
+LogPython: DIAG12a6 before-load /Game/GameData/DI_ItemRarity.DI_ItemRarity True
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0001-0000-4000-8000-000000000001 is not in DI_VItemRarity in  Select by Primary Key .
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0002-0000-4000-8000-000000000002 is not in DI_VItemRarity in  Select by Primary Key .
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0003-0000-4000-8000-000000000003 is not in DI_VItemRarity in  Select by Primary Key .
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0004-0000-4000-8000-000000000004 is not in DI_VItemRarity in  Select by Primary Key .
+LogPython: DIAG12a6 loaded True
+## diag_off_1 (diag build; off = DIAG12A6_NOPRELOAD=1 skips the new preload, interleaved)
+LogTemp: Warning: DIAG12a6 pin 2B8F0001-0000-4000-8000-000000000001 friendly=Common
+LogTemp: Warning: DIAG12a6 pin 2B8F0002-0000-4000-8000-000000000002 friendly=Uncommon
+LogTemp: Warning: DIAG12a6 pin 2B8F0003-0000-4000-8000-000000000003 friendly=Rare
+LogTemp: Warning: DIAG12a6 pin 2B8F0004-0000-4000-8000-000000000004 friendly=Epic
+LogTemp: Warning: DIAG12a6 validate DI_VItemRarity repoNeedLoad=1 repoNeedPostLoad=1 editorData=0 edNeedLoad=0 edNeedPostLoad=0
+LogTemp: Warning: DIAG12a6 pin 2B8F0001-0000-4000-8000-000000000001 friendly=2B8F0001-0000-4000-8000-000000000001
+LogTemp: Warning: DIAG12a6 pin 2B8F0002-0000-4000-8000-000000000002 friendly=2B8F0002-0000-4000-8000-000000000002
+LogTemp: Warning: DIAG12a6 pin 2B8F0003-0000-4000-8000-000000000003 friendly=2B8F0003-0000-4000-8000-000000000003
+LogTemp: Warning: DIAG12a6 pin 2B8F0004-0000-4000-8000-000000000004 friendly=2B8F0004-0000-4000-8000-000000000004
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0001-0000-4000-8000-000000000001 is not in DI_VItemRarity in  Sele
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0002-0000-4000-8000-000000000002 is not in DI_VItemRarity in  Sele
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0003-0000-4000-8000-000000000003 is not in DI_VItemRarity in  Sele
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0004-0000-4000-8000-000000000004 is not in DI_VItemRarity in  Sele
+## diag_on_1 (diag build; off = DIAG12A6_NOPRELOAD=1 skips the new preload, interleaved)
+LogTemp: Warning: DIAG12a6 pin 2B8F0001-0000-4000-8000-000000000001 friendly=Common
+LogTemp: Warning: DIAG12a6 pin 2B8F0002-0000-4000-8000-000000000002 friendly=Uncommon
+LogTemp: Warning: DIAG12a6 pin 2B8F0003-0000-4000-8000-000000000003 friendly=Rare
+LogTemp: Warning: DIAG12a6 pin 2B8F0004-0000-4000-8000-000000000004 friendly=Epic
+LogTemp: Warning: DIAG12a6 validate DI_VItemRarity repoNeedLoad=0 repoNeedPostLoad=1 editorData=1 edNeedLoad=0 edNeedPostLoad=1
+LogTemp: Warning: DIAG12a6 pin 2B8F0001-0000-4000-8000-000000000001 friendly=Common
+LogTemp: Warning: DIAG12a6 pin 2B8F0002-0000-4000-8000-000000000002 friendly=Uncommon
+LogTemp: Warning: DIAG12a6 pin 2B8F0003-0000-4000-8000-000000000003 friendly=Rare
+LogTemp: Warning: DIAG12a6 pin 2B8F0004-0000-4000-8000-000000000004 friendly=Epic
+## diag_off_2 (diag build; off = DIAG12A6_NOPRELOAD=1 skips the new preload, interleaved)
+LogTemp: Warning: DIAG12a6 pin 2B8F0001-0000-4000-8000-000000000001 friendly=Common
+LogTemp: Warning: DIAG12a6 pin 2B8F0002-0000-4000-8000-000000000002 friendly=Uncommon
+LogTemp: Warning: DIAG12a6 pin 2B8F0003-0000-4000-8000-000000000003 friendly=Rare
+LogTemp: Warning: DIAG12a6 pin 2B8F0004-0000-4000-8000-000000000004 friendly=Epic
+LogTemp: Warning: DIAG12a6 validate DI_VItemRarity repoNeedLoad=1 repoNeedPostLoad=1 editorData=0 edNeedLoad=0 edNeedPostLoad=0
+LogTemp: Warning: DIAG12a6 pin 2B8F0001-0000-4000-8000-000000000001 friendly=2B8F0001-0000-4000-8000-000000000001
+LogTemp: Warning: DIAG12a6 pin 2B8F0002-0000-4000-8000-000000000002 friendly=2B8F0002-0000-4000-8000-000000000002
+LogTemp: Warning: DIAG12a6 pin 2B8F0003-0000-4000-8000-000000000003 friendly=2B8F0003-0000-4000-8000-000000000003
+LogTemp: Warning: DIAG12a6 pin 2B8F0004-0000-4000-8000-000000000004 friendly=2B8F0004-0000-4000-8000-000000000004
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0001-0000-4000-8000-000000000001 is not in DI_VItemRarity in  Sele
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0002-0000-4000-8000-000000000002 is not in DI_VItemRarity in  Sele
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0003-0000-4000-8000-000000000003 is not in DI_VItemRarity in  Sele
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0004-0000-4000-8000-000000000004 is not in DI_VItemRarity in  Sele
+## diag_on_2 (diag build; off = DIAG12A6_NOPRELOAD=1 skips the new preload, interleaved)
+LogTemp: Warning: DIAG12a6 pin 2B8F0001-0000-4000-8000-000000000001 friendly=Common
+LogTemp: Warning: DIAG12a6 pin 2B8F0002-0000-4000-8000-000000000002 friendly=Uncommon
+LogTemp: Warning: DIAG12a6 pin 2B8F0003-0000-4000-8000-000000000003 friendly=Rare
+LogTemp: Warning: DIAG12a6 pin 2B8F0004-0000-4000-8000-000000000004 friendly=Epic
+LogTemp: Warning: DIAG12a6 validate DI_VItemRarity repoNeedLoad=0 repoNeedPostLoad=1 editorData=1 edNeedLoad=0 edNeedPostLoad=1
+LogTemp: Warning: DIAG12a6 pin 2B8F0001-0000-4000-8000-000000000001 friendly=Common
+LogTemp: Warning: DIAG12a6 pin 2B8F0002-0000-4000-8000-000000000002 friendly=Uncommon
+LogTemp: Warning: DIAG12a6 pin 2B8F0003-0000-4000-8000-000000000003 friendly=Rare
+LogTemp: Warning: DIAG12a6 pin 2B8F0004-0000-4000-8000-000000000004 friendly=Epic
+## after1 (final build): is-not-in count = 0
+## after2 (final build): is-not-in count = 0
+## ac4 (final build: Select Repository -> DI_ItemType, compile)
+LogPython: DIAG12a6 ac4 retargeted 2
+LogPython: DIAG12a6 ac4 compile start
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0001-0000-4000-8000-000000000001 is not in DI_ItemType in  Select 
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0002-0000-4000-8000-000000000002 is not in DI_ItemType in  Select 
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0003-0000-4000-8000-000000000003 is not in DI_ItemType in  Select 
+LogBlueprint: Error: [AssetLog] E:\workspace\DataIndexerProject\Content\__Verify\BP_VSelect.uasset：[コンパイラ] PrimaryKey 2B8F0004-0000-4000-8000-000000000004 is not in DI_ItemType in  Select 
+LogPython: DIAG12a6 ac4 compile end
+## DataIndexerEd automation: 77 Success / 0 Fail

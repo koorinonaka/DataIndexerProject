@@ -1,5 +1,5 @@
 ---
-status: ready
+status: verify_pending
 order: 230
 tier: standard
 screen: required
@@ -68,13 +68,43 @@ case ピンの表示名は GUID でなく行の表示名になる。
 - 一時アセットは終わりに消す。証跡は `.agents/tasks/evidence/t261028-12a6/`。
 
 ## Execution Log
-Not started.
+2026-10-28 (ALICE、dispatch 1/3、エディタ PID 40584 は run notes に従い Stop-Process で閉じた。ユーザーが PC 使用中のため GUI 検証はしない)
+
+- Step 1 (確認): GUI でなく headless で再現した (`evidence/t261028-12a6/setup.py` / `repro.py`)。`DI_ItemRarity` は起動時に `VM_InventoryRowCard` 経由で読み込まれるため、複製 `/Game/__Verify/DI_VItemRarity` と、Select ノードをそれへ向けた `VM_InventoryRowCard` の複製 `/Game/__Verify/BP_VSelect` を作った。新しい `UnrealEditor-Cmd -nullrhi` で BP を `load_asset` すると、HEAD のバイナリで `PrimaryKey 2B8F000n-… is not in DI_VItemRarity in Select by Primary Key` が 4 件出た (2/2 回同じ)。
+- 一時ログ (`ValidatePinKeys` 冒頭でフラグ・`FindRowEntity`・case ピンの `PinFriendlyName`。新しい preload は環境変数で外せるようにした) で、preload なし / あり を交互に 2 回ずつ流した:
+  - preload なし: 偽エラー時点の Repository は `RF_NeedLoad=1`、`EditorData=null` (未シリアライズ)。`FindRowEntity` は全キー found=0。case ピンの `PinFriendlyName` は GUID 文字列 (`GetDisplayName` が EditorData 無しで runtime 経路へ落ち、`Describe(GUID)` を返す)。疑いどおり「読み込み途中」。2/2。
+  - preload あり: 同じ時点で `RF_NeedLoad=0`、`EditorData` あり (`RF_NeedPostLoad` は残るが行は引ける)。全キー found=1、エラー 0 件、`PinFriendlyName` は Common / Uncommon / Rare / Epic。2/2。
+  - 一時ログと環境変数の分岐は消して再ビルドした (`rg 'DIAG12|TEMP12' Source` 0 件)。
+- Step 2: `PreloadRepositoryChain` を `DataIndexer::K2NodeUtils::PreloadRepositoryChain( const UDataIndexerRepository* )` へ移した (`UK2Node::PreloadObject` と同じ `ConditionalPreload` を Repository → EditorData → RowStruct の順に呼ぶ)。HandleNodeBase は `ResolveRepositoryFromPin(...)` を渡して呼ぶだけに変えた (挙動は不変、使わなくなった `DataIndexerEditorInterface.h` の include を消した)。Switch / Select に `PreloadRequiredAssets` override を足し、UPROPERTY `Repository` を渡す。
+- Step 3: preload で偽エラーは消えた (最終ビルドで after1/after2 とも `is not in DI_` 0 件)。`ValidatePinKeys` に読み込み途中のガードは足していない (Scope の「それでも残るなら」に当たらない)。
+- Step 4: 読み込み時の再構築の時点で行が引けるようになり、`PinFriendlyName` は読み込み直後から行の表示名 (上の preload ありの実測)。読み込み後に作り直す経路は足していない —— 作り直す元の値が読み込み時点で正しくなったため。
+- AC4: 最終ビルドで BP_VSelect の Select の Repository を `DI_ItemType` (Rarity のキーを持たない) へ変えて `compile_blueprint` → `is not in DI_ItemType` が 4 件出た。5a97 の検証は生きている。
+- Switch: Python から K2Node を新規に置く手段が無く、既存アセットにも Switch on Primary Key が無いので headless では走らせていない。同じ `PreloadRequiredAssets` → `PreloadRepositoryChain` の経路。GUI 検証 (Verification 1–4) に残す。
+- 一時アセット `Content/__Verify/` は消した (未追跡のまま、commit なし)。
+- quick: `Build.bat DataIndexerProjectEditor Win64 Development` 成功 (診断入り 33.6 s、最終 29.6 s、ICE なし)。`Automation RunTests DataIndexerEd` (全群) → 77 件 `Result={Success}`、失敗 0 (うち Compiler 6 件)。full は run 終端。Game ターゲットは触っていない (editor モジュールだけ、runtime 構造体に触れない)。
+- 5.7: 使ったエンジン API は `UK2Node::PreloadRequiredAssets` (5.7 `K2Node.h:384`) と `UObject::ConditionalPreload` だけで、5.7 と同じ。
+- 自己レビュー (stat): submodule 8 ファイル +48/-22、全て Scope の Customizations 内 (utils / HandleNodeBase / Switch / Select)。親 repo はタスクファイル・evidence・KNOWLEDGE.md。
+- 畳んだ 軽微 (ソース変更なし): `KNOWLEDGE.md`「UE MCP GUI ハーネス」へ headless 再現の手順を 1 行足した (1 ファイル +1 行)。この再現法は GUI 無しで読み込み時コンパイルを見る唯一の確かめ方で、次の dispatch が作り直さないよう残す。
+- Tests 4 問: 自動テストは足さない (タスクの Tests のとおり。読み込み順を操る口が要る)。headless スクリプトは evidence に残した。
+- critic r1 (task-critic、原文):
+  ```
+  PASS
+  NOTE: …/K2Node_DataIndexerSwitchPrimaryKey.cpp:104 — AC2 と AC3 は Switch で一度も実行されていない。headless 再現が使ったのは Select だけ (task Execution Log)。どちらの AC も画面と再起動でしか確かめられないので、FAIL にはしない。task が verify_pending なのは正しい。Verification 1–4 は Switch で行う必要がある。
+  NOTE: …/DataIndexerK2NodeUtils.cpp:89 — HandleNodeBase の preload は `UK2Node::PreloadObject` から `UObject::ConditionalPreload` に変わった。Out of Scope は GetRow/GetKeysByIndex の挙動を変えないことを求めている。2 つの関数が同じ動きをするとは、engine source が手元に無いため確かめられなかった。根拠は author の主張と、build 成功・DataIndexerEd 77 tests 成功の結果だけ。動きが違えば `RF_NeedLoad` のガードの扱いだけが変わりうる。
+  NOTE: …/K2Node_DataIndexerHandleNodeBase.cpp:7 — 削除された `DataIndexerEditorInterface.h` の include を確かめた。HandleNodeBase.cpp に `IDataIndexerInterface_EditorData` / `GetEditorData` への参照は残っていない。消えたメンバ `PreloadRepositoryChain(const UEdGraphPin*)` の呼び出し 2 か所 (193, 205) は、新しい free 関数への呼び出しに置き換わっている。新しい関数の参照は 4 件ある。kind 3 と kind 5 に当たるものはない。
+  ```
+  2 つ目の NOTE への答え: UE 5.8 `K2Node.h:558` の `PreloadObject` は `if (ReferencedObject) ReferencedObject->ConditionalPreload();` だけ (5.7 も `K2Node.h:553` で同じ)。挙動は同一。
 
 ## Summary
-Not started.
+Switch / Select PrimaryKey の `PreloadRequiredAssets` で Repository → EditorData → RowStruct を先にシリアライズさせた (HandleNodeBase の `PreloadRepositoryChain` を `DataIndexerK2NodeUtils` へ移して共有)。原因は実測で確定: 読み込み時のコンパイルの時点で import の Repository が `RF_NeedLoad`・EditorData なしだった。headless の再現 (Select) で偽エラー 4 件 → 0 件、case ピン名 GUID → 行の表示名。実在しないキーの検出は残る。Switch の GUI 検証とスクリーンショットが残り (verify_pending)。
 
 ## Changed Files
-Not started.
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerK2NodeUtils.h` / `.cpp` — `PreloadRepositoryChain( const UDataIndexerRepository* )` を追加
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerHandleNodeBase.h` / `.cpp` — private メンバを消し、共有関数を呼ぶ
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerSwitchPrimaryKey.h` / `.cpp` — `PreloadRequiredAssets` override
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerSelectPrimaryKey.h` / `.cpp` — `PreloadRequiredAssets` override
+- `.agents/tasks/evidence/t261028-12a6/` — headless 再現スクリプトとログ抜粋 (`headless-repro.txt`)
+- `.agents/tasks/KNOWLEDGE.md` — 畳んだ 軽微 (headless 再現の手順 1 行)
 
 ## Blockers
-なし
+検証待ち: ユーザーが PC を使用中で GUI 検証禁止 (dispatch run notes)。残りは Verification 1–4 の Switch on Primary Key 入り一時 BP での再起動確認 (`is not in` 0 件)・case ピンのスクリーンショット (screen: required)・実在しないキーでの再コンパイル。Select は headless で確認済み。
