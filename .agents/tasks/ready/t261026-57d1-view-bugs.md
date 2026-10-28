@@ -112,6 +112,7 @@ created_by: task-create
   NOTE: SDataIndexerViewHeader.cpp:184-187 — A schema column resize (`HandleColumnWidthChanged`) still does not recompute `MinContentWidth`. The pre-diff code behaved the same way, so the diff did not cause it.
   NOTE: Sweeps found nothing. These removed names have no references left outside `.agents` docs: `UpdateSort`, `GetSortMode`, `SortContext`, `LastSelectionIndex`, `FillHandleOriginalBounds` and the `OnMouseButtonDown` override. `HorizontalScrollBar` and `VerticalScrollBar` are still used at `SDataIndexerView.cpp:40-198`. Both `GetOnRowsRemoved` binders were updated (`DataIndexerEditorToolkit.cpp:267`, `SDataIndexerView.cpp:36`). Every new definition has a caller: `GetVisibleColumnIndices`, `IsOverEmptyListArea`, `RecomputeMinContentWidth`, `FScopedClipboardRestore`, `GetAutomationRowValue`.
   ```
+- verify sweep 2026-10-28 16:55 (環境不可、verify_pending 継続): エディタ (PID 9372) は HEAD のビルドで起動中、UE MCP に接続できた。ユーザーが作業中だった (最終入力 0.8 秒前、前面は Chrome リモート デスクトップ)。dispatch の条件は「ユーザーの作業を妨げない」。SlateInspectorToolset の Click / Hover / Drag は実カーソルを動かす (`SetCursorPos`)。PressKey は Slate へキーを注入する。AC 1〜6 の確認は Delete・Paste・ヘッダのドラッグ・Ctrl+V・列の非表示・Ctrl+C を要するので、6 枚とも未実施のまま残した。
 
 ## Summary
 Data View の 8 件 (B-V1, B-V3, B-V4, B-V5, B-V6, B-V7, B-V9, B-V10) を修正した。

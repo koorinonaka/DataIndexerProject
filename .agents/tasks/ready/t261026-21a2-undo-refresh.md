@@ -124,6 +124,12 @@ Ctrl+Z / Ctrl+Y の後、開いている Data View・派生 Repository の toolk
 - undo client は現状維持。`FViewModel` の `FSelfRegisteringEditorUndoClient` 継承と `PostUndo/PostRedo` は残す。
   実行者が書き直した Scope 3 / Steps 3 / AC 2 (critic round 1 の 1 つ目の NOTE) をユーザーが承認した。status は変えない。
 
+### verify sweep 2026-10-28 16:55 (環境不可、verify_pending 継続)
+- エディタ (PID 9372) は起動中で、UE MCP (127.0.0.1:8001) に接続できた。`UnrealEditor-DataIndexerEd.dll` (15:50) はエディタ起動 (16:34) より前のビルドなので、HEAD の実装が載っている。
+- ユーザーが作業中だった (最終入力 0.8 秒前、前面は Chrome リモート デスクトップ)。dispatch の条件は「ユーザーの作業を妨げない」。
+- SlateInspectorToolset の Click / Hover / Drag は `FSlateApplication::SetCursorPos` で実カーソルを動かす (`SlateInspectorToolset.cpp:115, 317, 589`)。PressKey / Type は Slate へキーを注入する。`OpenEditorForAsset` はエディタのウィンドウを前面に出す恐れがある。
+- Verification の 2 項目は Data View を開き、行削除・Ctrl+Z・範囲選択・Ctrl+C を要する。上の制限の下では実施できないので、未実施のまま残した。
+
 ## Summary
 `UDataIndexerEditorData::PostEditUndo` を追加し、undo/redo で `OnEditorRowsUpdated` を broadcast するようにした
 (派生 toolkit・DrivenCollection が追随)。dirty + broadcast は `NotifyRowsChanged()` に集約。`UpdateVisibleRows` が毎回

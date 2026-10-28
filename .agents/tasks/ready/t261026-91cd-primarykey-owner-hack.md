@@ -146,6 +146,11 @@ NOTE: 削除した名前の sweep — `\bOwnerRepository\b` の残りは DataInd
 NOTE: round 1 の回答を確かめた — AC の rg を語単位にした修復はタスクファイルの 58-60 行にある。Case6 のコメントは diff の 198 行で直っている。
 ```
 
+verify sweep 2026-10-28 16:55 (環境不可、verify_pending 継続):
+- エディタ (PID 9372) は HEAD のビルドで起動中、UE MCP に接続できた。ユーザーが作業中だった (最終入力 0.8 秒前、前面は Chrome リモート デスクトップ)。dispatch の条件は「ユーザーの作業を妨げない」「アセットを恒久的に変えない」。
+- AC (b) は Ctrl+Z / Ctrl+Y と Reference Viewer を要する。MCP に undo/redo の手段は無い。SlateInspectorToolset の PressKey は Slate へキーを注入する。よって AC (b) は未実施のまま残した。Tier 2 の判定 (Tier 1 への後退) はまだ出ていない。
+- 次の sweep への手がかり: 保存と Duplicate の部分は画面なしで取れる (BlueprintTools `create` → GetRow の `create_node` → `set_pin_value` → AssetTools `save_assets` → `get_dependencies` → `duplicate` → `get_dependencies` → 一時アセットを `delete`)。undo/redo の部分は GUI が要る。
+
 ## Summary
 `FDataIndexerPrimaryKey::OwnerRepository` を削除し (Tier 2)、全構成で 16 byte に戻した (`static_assert`)。graph pin の default は
 `PostSerialize` で persistent 保存時だけ `SerializedObject` から都度解決するので、間に transient 保存アーカイブが挟まっても

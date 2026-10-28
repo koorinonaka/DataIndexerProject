@@ -106,6 +106,10 @@ Repository に無いキーをコンパイルエラーで報告し、Repository �
   NOTE: K2Node_DataIndexerSelectPrimaryKey.cpp:116 — Select の重複報告は Warning から Error に変わった。消えた Algo/Find.h は使用箇所が無い。
   NOTE: AC2-4 は画面でしか確かめられない。コードの経路は合っている。Verification 1-6 は未実施 (screen: required)。
   ```
+- verify sweep 2026-10-28 16:55 (環境不可、verify_pending 継続): エディタ (PID 9372) は HEAD のビルドで起動中、UE MCP に接続できた。ユーザーが作業中だった (最終入力 0.8 秒前、前面は Chrome リモート デスクトップ)。dispatch の条件は「ユーザーの作業を妨げない」「エディタを閉じない」。
+  - Verification 2 はエディタの再起動を要するので、この条件では実施できない。
+  - Verification 3〜5 はスクリーンショットを要する。BP エディタを開くとウィンドウが前面に出る恐れがあるので、実施していない。
+  - 次の sweep への手がかり: 3〜6 の判定は MCP の BlueprintTools で画面なしに取れる見込み (`create` → `create_node` → ObjectTools `set_properties` で `PinKeys` / `Repository` → `compile_blueprint` → `get_node_infos`、6 は `add_node_pin`)。コンパイルが通知トーストを出すか未確認なので、ユーザー作業中には実行しなかった。
 
 ## Summary
 Switch の `CreateFunctionPin` / `PostLoad` override を削除しエンジン実装 (5.7/5.8 とも null ガード有り) に戻した。

@@ -94,6 +94,7 @@ SchemaClass 差し替え後の未追随、誤った tooltip、無駄な再構築
   Sweeps: 削除した文言の残存なし。LOCTEXT キーは不変。InitEditor の bind は BindSchemaDelegates で再生成。追加定義は全て参照あり。Out of Scope 不接触。
   ```
 - critic NOTE 2 (undo 後の delegate 不整合) は follow-up `task化` 候補として report に回す (PostUndo で RowStruct 変化を検知して再 bind する設計判断が要るため fold しない)。
+- verify sweep 2026-10-28 16:55 (環境不可、verify_pending 継続): エディタ (PID 9372) は HEAD のビルドで起動中、UE MCP に接続できた。ユーザーが作業中だった (最終入力 0.8 秒前、前面は Chrome リモート デスクトップ)。dispatch の条件は「ユーザーの作業を妨げない」。SlateInspectorToolset の Click / Hover / Drag は実カーソルを動かす (`SetCursorPos`)。Verification 1〜4 はダイアログの「Yes」・Ctrl+Z・Validate・Asset Details の編集・Content Browser の右クリックを要するので、未実施のまま残した。
 
 ## Summary
 B-E4/E7/E8/E14/E15/E17 を実装。右クリックはタグ判定でロードしない、全行リセットは undo 可能、Validator は CommentOut 行を飛ばし Info を Info で報告、SchemaClass 変更で delegate を再束縛して不一致警告を出す、tooltip 修正、reimport 失敗/キャンセルで再構築しない。自動テストは全群 68/68 通過。GUI の証跡が残り (verify_pending)。

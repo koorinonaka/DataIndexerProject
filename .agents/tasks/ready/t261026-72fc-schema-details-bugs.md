@@ -96,6 +96,7 @@ Schema の Column Layout パネルで、NotOverridable のロック解除がト�
   ```
   回答 (NOTE 4): `E:/UE/UE_5.8/Engine/Source/Editor/UnrealEd/Public/Kismet2/ListenerManager.h` の `InnerListenerType()` が `AddListener(this)`、`~InnerListenerType()` が `RemoveListener(this)` を呼ぶことを本文で確認済み。5.7 の同ファイル先頭 90 行は 5.8 と差分なし。
 - 検証待ち: UE MCP (127.0.0.1:8001) がこの run で停止中。GUI スクリーンショット 2 枚は取れない。
+- verify sweep 2026-10-28 16:55 (環境不可、verify_pending 継続): エディタ (PID 9372) は HEAD のビルドで起動中、UE MCP に接続できた。ユーザーが作業中だった (最終入力 0.8 秒前、前面は Chrome リモート デスクトップ)。dispatch の条件は「ユーザーの作業を妨げない」。SlateInspectorToolset の Click / Hover / Drag は実カーソルを動かす (`SetCursorPos`)。2 枚とも Schema エディタを開き、lock icon のクリック・Ctrl+Z・UDS へのフィールド追加を要するので、未実施のまま残した。
 
 ## Summary
 unlock を `FStructureEditorUtils::SetMetaData(..., FString())` に置換し、トランザクション下で key 削除 (undo 可) にした。
