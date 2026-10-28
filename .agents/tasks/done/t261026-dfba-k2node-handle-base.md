@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 140
 tier: standard
 screen: required
@@ -78,6 +78,7 @@ created_by: task-create
 ## Verification
 - undo 2 シナリオのスクリーンショット (繋ぐ前 / 繋いだ後 / Ctrl+Z 後)。既存 BP のコンパイル結果。
 - 残り (2026-10-28): (1) Repository ピンを繋ぐ → Ctrl+Z でキーピンの参照性が戻る。(2) Repository を繋ぎ替えて型が変わる → Ctrl+Z で相手ノードのリンクも戻る。(3) Boot Level BP をエディタで開き、ピン欠落・再接続がないこと (ヘッドレスのコンパイルは済)。(4) Handle の Split / Recombine で出力型が追従すること (P-C7 のフィルタ変更の確認)。
+- 済 (2026-10-28 verify sweep、ALICE): (1)〜(4)。(2) は型が変わってもリンクが切れない経路だった (Execution Log)。証跡 `.agents/tasks/evidence/t261026-dfba/` (ピンの状態はクリップボード T3D を `_harness/t3dpins.ps1` で読んだ数値)。
 
 ## Execution Log
 - 2026-10-28 前提: t261026-5a97 / t261026-de66 はどちらも `verify_pending` (検証未完)。その上に構築した。
@@ -134,8 +135,18 @@ created_by: task-create
 - 旧文言: 「`rg 'IsSplitPinNameMatch|FindSubPinByLeafName' Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_*.cpp` が 0 件 (現在 2 ファイル)。」
 - 新文言: GetRow/GetKeysByIndex の .cpp で 0 件、定義は `DataIndexerK2NodeUtils.cpp` だけ。
 
+### verify sweep 2026-10-28 20:00 (ALICE、合格 → done)
+- 前提 t261026-de66 は同じ sweep で合格した。
+- 環境: エディタ PID 40584 (submodule 0f651e4 のビルド)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。前回 sweep の残り `/Game/__Verify/BP_VGetRow_Dup` (GetRow、Handle 分割済み) に変数 RepoVar と Break ItemRow ノードを足して使い、終了時に削除した。証跡は `.agents/tasks/evidence/t261026-dfba/`。
+- ハーネスの落とし穴: 最初の `TRANSACTION UNDO` は何もしなかった。`py unreal.SystemLibrary.end_transaction()` が 1 を返した (開いたままのトランザクションが残っていた。どの MCP ツール由来かは不明)。閉じて undo の塊を 1 回戻し、`end_transaction()` が 0 を返すのを確かめてから測り直した。下の数値はその測り直し。
+- (1) RepoVar の Get ノードを実マウスで Handle Repository に繋いだ。T3D の Handle_PrimaryKey: 繋ぐ前 `bIsReference=False bIsConst=False` (01a) → 繋いだ後 `True True` (01b) → `TRANSACTION UNDO` 後 `False False`、Handle_Repository の LinkedTo も 0 (01c)。
+- (2) Out Row を Break ItemRow に繋いだ状態で、Handle Repository を DI_V1000 → DI_ItemRarity にピンのコンボで変えた → Out Row は ItemRarityRow 型、リンクは両側とも残った (02b)。Undo → Out Row は ItemRow 型に戻り、リンクは両側とも 1 本 (02c)。AC の「現在: 片側だけ」は、この経路では起きない。`PropagatePinType` は、型が解決できずリンクがある struct ピンなら型を保つ (この分岐は dfba 以前の `K2Node_DataIndexerGetRow.cpp` にもある、`e7c1f91^` で確認)。リンクを切る分岐に入るのは PinSubCategoryObject が無効なときだけ。AC 文言の扱いは run 終端の 要ユーザー判断。
+- (3) Boot の Level BP をエディタで開いた (03)。GetRow ×2 と GetKeysByIndex ×1 のピンと結線はそろっていた (`get_node_infos`)。開いた後のログに Warning / Error は無い。保存はしていない。
+- (4) Handle を右クリックで「構造体ピンを再結合」→ Handle 1 本、Out Row は ItemRow 型、リンクは残った (04a)。「構造体ピンを分割」→ Handle_Repository / Handle_PrimaryKey、型とリンクは同じ (04b)。限界: この経路では型が変わる理由が無いので、「追従しない」場合との区別はつかない。
+- 所要 約 6 分 (20:00〜20:06)。
+
 ## Summary
-GetRow / GetKeysByIndex の共通部分を `UK2Node_DataIndexerHandleNodeBase` (abstract) に集め、自由関数と PinKeys を `DataIndexerK2NodeUtils` に統合した。B-C3 / B-C4 / B-C5 / B-C11 / P-C7 / R-C11 を基底で直した。ビルドと `DataIndexerEd.Compiler` 5/5 は通過。既存 Boot Level BP はヘッドレスで警告なしにコンパイルできた。undo の GUI 確認は MCP 停止のため未実施。
+GetRow / GetKeysByIndex の共通部分を `UK2Node_DataIndexerHandleNodeBase` (abstract) に集め、自由関数と PinKeys を `DataIndexerK2NodeUtils` に統合した。B-C3 / B-C4 / B-C5 / B-C11 / P-C7 / R-C11 を基底で直した。ビルドと `DataIndexerEd.Compiler` 5/5 は通過。既存 Boot Level BP はヘッドレスで警告なしにコンパイルできた。undo などの GUI 確認は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerHandleNodeBase.h` (新規)
@@ -146,6 +157,7 @@ GetRow / GetKeysByIndex の共通部分を `UK2Node_DataIndexerHandleNodeBase` (
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerGetKeysByIndex.h/.cpp`
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerSwitchPrimaryKey.cpp` (`#include` のみ)
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerSelectPrimaryKey.cpp` (`#include` のみ)
+- `.agents/tasks/done/t261026-dfba-k2node-handle-base.md`
 
 ## Blockers
-検証待ち: UE MCP (127.0.0.1:8001) が停止しており GUI の Verification ができない。残りは Verification 節の項目だけ。
+None

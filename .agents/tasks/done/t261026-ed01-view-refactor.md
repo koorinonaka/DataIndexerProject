@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 160
 tier: standard
 screen: required
@@ -94,6 +94,7 @@ R-V1〜R-V13。
 - smoke 5 操作のスクリーンショット (選択矩形、貼り付け後、フィル後、列ドラッグ中のデコレータ、行ドラッグ中のデコレータ)。
 - 重点 1: 貼り付け後とフィル後の選択矩形が以前と同じ範囲か (`SelectCellRect` 経由に変更)。
 - 重点 2: ドラッグデコレータの見た目 (`FTextDragDropOp` に統合。行デコレータは旧 `SHorizontalBox` 1 スロットの包みを外した)。
+- 済 (2026-10-28 verify sweep、ALICE): smoke 5 操作と重点 1・2。証跡 `.agents/tasks/evidence/t261026-ed01/`。
 
 ## Execution Log
 - 2026-10-28 着手。前提 t261026-57d1 / bd46 / dd8a は `verify_pending` (検証未完) の上に構築した。作業ブランチは両 repo とも `fix/audit-2026-10`。
@@ -177,8 +178,19 @@ R-V1〜R-V13。
 - critic 2 件目: fold した t261026-57d1 由来の 1 行 (`SViewHeader::HandleColumnWidthChanged` の `RecomputeMinContentWidth();`) は受け入れる。
   Out of Scope の「挙動変更」は「リファクタ由来の挙動変更」と読む。Out of Scope の文言は変えない。
 
+### verify sweep 2026-10-28 19:34 (ALICE、合格 → done)
+- 前提 t261026-57d1 / bd46 / dd8a は合格済み (bd46 / dd8a は同じ sweep)。
+- 環境: エディタ PID 40584 (submodule 0f651e4 のビルド)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセット `/Game/__Verify/DI_V1000` (DIS_Item、1000 行) を bd46 と共用し、終了時に削除した。全データ列を表示して操作し、列レイアウトは後で UI で戻した (bd46 の Execution Log)。証跡は `.agents/tasks/evidence/t261026-ed01/`。
+- 選択矩形: Subtitle 行 1 を Ctrl+Click → Description 行 2 を Shift+Click → 2×2 の枠 (01)。
+- 貼り付け (重点 1): その 2×2 を Copy → Subtitle 行 4 を 1 セル選択 (02a) → Paste (実マウス) → 行 4〜5 の Subtitle..Description に値が入り、選択枠はちょうどその 2×2 (02)。旧実装の `TargetColumns` から作る範囲と同じ。
+- フィル (重点 1): Base Value 行 1 を選び、ハンドルを行 3 まで実マウスでドラッグ → 青枠のプレビュー (03a) → 離すと行 2・3 に 0 が入り、選択枠は行 1〜3 の Base Value (03)。旧実装の Begin → Extend → End と同じ範囲 (元セルから終点まで)。行のフィルも dd8a の検証で同じ結果 (行 4〜6)。
+- 列ドラッグのデコレータ (重点 2): ドラッグ中に CopyFromScreen で撮った (`_harness/dragcap.ps1`)。余白つきの枠に "BaseValue"、挿入位置に青い縦線 (04)。
+- 行ドラッグのデコレータ (重点 2): "Place Row [Item 0000] Here" の枠と挿入線 (05)。旧 `SHorizontalBox` の包みを外した後も、文字は枠の中に収まっている。
+- 見つけた不具合 (follow-up、既存): 前に非表示のデータ列があると、列ドラッグの挿入位置が常に 0 になる (`ComputeDropInsertIndex` が非表示列で break)。本タスク以前 (`7b8789e^`) も同じ処理。証跡 `.agents/tasks/evidence/t261026-bd46/03b-drag-with-hidden-columns-noop.png`。
+- 所要 約 4 分 (Data View の作業 19:34〜19:54 を bd46 / dd8a / ed01 で共用。按分は概算)。
+
 ## Summary
-Views の重複・責務漏れ・死にコードを整理した (R-V1〜R-V13)。セル値の Export/Import、行の読取専用検査、Fill Down の書込み、列レイアウトの走査、ドラッグの Op/Handle、セル枠の描画を、それぞれ 1 つにまとめた。挙動は変えない意図で、自動テストは 75/75。GUI smoke 5 操作が残る。
+Views の重複・責務漏れ・死にコードを整理した (R-V1〜R-V13)。セル値の Export/Import、行の読取専用検査、Fill Down の書込み、列レイアウトの走査、ドラッグの Op/Handle、セル枠の描画を、それぞれ 1 つにまとめた。挙動は変えない意図で、自動テストは 75/75。GUI smoke 5 操作は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/` 配下:
@@ -193,7 +205,7 @@ Views の重複・責務漏れ・死にコードを整理した (R-V1〜R-V13)�
   - `SDataIndexerViewColumnMoveDragDrop.h` / `.cpp`
   - `SDataIndexerViewRowMoveDragDrop.h` / `.cpp`
   - `SDataIndexerViewDragHandle.h` (新規)
-- `.agents/tasks/ready/t261026-ed01-view-refactor.md`
+- `.agents/tasks/done/t261026-ed01-view-refactor.md`
 
 ## Blockers
-検証待ち: GUI smoke 5 操作のスクリーンショット (Verification 参照)。UE MCP server (`127.0.0.1:8001`) が本 run で停止しているため撮れない。実装は残っていない。
+None

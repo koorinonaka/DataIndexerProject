@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 150
 tier: standard
 screen: required
@@ -93,6 +93,7 @@ details の毎フレーム `LoadObject` / グローバル関数検索 / ハン�
   - Repository ピッカー (ピンと details) が同じ候補を出すスクリーンショット。Schema クラスピッカー 2 箇所が同じ候補を出すスクリーンショット。
   - Schema Filter 付き BP 変数 details を開いて静止 → log に `LoadObject` 警告が出ない。
   - 1000 行 Repository の行を選択して details を開き、`HandleIsResetToDefaultVisible` 1 回あたり `GetChildHandle` が呼ばれないことをカウンタで確かめる (AC)。
+- 済 (2026-10-28 verify sweep、ALICE): 上の 3 項目。カウンタはビルドが要るので使わず、README の perf 規則どおり構造 (`GetChildHandle` は `CustomizeDetails` の 1 箇所だけ) で代えた。1000 行 Repository の行 details は開いて問題なし。証跡 `.agents/tasks/evidence/t261026-e5c0/`。
 
 ## Execution Log
 - 2026-10-28 dispatch 16/18。前提 t261026-de66 は verify_pending (検証未完) の上に構築。両 repo `fix/audit-2026-10`。
@@ -162,10 +163,20 @@ details の毎フレーム `LoadObject` / グローバル関数検索 / ハン�
 - 旧文言 2: 「`rg 'DisplayStrings' Plugins/DataIndexer/Source/DataIndexerEd/` が 0 件 (現在 1)。」
 - 新文言 2: 対象を `DataIndexerGraphPin_PrimaryKey.h` に絞って 0 件。
 
+### verify sweep 2026-10-28 20:06 (ALICE、合格 → done)
+- 前提 t261026-de66 は同じ sweep で合格した。
+- 環境: エディタ PID 40584 (submodule 0f651e4 のビルド)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセット `/Game/__Verify/BP_VDe66` (de66 と共用) と `/Game/__Verify/DI_V1000` を使い、終了時に削除した。証跡は `.agents/tasks/evidence/t261026-e5c0/`。
+- Repository ピッカー (フィルタなし): Boot Level BP の class defaults `Handle Repository` (details、01c) と BP_VDe66 の Set Repository ノードのピン (01b) は、先頭が同じ DI_Ability / DI_Ability_Mage / DI_Ability_Warrior / DI_CharacterClass。
+- Repository ピッカー (Schema Filter あり): BP_VDe66 の変数 `Repository` に Schema Filter = DIS_Item → details の既定値ピッカーは DI_Items と DI_V1000 の 2 件だけ (01a)。同じ変数の Set ノードのピンは全件を出した (01b)。原因はエンジン: `UK2Node_Variable::GetPinMetaData` は `AllowAbstractClasses` しか返さないので、変数ノードのピンに Schema メタは届かない。e5c0 以前の `GraphPin_Repository` も同じ `GetPinMetaData` を読む (`1fd51e9^` で確認)。Schema メタを持つピン (ネイティブ関数の引数など) はこのプロジェクトに無い。両者は同じ `SchemaFilter::ShouldFilterRepositoryAsset` を使う。
+- Schema クラスピッカー: 変数の Schema Filter (VariableCustomization) は 15 件 (CharacterClassSchema … ItemTypeSchema、テスト用スキーマ 7 件を含む、02a)。Repository の Asset Details の Schema Class (PTC_Schema、DI_V1000) は DIS_Item と ItemSchema の 2 件 (02b)。2 件は 15 件のうち行構造体が ItemRow のもの。R-C6 の `RequiredRowStruct` (任意引数) による絞り込みで、設計どおり。除外の基準は共通。「同じ候補」という Verification の文言は、この差を含まない。文言の扱いは run 終端の 要ユーザー判断。
+- LoadObject 警告: Schema Filter = DIS_Item の変数 details を表示したまま操作した間、`LoadObject` / `LogUObjectGlobals: Warning` / `Failed to find` は 0 件 (起動時の無関係な GameDataSettings 1 件だけ)。古いパスでの対照 (旧コードなら毎フレーム警告) は、変数メタを古いパスに書き換える手段が無く未実施。
+- AC (GetChildHandle カウンタ): カウンタはビルドが要るので使わなかった。README の perf 規則に従い構造で確認: `GetChildHandle` は EditorRow.cpp の `CustomizeDetails` 1 箇所だけ (critic round 1/2 も確認)。1000 行の DI_V1000 で行を選び details を開いた (bd46 / dd8a の作業中)。警告・停止は無い。
+- 所要 約 4 分 (20:06〜20:10、Boot の追加確認を含む)。
+
 ## Summary
 Customizations の重複を `DataIndexerSchemaFilter` / `DataIndexerKeyOptions` に集約し、schema クラスピッカーのフィルタを 1 クラスにした。
 details と変数カスタマイズの毎フレーム `LoadObject` / `GetChildHandle` 鎖走査 / 未バインド関数の再解決を、構築時の解決とキャッシュに置き換えた。meta キーは `DataIndexerMetaDataKeys.h` に集めた。
-GUI 検証は未実施 (verify_pending)。
+GUI 検証は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerMetaDataKeys.h
@@ -185,6 +196,7 @@ GUI 検証は未実施 (verify_pending)。
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerRowFunctionBinding.cpp
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerVariableCustomization_PrimaryKey.h / .cpp
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerVariableCustomization_RepositorySchema.h / .cpp
+- .agents/tasks/done/t261026-e5c0-customizations-dedupe.md
 
 ## Blockers
-検証待ち: GUI 検証 3 件と `GetChildHandle` カウンタの AC。UE MCP (127.0.0.1:8001) がこの run では停止しており、エディタ GUI を操作できない。
+None

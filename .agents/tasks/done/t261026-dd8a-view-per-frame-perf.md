@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 120
 tier: standard
 screen: required
@@ -87,6 +87,7 @@ O(rows²) のソート・フィルタを、マップとキャッシュで定数�
 - fill handle: 選択行へのホバーでハンドルが出る。ハンドル上でカーソルが ResizeUpDown になる。ドラッグでプレビュー (背景と青枠) が出て、離すと消える (HandleCenter キャッシュと OnFillPreviewChanged 分離の目視)。
 - CommentOut トグルで行の文字色・背景・Visibility チェックが次の tick で切り替わる (bCommentOut キャッシュ)。
 - t261026-ba24 から引き継いだ Reload 経路の compiled-repository cache の GUI 確認。
+- 済 (2026-10-28 verify sweep、ALICE): AC3、fill handle、CommentOut、Reload 経路。`stat Slate` の before は旧バイナリが無く撮れない (README「perf は構造の AC で足りる」、AC4 は静的に成立)。証跡 `.agents/tasks/evidence/t261026-dd8a/`。
 
 ## Execution Log
 - 2026-10-28 13:17 着手。前提 t261026-bd46 は verify_pending (検証未完) の上に構築。`release/v1.0.2` は両 repo の main に merge 済み (`git merge-base --is-ancestor` で確認)。作業ブランチは両 repo とも `fix/audit-2026-10`。
@@ -142,8 +143,18 @@ O(rows²) のソート・フィルタを、マップとキャッシュで定数�
   ```
   回答: 1 を修正。`FCellEntry::FilterText` メンバーを削除し、ctor 引数 `InFilterText` は SearchText の材料として残した。ViewTypes.h / ViewTypes.cpp:486 / Visibility.cpp:81 のコメントからメンバー名を外した。再 build 22.8s、`DataIndexerEd.View+DataIndexerEd.Repository` → Success=18 Fail=0。
 
+### verify sweep 2026-10-28 19:34 (ALICE、合格 → done)
+- 前提 t261026-bd46 は同じ sweep で合格した。
+- 環境: エディタ PID 40584 (submodule 0f651e4 のビルド)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセット `/Game/__Verify/DI_V1000` (DIS_Item、1000 行) を bd46 と共用し、終了時に削除した。証跡は `.agents/tasks/evidence/t261026-dd8a/`。
+- AC3: `LogsToolset.SetVerbosity LogDataIndexer Verbose`。6 行をまたぐ範囲選択を実マウスでドラッグ (01 保持中、02 後) → `SSelectionDetails: ForceRefresh` は 1 行だけ (#1、6 rows)。対照: 行を 2 回クリック → #2・#3 の 2 行。計器は選択変更ごとに数えている。
+- fill handle: 選択行の上にホバー → ハンドルのピクセル 48 個 (03)。別の行にホバー → 0 個 (03b)。ハンドル上の OS カーソルは IDC_SIZENS、ハンドル外は SIZENS でない (`_harness/cursor.ps1`)。ハンドルをドラッグ → 2 行に青枠のプレビューと "Fill Down" (04a)。離すとプレビューが消え、2 行に値が入った (04b)。
+- CommentOut: 行を選んで Shift+T → 目のアイコンが閉じ、チェックが外れた (05b)。選択を外すと文字が暗くなった (05c)。もう一度 Shift+T で元に戻った (チェック checked)。
+- Reload (ba24 から合流): Python (`py` コマンドを Cmd 欄から) で `get_all_primary_keys` を数えた。編集後 (行削除 + Insert) は 1000 件で、削除した行のキー 694B9C9F… は無い。`EditorLoadingAndSavingUtils.reload_packages(..., ASSUME_POSITIVE)` で Reload → 1000 件で、そのキーが戻った。compiled cache は Reload で捨てられ、保存済みの内容から作り直された。ensure・警告は無い。
+- `stat Slate` の before/after: 旧バイナリが無いので before を撮れない。README の perf 規則に従い、構造の AC (AC1・AC2・AC4 は静的に確認済み) で代えた。
+- 所要 約 6 分 (Data View の作業 19:34〜19:54 を bd46 / dd8a / ed01 で共用。按分は概算)。
+
 ## Summary
-Data View の毎フレーム経路から、線形探索・EditorData の FindRow・AssetRegistry 問い合わせを外した。代わりにマップ 3 つと、FRowEntry / FColumnEntry / FCellEntry のキャッシュを引く。Sort の O(n² log n) と選択フィルタの O(sel×rows) は、1 パスで作るマップに置き換えた。fill プレビューは専用デリゲートに分け、Details はドラッグ中の再構築を保留する。自動テストは green。GUI の計測と目視が残る (verify_pending)。
+Data View の毎フレーム経路から、線形探索・EditorData の FindRow・AssetRegistry 問い合わせを外した。代わりにマップ 3 つと、FRowEntry / FColumnEntry / FCellEntry のキャッシュを引く。Sort の O(n² log n) と選択フィルタの O(sel×rows) は、1 パスで作るマップに置き換えた。fill プレビューは専用デリゲートに分け、Details はドラッグ中の再構築を保留する。自動テストは green。GUI の確認は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 Plugins/DataIndexer (submodule):
@@ -170,7 +181,7 @@ Plugins/DataIndexer (submodule):
 
 親 repo:
 - Plugins/DataIndexer (submodule pointer)
-- .agents/tasks/ready/t261026-dd8a-view-per-frame-perf.md
+- .agents/tasks/done/t261026-dd8a-view-per-frame-perf.md
 
 ## Blockers
-検証待ち: Verification 節の GUI 確認が残る (stat Slate before/after、ドラッグ中の ForceRefresh ログ数、fill handle と CommentOut の目視、ba24 の Reload 経路)。UE MCP (127.0.0.1:8001) がこの run で停止していて実行できない。実装は残っていない。
+None

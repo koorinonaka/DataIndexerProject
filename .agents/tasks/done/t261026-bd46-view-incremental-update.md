@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 110
 tier: standard
 screen: required
@@ -93,6 +93,7 @@ created_by: task-create
   4. InlineTransient セルの編集確定直後に Fill handle が有効。
   5. Undo / Redo 後にセルが空にならない (EmptyKey 経路の `RebuildList`)。
   6. 行の追加 / 削除 / 移動で行番号が正しく振り直される (LineNumber TAttribute)。
+- 済 (2026-10-28 verify sweep、ALICE): 1〜6。`stat Slate` の before は旧バイナリが無く撮れない (README「perf は構造の AC で足りる」)。ちらつきは静止画で測れない。構造 (`AddColumns` 一括・トグルで `ClearColumns` なし) と表示の正しさで代えた。証跡 `.agents/tasks/evidence/t261026-bd46/`。
 
 ## Execution Log
 - 2026-10-28 13:02 着手。前提 t261026-57d1 は verify_pending (検証未完) の上に構築。`release/v1.0.2` は main にマージ済み (作業ブランチ `fix/audit-2026-10` は main から)。
@@ -121,8 +122,22 @@ created_by: task-create
   掃除の結果: 外部の参照切れなし。追加した定義はすべて参照あり。シグネチャ変更の呼び手 (テスト含む) もすべて追従。
   ```
 
+### verify sweep 2026-10-28 19:34 (ALICE、合格 → done)
+- 環境: エディタ PID 40584 (submodule 0f651e4 のビルド)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセット `/Game/__Verify/DI_V1000` (DIS_Item、1000 行、DataIndexerToolset で生成) を作り、終了時に削除した。前回 sweep の残り `/Game/__Verify/BP_VGetRow_Dup` も削除した。証跡は `.agents/tasks/evidence/t261026-bd46/`。
+- 計器: 一時ログカウンタはビルドが要る (エディタを閉じる) ので使わなかった。代わりに SlateInspector の ref をウィジェット実体の識別子として使った。計器の確認: 静止で 2 回取って同じ ref。Undo (EmptyKey → `RebuildList`) で全行・全セルの ref が新しくなった (陽性対照)。記録は `01-widget-identity.txt`。
+- 1 (Construct): details で Item 0002 の DisplayName を編集 → その行のセルだけ ref が新しくなった。行 widget (g9) と他の 6 行のセルは同じ ref のまま。
+- 2 (フィルタ): 検索欄に "Item 000" を 8 打鍵 (1000 → 10 行) → 残った行とセルの ref は全部そのまま (02)。全再生成は起きていない。具体キー経路の `RepopulateEntries` が走らないことは読みで確認した (`HandleModelVisibleUpdated` は `bVisibleRowsDirty` を立てるだけ)。
+- 3 (列): Base Value 列のトグル表示 → 既存のセル ref はそのまま、新しい列のセルだけ増えた (03a)。全列表示で Base Value を Rarity と Metadata Tags の間へ実マウスでドラッグ → 並びが変わり、ヘッダとセルの位置が揃っていた (03c 保持中、03d 後)。ちらつきは静止画で測れない。
+- 4 (Fill handle): Base Value セルを選択 → ハンドルあり (04a)。ダブルクリックで InlineTransient 編集中 → ハンドルなし (04b)。値を確定 → すぐハンドルが戻った (04c)。
+- 5 (Undo): `TRANSACTION UNDO` 後もセルは空にならず、値が戻った。
+- 6 (行番号): 行削除 (Item 0002)・行のドラッグ移動 (Item 0000 を 3 行目へ)・Insert で、行番号は 1 から振り直された。残った行の widget は同じ ref で番号だけ変わった (06)。
+- 見つけた不具合 (follow-up、本タスクの AC 外): 行数の桁が変わる (10 行 → 9 行) と、その後に作り直した行だけ LineNumber 列が 2px 狭くなり、列がずれる (06 の 3 行目)。原因: `SView::UpdateLineNumberDigitCount` → `SViewHeader::UpdateLineNumberWidth` → `SHeaderRow::SetColumnWidth` は Fixed 列の `Width` だけを書き換える。生成済みの行 (`STableRow.h:1454`) とヘッダ (`SHeaderRow.cpp:957`) は生成時の `WidthOverride(Width.Get())` を持ち続ける。対照: 列トグル (ColumnsChanged) の後は全行とヘッダが新しい幅で揃った。この経路は `1196d75` からある。本タスクの行 widget 再利用で、症状が「全行とヘッダのずれ」から「作り直した 1 行だけのずれ」に変わった。
+- 見つけた不具合 2 (follow-up、既存): 前に非表示のデータ列があると、列ドラッグの挿入位置が常に 0 になる (`ComputeDropInsertIndex` が非表示列で break)。ed01 以前のコード (`7b8789e^`) も同じ。証跡 `03b-drag-with-hidden-columns-noop.png`。
+- 後片付け: DIS_Item の列レイアウト (Saved/Config、git 管理外) を UI で戻した。いまは `ColumnVisibility=False`・`Preview=True`・`ColumnOrder=` 宣言順が明示で入る。挙動は元と同じ。
+- 所要 約 10 分 (Data View の作業 19:34〜19:54 を bd46 / dd8a / ed01 で共用。按分は概算)。
+
 ## Summary
-Data View を差分更新にした。`BuildRows` は旧 `FRowEntry` をキーで再利用し、dirty 行だけセルを再計算する。`SView::Tick` は EmptyKey だけ全再生成し、具体キーは該当 `SViewRow::RebuildCells`、フィルタは `RequestListRefresh` だけにした。ヘッダは `AddColumns` 一括 (5.7 は分岐)、列トグルは `SetShowGeneratedColumn`、列並べ替えはヘッダ再構築だけ。LineNumber / SimpleText は TAttribute、`SViewCell` デストラクタで編集フラグを戻す。GUI の Verification が残る。
+Data View を差分更新にした。`BuildRows` は旧 `FRowEntry` をキーで再利用し、dirty 行だけセルを再計算する。`SView::Tick` は EmptyKey だけ全再生成し、具体キーは該当 `SViewRow::RebuildCells`、フィルタは `RequestListRefresh` だけにした。ヘッダは `AddColumns` 一括 (5.7 は分岐)、列トグルは `SetShowGeneratedColumn`、列並べ替えはヘッダ再構築だけ。LineNumber / SimpleText は TAttribute、`SViewCell` デストラクタで編集フラグを戻す。GUI の Verification は 2026-10-28 の verify sweep で合格した。
 
 ## Changed Files
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/DataIndexerViewTypes.h
@@ -138,7 +153,7 @@ Data View を差分更新にした。`BuildRows` は旧 `FRowEntry` をキーで
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerViewCell.h
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerViewCell.cpp
 - Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/ViewModel/DataIndexerViewModelTests.cpp
-- .agents/tasks/ready/t261026-bd46-view-incremental-update.md
+- .agents/tasks/done/t261026-bd46-view-incremental-update.md
 
 ## Blockers
-検証待ち: UE MCP (127.0.0.1:8001) がこの run で停止しており、エディタ GUI の Verification を実施できない。残りは Verification 節の GUI 項目だけ (実装は完了)。
+None

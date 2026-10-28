@@ -1,0 +1,9 @@
+SlateInspector ref = widget instance identity (observer assigns a new ref to a new widget).
+Fixture /Game/__Verify/DI_V1000 (1000 rows, DIS_Item). Visible rows 1-7, refs = [row, ...cells].
+A idle:            Item 0000 g7 i98 x55 b85 ... | Item 0002 g9 i112 x71 b87 i113 x72 ... | Item 0003 g10 i119 x79 ...
+B edit Item 0002 DisplayName (details) -> "Item 0002x":
+                   Item 0000 g7 i98 x55 b85 ... (same) | Item 0002x g9 i194 x128 b133 i195 x129 ... (row kept, cells new) | Item 0003 g10 i119 x79 ... (same)
+C TRANSACTION UNDO (EmptyKey -> RebuildList, positive control):
+                   Item 0000 g52 i234 x144 ... | Item 0002 g54 i248 x160 ... | every row and cell new; values restored, no empty cells
+D type filter "Item 000" (8 keystrokes, 1000 -> 10 rows): Item 0000 g52 i234 x144 ... (all unchanged) -> no EmptyKey/RebuildList on filter
+E column toggle Base Value on: rows g52.. kept, existing cells kept (x145, x146), only new Base Value cell x267 added

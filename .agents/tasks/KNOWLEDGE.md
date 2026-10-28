@@ -23,3 +23,11 @@
 - K2Node の検証は exec に繋がっていないと孤立ノードとして刈られ、`compile_blueprint` で走らない。BeginPlay から繋ぐ。
 - 非表示の関数ピンの `DefaultObject` は、ノードを選んで Ctrl+C した T3D (クリップボード) で読める。
 - `AssetTools.delete` は Reference Viewer などで掴まれた資産を消せないことがある (戻り値 true でも `exists` が true)。
+- (2026-10-28 2 回目の sweep) 一時ログカウンタの代わり: SlateInspector の ref はウィジェット実体ごとに振られる。Snapshot の ref の一致で「作り直されていない」を数えられる。使う前に、静止で 2 回同じ・Undo (全再生成) で全部変わる、を確かめる。
+- Python の逃げ道: 状態バーの Cmd 欄へ `py <文>` を `Type` (submit) すると実行され、`print` は `LogPython` に出る。Cmd 欄の ref は前面のタブで変わるので、毎回 Snapshot で `textbox … pos=3xx,10xx` を探す。`GetLogEntries` は数秒遅れることがある。「行が無い」と結論する前に読み直す。
+- `Type` は欄の中身を置き換える (追記ではない)。MCP の `PressKey Ctrl+Z` は Data View で効かなかった (同じ時点の `TRANSACTION UNDO` は効いた)。Undo は Cmd 欄の `TRANSACTION UNDO` で行う。
+- Undo の検証の前に `py print(unreal.SystemLibrary.end_transaction())` を打つ。1 以上なら開いたままのトランザクションが残っている (どの MCP ツール由来かは不明)。残っていると `TRANSACTION UNDO` が黙って何もしない。閉じると、それまでの操作が 1 つの塊になる。0 を確かめてから測る。
+- アセットピッカーは現在値までスクロールして開く。先頭の数件だけ見ると、絞り込まれたように見える。比べるときは現在値が None のピッカーを使う。
+- `_harness/dragcap.ps1`: 実マウスのドラッグを押したまま CopyFromScreen で撮ってから離す (ドラッグのデコレータ・フィルのプレビュー用)。`_harness/t3dpins.ps1`: ノードを選んで MCP `PressKey Ctrl+C` した後のクリップボード T3D から、ピンごとの `bIsReference` / `bIsConst` / LinkedTo 数 / 型を出す。`_harness/cursor.ps1`: 実カーソルを置いて OS カーソルの形 (SIZENS など) を返す。
+- Data View の列ドラッグは、前に非表示のデータ列があると挿入位置が常に 0 になる (既存の不具合)。列の並べ替えを検証するときは全列を表示する。列の表示や並びは Saved/Config の SchemaLayouts に即時保存されるので、終わったら UI で戻す。
+- このプロジェクトのスキーマには Repository 型・RowHandle 型の列が無い。Data View のセルの Repository ピッカー (PTC_Repository) を GUI で見るには、そういう列を持つ一時 UDS とスキーマが要る。

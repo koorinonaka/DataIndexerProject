@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 130
 tier: standard
 screen: required
@@ -153,11 +153,20 @@ NOTE: K2Node_DataIndexerGetRow.cpp:83 — Out of Scope には「`ResolveReposito
 - AC5 旧文言: 「`rg 'ResolveSiblingRepository'` が 1 定義 + 2 呼び手。」
 - AC5 新文言: 定義 1 + 宣言 1 + 呼び手 2。
 
+### verify sweep 2026-10-28 19:55 (ALICE、合格 → done)
+- 環境: エディタ PID 40584 (submodule 0f651e4 のビルド)、UE MCP 127.0.0.1:8001。GUI 操作はユーザー許可済み (dispatch 2026-10-28「今からやって」)。一時アセット `/Game/__Verify/BP_VDe66` (Actor BP、変数 `Repository` = DI_ItemRarity、Select by Primary Key ノード) を BlueprintTools で作り、前回 sweep の残り `BP_VGetRow_Dup` (GetRow、Handle 分割済み) と一緒に終了時に削除した。証跡は `.agents/tasks/evidence/t261026-de66/`。
+- 静止時のカウンタ (AC2): `LogDataIndexer` を Verbose にした。BP_VGetRow_Dup のグラフを開いて 45 秒静止 → `EvaluateRepositoryPath` の行は 0 増 (4034 のまま)。BP_VDe66 を開いた時に Select ノードで 1 行 (Construct の 1 回)、その後 30 秒静止で 0 増。対照: Select ノードの `Repository` を設定 → 1 行増えた。計器は解決を数えている。
+- 繋ぎ替え: GetRow の Handle Repository を DI_ItemRarity → DI_ItemType に変えた → タイトルが Item Type Row になり、キーは None 表示、コンボの候補は None / Weapon / Armor / Accessory / Material (01a・01b・01c)。
+- Select (AC3): `Repository` 未設定の Select ノードは、BP 変数 `Repository` (= DI_ItemRarity) があってもピッカーを出さない (02a)。ログの評価は `on K2Node_DataIndexerSelectPrimaryKey_0` だけで、`Default__BP_VDe66_C` (CDO) の評価は無い。対照: ノードの `Repository` を DI_ItemRarity にするとコンボ "None" と Browse が出た (02b)。
+- 3 シナリオの log: PID 40584 起動 (19:23) 以降、`LogDataIndexer` の Warning / Error と ensure は 0 件。無関係の起動時警告 1 件 (`GameDataSettings` クラスが見つからない、19:23:43) だけ。PrimaryKey ピン入りの BP を初回ロードで開いた (BP_VGetRow_Dup 19:55)。未ロードの Repository を初めて開いた (DI_CharactersFromDataTable、0 行、起動後の初回ロード)。どちらも警告なし。TOptional は quick で回した RowHandle 群の自動テストが受け持つ (GUI で見られるプロパティがプロジェクトに無い)。Data View の Repository セルは未実施: このプロジェクトのスキーマに Repository 型 / RowHandle 型の列が無い (KNOWLEDGE に記録)。エディタの再起動はしていない (dispatch の制限)。
+- 行名の追従: GetRow の Repository を DI_V1000、キーを Item 0000 にした → ピンは "Item 0000" (04a)。Data View で Item 0000 の DisplayName を "Renamed 0000" に変えた → BP タブに戻るとピンは "Renamed 0000" (04b)。ピンの DefaultValue は変わっていないので、`OnEditorRowsUpdated` で表示名のキャッシュが捨てられている。
+- 所要 約 5 分 (19:55〜20:00)。
+
 ## Summary
 Repository 解決を純粋なメタパス探索 (`FindRepositoryMetaPath` / `FindSiblingRepositoryPin`) とスクリプト実行つき評価 (`EvaluateRepositoryPath`) に分けた。
 グラフピン 2 種は `FGraphPinRepositoryCache` で兄弟 Repository ピン変化時だけ再解決し、PTC 2 種は `CustomizeHeader` で 1 回解決して
 子プロパティ変更で再解決する。表示名は FText をキャッシュし値変更・行更新で捨てる。CDO fallback はノード UPROPERTY 名のパスで走らない。
-ビルドと Compiler / RowHandle の自動テストは通過。GUI の Verification は MCP 停止のため検証待ち。
+ビルドと Compiler / RowHandle の自動テストは通過。GUI の Verification は 2026-10-28 の verify sweep で合格した。
 
 ## Tests
 - 自動テストの追加なし (タスク本文どおり)。
@@ -170,6 +179,7 @@ Repository 解決を純粋なメタパス探索 (`FindRepositoryMetaPath` / `Fin
 - `Repository` 未設定の Select ノードで、BP 変数 `Repository` がある BP のピッカーが空のスクリーンショット。
 - Data View の Repository セル・TOptional プロパティ・エディタ起動直後に開く Repository の 3 シナリオで警告/クラッシュなし (log)。
 - Data View で行名を変えたとき、開いている BP の PrimaryKey ピン表示が追従する (OnEditorRowsUpdated)。
+- 済 (2026-10-28 verify sweep、ALICE): 上の 4 項目。3 項目目の Data View の Repository セルは、該当する列がプロジェクトに無く未実施 (Execution Log)。証跡 `.agents/tasks/evidence/t261026-de66/`。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerPrimaryKeyRepositoryResolver.h`
@@ -182,7 +192,7 @@ Repository 解決を純粋なメタパス探索 (`FindRepositoryMetaPath` / `Fin
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerPropertyTypeCustomization_PrimaryKey.cpp`
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerPropertyTypeCustomization_IndexKey.h`
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerPropertyTypeCustomization_IndexKey.cpp`
-- `.agents/tasks/ready/t261026-de66-resolver-split.md`
+- `.agents/tasks/done/t261026-de66-resolver-split.md`
 
 ## Blockers
-検証待ち: GUI の Verification (上記 4 項目) が残る。UE MCP server (127.0.0.1:8001) 停止中のため未実施。実装は残っていない。
+None
