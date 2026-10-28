@@ -1,5 +1,5 @@
 ---
-status: ready
+status: verify_pending
 order: 180
 tier: standard
 screen: required
@@ -76,13 +76,37 @@ Repository の SchemaClass 変更 (行リセット込み) を Ctrl+Z / Ctrl+Y �
 - 上の GUI 2 項目を UE MCP か `windows-screenshot` で撮る (Ctrl+Z 後と Ctrl+Y 後の Data View 各 1 枚)。
 
 ## Execution Log
-Not started.
+- 2026-10-28 (dispatch 19/21, branch `fix/audit-2026-10`): Preconditions 確認。`BindSchemaDelegates` / `UnbindSchemaDelegates` /
+  `BoundRowStruct` / `BoundSchemaBlueprint` は木にある (6bf4 の実装、verify_pending の上に構築)。
+- 実装: Steps 1–3 どおり。`RebindSchemaDelegatesIfChanged()` は EditorData null で return、現在の UDS と Schema Blueprint を
+  `BindSchemaDelegates` と同じ取り方で求め、両方が `BoundRowStruct.Get()` / `BoundSchemaBlueprint.Get()` と一致すれば
+  Unbind/Bind を呼ばずに return する。`InitEditor` の `GetOnAssetChanged()` lambda から `HandleModelRowsChanged( true )` の前に呼ぶ。
+- ビルド: `Build.bat DataIndexerProjectEditor Win64 Development` は 1–3 回目が `fatal error C1001` (内部コンパイラエラー、毎回別の
+  エンジンヘッダ行: SharedPointerInternals.h(885) / SparseSet.h.inl(1391) など) で exit 6、各 15–16 秒。空きメモリ 40GB。
+  4 回目は同じソースで `Result: Succeeded` (21.7 秒)。発生位置が毎回違うため、本変更ではなくコンパイラの一過性と判断した。
+- quick: `Automation RunTests DataIndexerEd.Repository` → Found 3 tests、3 件とも `Result={Success}`、EXIT CODE 0。
+- Acceptance: `rg 'RebindSchemaDelegatesIfChanged' …/DataIndexerEditorToolkit.cpp` → 2 件 (定義・lambda 呼び出し)。比較一致時の早期 return を
+  コードで確認。GUI 2 項目は UE MCP (127.0.0.1:8001) がこの run で停止しているため未実施。
+- 自己レビュー: `git diff --stat` = Toolkit.cpp +29/-1、Toolkit.h +1。Scope 外のパス無し。
+- critic round 1 (task-critic):
+
+  ```
+  PASS
+  NOTE: DataIndexerEditorToolkit.cpp:585 — I checked the first two Acceptance Criteria in the code. `rg 'RebindSchemaDelegatesIfChanged'` finds 2 hits: the definition at line 585 and the call from the `GetOnAssetChanged` lambda at line 239. When both values match, the new function returns at lines 599-602, before `UnbindSchemaDelegates` / `BindSchemaDelegates` run. Lines 595-597 read the current values the same way `BindSchemaDelegates` does at lines 541 and 554-556.
+  NOTE: t261028-095d-toolkit-rebind-on-undo.md:66-68 — The diff cannot show the two GUI criteria (after Ctrl+Z / Ctrl+Y, adding a field to the UDS makes a column appear in Data View). The author has not run them yet; this is listed under Blockers. The screenshots still need to be taken.
+  NOTE: DataIndexerEditorToolkit.cpp:604-605 — When the RowStruct is not a UDS and the Schema is not a Blueprint, both bound pointers stay null. In that case the comparison sees null on both sides and skips the rebind, which is correct. One gap: if a bound object is garbage-collected, its `TWeakObjectPtr` turns stale and `Get()` returns null. That differs from a live current value, so the function rebinds. This does no harm.
+  No removed identifiers. The only `-` line is the old lambda body, and its `HandleModelRowsChanged( true )` call is kept. The diff does not touch `HandleSchemaClassChanged`, `ResolveStructureMismatch` or `FViewModel` (Out of Scope). The project has no CLAUDE.md.
+  ```
 
 ## Summary
-Not started.
+`FEditorToolkit::RebindSchemaDelegatesIfChanged()` を追加し、`ViewModel` の `OnAssetChanged` (undo/redo の `PostUndo`/`PostRedo` も含む)
+のたびに RowStruct UDS と Schema Blueprint を束縛先と比較して、違うときだけ schema delegate を張り直す。
+ビルドと Repository テストは通過。GUI 検証 (Ctrl+Z / Ctrl+Y 後の列追加) は未実施。
 
 ## Changed Files
-Not started.
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.h`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.cpp`
 
 ## Blockers
-なし
+検証待ち: UE MCP (127.0.0.1:8001) がこの run で停止している。Verification の GUI 2 項目 (Ctrl+Z 後に Schema A の UDS へ
+フィールド追加で列が出る / Ctrl+Y 後に Schema B の UDS へ追加で列が出る) のスクリーンショットだけが残っている。
