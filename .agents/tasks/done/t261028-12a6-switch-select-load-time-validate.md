@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 230
 tier: standard
 screen: required
@@ -66,6 +66,7 @@ case ピンの表示名は GUID でなく行の表示名になる。
 - 3. case ピンのスクリーンショット (表示名が行の名前)。
 - 4. 実在しないキーを足して再コンパイル → `is not in` が出ることを確かめる。
 - 一時アセットは終わりに消す。証跡は `.agents/tasks/evidence/t261028-12a6/`。
+- 済 (2026-10-29 verify sweep): 1〜4 すべて。
 
 ## Execution Log
 2026-10-28 (ALICE、dispatch 1/3、エディタ PID 40584 は run notes に従い Stop-Process で閉じた。ユーザーが PC 使用中のため GUI 検証はしない)
@@ -95,8 +96,17 @@ case ピンの表示名は GUID でなく行の表示名になる。
   ```
   2 つ目の NOTE への答え: UE 5.8 `K2Node.h:558` の `PreloadObject` は `if (ReferencedObject) ReferencedObject->ConditionalPreload();` だけ (5.7 も `K2Node.h:553` で同じ)。挙動は同一。
 
+### verify sweep 2026-10-29 05:12 (ALICE、合格 → done)
+- 環境: エディタは HEAD のビルド (UnrealEditor-DataIndexerEd.dll 2026-10-28 21:29 = submodule c9ca5c7 の木)。UE MCP 127.0.0.1:8001 を `evidence/_harness/mcp.py` で HTTP から叩いた。ユーザーは不在で、GUI 操作は dispatch で許可済み。証跡 `evidence/t261028-12a6/gui-restart-verify.txt` と `gui-after-restart-case-pins.png`。
+- V1: `/Game/__Verify/DI_VItemRarity` (DI_ItemRarity の複製、行名を VCommon… に変更) と `/Game/__Verify/BP_VSwitch` を作った。BP には Switch on Primary Key (add_node_pin ×2 → 2B8F0001 / 0002) と Select by Primary Key (同じキー) を置き、BeginPlay → Switch → PrintString、Select → PrintString.InString と繋いだ。コンパイルして保存した。
+- V2 / AC2: エディタを再起動した (PID 27548 → 34332)。開く前に `find_object` で DI_VItemRarity と BP_VSwitch が未読み込みであることを確かめた (DI_ItemRarity は読み込み済み)。`OpenEditorForAsset` で BP を開いた。`GetLogEntries(LogBlueprint, "is not in")` は 0 件。修正前は同じ手順で 2 件出ていた (5a97 の followup-02b)。
+- V3 / AC3: 再起動後の初回表示で、Switch の case ピンは VCommon / VUncommon、Select のピンも VCommon / VUncommon (gui-after-restart-case-pins.png)。修正前は GUID だった。
+- V4 / AC4: Switch の PinKeys に AAAAAAAA-… を足して `compile_blueprint` → `PrimaryKey AAAAAAAA-… is not in DI_VItemRarity in Switch on Primary Key` が 1 件出た。同じ `GetLogEntries` の問い合わせがこの行を返した。V2 の 0 件の対照になる。
+- AC1: `rg PreloadRequiredAssets` は Switch / Select の .h / .cpp で 4 件 (実装時に確認済み)。
+- 一時アセットは消した (`exists` false)。
+
 ## Summary
-Switch / Select PrimaryKey の `PreloadRequiredAssets` で Repository → EditorData → RowStruct を先にシリアライズさせた (HandleNodeBase の `PreloadRepositoryChain` を `DataIndexerK2NodeUtils` へ移して共有)。原因は実測で確定: 読み込み時のコンパイルの時点で import の Repository が `RF_NeedLoad`・EditorData なしだった。headless の再現 (Select) で偽エラー 4 件 → 0 件、case ピン名 GUID → 行の表示名。実在しないキーの検出は残る。Switch の GUI 検証とスクリーンショットが残り (verify_pending)。
+Switch / Select PrimaryKey の `PreloadRequiredAssets` で Repository → EditorData → RowStruct を先にシリアライズさせた (HandleNodeBase の `PreloadRepositoryChain` を `DataIndexerK2NodeUtils` へ移して共有)。原因は実測で確定: 読み込み時のコンパイルの時点で import の Repository が `RF_NeedLoad`・EditorData なしだった。headless の再現 (Select) で偽エラー 4 件 → 0 件、case ピン名 GUID → 行の表示名。実在しないキーの検出は残る。2026-10-29 の verify sweep で Switch も GUI で確認した (再起動後の読み込みで `is not in` 0 件、case ピンは行の表示名)。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/DataIndexerK2NodeUtils.h` / `.cpp` — `PreloadRepositoryChain( const UDataIndexerRepository* )` を追加
@@ -105,6 +115,7 @@ Switch / Select PrimaryKey の `PreloadRequiredAssets` で Repository → Editor
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Customizations/K2Node_DataIndexerSelectPrimaryKey.h` / `.cpp` — `PreloadRequiredAssets` override
 - `.agents/tasks/evidence/t261028-12a6/` — headless 再現スクリプトとログ抜粋 (`headless-repro.txt`)
 - `.agents/tasks/KNOWLEDGE.md` — 畳んだ 軽微 (headless 再現の手順 1 行)
+- `.agents/tasks/evidence/t261028-12a6/gui-restart-verify.txt` / `gui-after-restart-case-pins.png` — verify sweep の証跡
 
 ## Blockers
-検証待ち: ユーザーが PC を使用中で GUI 検証禁止 (dispatch run notes)。残りは Verification 1–4 の Switch on Primary Key 入り一時 BP での再起動確認 (`is not in` 0 件)・case ピンのスクリーンショット (screen: required)・実在しないキーでの再コンパイル。Select は headless で確認済み。
+None

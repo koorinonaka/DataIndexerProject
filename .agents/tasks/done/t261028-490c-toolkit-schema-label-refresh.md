@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 250
 tier: standard
 screen: required
@@ -56,6 +56,7 @@ Repository エディタで SchemaClass を変えたとき、または Ctrl+Z で
 - 2. Schema Class を変えた後のスクリーンショット (名前が変わる)。「エディタで開く」を押し、開いた schema を確かめる。
 - 3. `TRANSACTION UNDO` 後のスクリーンショット (名前が戻る)。
 - 一時アセットは終わりに消す。証跡は `.agents/tasks/evidence/t261028-490c/`。
+- 済 (2026-10-29 verify sweep): 1〜3 すべて。
 
 ## Execution Log
 - 2026-10-28 実装 (dispatch 3/3、ブランチ `fix/audit-2026-10`):
@@ -77,12 +78,20 @@ Repository エディタで SchemaClass を変えたとき、または Ctrl+Z で
   NOTE: diff が消すのは check( SchemaClass ) だけ。新しい名前は両方使われている。Out of Scope (ResolveStructureMismatch、overlay の見た目・文言) は触っていない。
   ```
 
+- verify sweep 2026-10-29 05:22 (ALICE、合格 → done):
+  - 環境: エディタは HEAD のビルド (UnrealEditor-DataIndexerEd.dll 2026-10-28 21:29、submodule c9ca5c7 の木)。UE MCP を `evidence/_harness/mcp.py` で叩いた。ユーザーは不在で、実マウスの操作は dispatch で許可済み。証跡は `evidence/t261028-490c/` (`verify.txt` と 01〜04)。
+  - 一時アセット: `/Game/__Verify/DIS_VItem2` (DIS_Item の複製。RowStruct が同じ ItemRow なので、ピッカーに出てリセットの modal も出ない) と、`/Game/__Verify/DI_V490` (schema DIS_Item_C)。終わりに消した。
+  - V1: 開いた直後の右上は `Schema: DIS_Item` だった (01)。
+  - V2 / AC1・AC3: Asset Details の Schema Class ピッカーで、DIS_VItem2 を実マウスで選んだ。エディタを開き直さずに、右上が `DIS_VItem2` になった (02)。続けて右上の 2 つ目のボタン (エディタで開く) を押した。`GetOpenAssets` に `/Game/__Verify/DIS_VItem2` が増え、DIS_VItem2 の BP エディタが開いた (03)。
+  - V3 / AC2: Repository のタブに戻り、`end_transaction()` が 0 であることを確かめた。Cmd 欄で `TRANSACTION UNDO` を打った (`Undo Schema Class を編集`)。右上は `DIS_Item` に戻った (04)。
+
 ## Summary
-Repository エディタ右上の「Schema: <名前>」overlay を `RefreshSchemaOverlay()` に切り出し、詳細パネルでの SchemaClass 変更と Undo / Redo (クラス比較、ネイティブ同士も可) で組み直すようにした。Schema が null なら overlay を消す。ビルドと `DataIndexerEd.Repository` は緑。GUI での確認は未実施 (verify_pending)。
+Repository エディタ右上の「Schema: <名前>」overlay を `RefreshSchemaOverlay()` に切り出し、詳細パネルでの SchemaClass 変更と Undo / Redo (クラス比較、ネイティブ同士も可) で組み直すようにした。Schema が null なら overlay を消す。ビルドと `DataIndexerEd.Repository` は緑。2026-10-29 の verify sweep で GUI 検証に合格した (変更で名前が変わる・Undo で戻る・「エディタで開く」が新しい schema を開く)。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.cpp`
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.h`
+- `.agents/tasks/evidence/t261028-490c/` — verify sweep の証跡
 
 ## Blockers
-検証待ち: ユーザーが PC を使用中のため GUI 検証を行っていない (dispatch 指示)。残りは Verification 1-3 (Schema 変更後の名前、「エディタで開く」の行き先、`TRANSACTION UNDO` 後の名前) のスクリーンショット確認のみ。実装は残っていない。
+None

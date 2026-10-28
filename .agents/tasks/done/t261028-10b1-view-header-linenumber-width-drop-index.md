@@ -1,5 +1,5 @@
 ---
-status: verify_pending
+status: done
 order: 240
 tier: standard
 screen: required
@@ -68,6 +68,7 @@ created_by: task-create
 - 2. データ列を 1 本非表示にし、その右の列を別の位置へドラッグ。ドラッグ中 (インジケータ) と落とした後のスクリーンショット。
 - 3. 全列表示でも同じドラッグが動くこと。
 - 列の表示や並びは Saved/Config の SchemaLayouts に即時保存される。終わったら UI で戻す。一時アセットは消す。証跡は `.agents/tasks/evidence/t261028-10b1/`。
+- 済 (2026-10-29 verify sweep): 1〜3 すべて。
 
 ## Execution Log
 - 2026-10-28 (dispatch 2/3, run fix/audit-2026-10): 実装。
@@ -92,14 +93,23 @@ created_by: task-create
   NOTE: SDataIndexerViewHeader.cpp:424-482 — AC2〜AC4 は GUI 未検証。非表示列が無いとき新実装は旧実装の 3 分岐と同じ値。[A, 非表示 H, B] では挿入位置とインジケータの左右境界が正しく決まる。
   NOTE: 消えた識別子はローカルかエンジン API のみ。参照 0 件の定義・消えた文字列なし。Out of Scope への変更なし。
   ```
+- verify sweep 2026-10-29 05:18 (ALICE、合格 → done):
+  - 環境: エディタは HEAD のビルド (UnrealEditor-DataIndexerEd.dll 2026-10-28 21:29、submodule c9ca5c7 の木)。UE MCP 127.0.0.1:8001 を `evidence/_harness/mcp.py` で叩いた。ユーザーは不在で、実マウスの操作は dispatch で許可済み。証跡 `evidence/t261028-10b1/`。
+  - 一時 Repository `/Game/__Verify/DI_V10` (ItemSchema、10 行) を作り、終わりに消した。
+  - 計器: SlateInspector の Snapshot の pos (画面 px)。変えずに 2 回取って同じ値になった。
+  - V1 / AC1: Row 05 を選んで Delete (10 → 9 行)。ヘッダの RowName は x 102 → 100、全行の先頭ボタンは 75 → 73、名前は 103 → 101。全行とヘッダが 2px そろって動いた。行の widget は同じ ref で、全行のセルが作り直された (`OnColumnsUpdated` → `RebuildCells`)。続けて 1 行だけ作り直した (詳細パネルで Row 06 の DisplayName を Row 66 に変更)。作り直されたのはその行のセルだけで、その行の位置も 73 / 101 のまま。修正前は作り直した行だけ 2px ずれていた (bd46 の 06)。`01-linenumber-measure.txt`、`01-after-delete-9rows-linenumber-aligned.png`。
+  - V2 / AC2・AC3: Filters → Properties で Subtitle を非表示にした。実マウスで Description を Rarity と Base Value の間へドラッグした。押したままの撮影では、青いインジケータが画面 x 935–936 (Rarity と Base Value の境) に出た (02a)。離した後の並びは RowName, Type, Rarity, Description, Base Value, Metadata Tags (02b)。修正前は挿入位置が 0 になっていた。
+  - V3 / AC4: Subtitle を表示に戻し (全列表示)、Description を Subtitle と Type の間へドラッグした。インジケータは x 367–368 に出た (03a)。並びは元の順 RowName, Subtitle, Description, Type, Rarity, Base Value, Metadata Tags に戻った (03b)。
+  - SchemaLayouts: UI で元の並びと表示に戻した。ただし ini の行には `Subtitle (bVisibility=True)` と `ColumnOrder` が明示値として残った。そこで sweep の終わりにエディタを閉じ、検証前に保存しておいた行で戻した。エディタを起動し直した後も、その行は検証前と同じだった。
 
 ## Summary
 LineNumber 列幅は桁数変化時にヘッダ (`RefreshColumns`) と生成済み全行 (`OnColumnsUpdated` → `RebuildCells`) を作り直して揃える。
-列ドラッグの挿入位置とインジケータは非表示列を飛ばして表示列だけで決める。ビルドと View/ViewModel テストは通過。GUI 検証待ち。
+列ドラッグの挿入位置とインジケータは非表示列を飛ばして表示列だけで決める。ビルドと View/ViewModel テストは通過。2026-10-29 の verify sweep で GUI 検証に合格した (桁が変わった後も全行とヘッダの LineNumber がそろう。非表示列があっても挿入位置とインジケータが正しい)。
 
 ## Changed Files
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerView.cpp`
 - `Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/SDataIndexerViewHeader.cpp`
+- `.agents/tasks/evidence/t261028-10b1/` — verify sweep の証跡
 
 ## Blockers
-検証待ち: Verification 1–3 (GUI、実マウスでのヘッダドラッグと撮影) が残り。ユーザーが PC を使用中のため未実施。
+None

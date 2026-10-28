@@ -1,0 +1,20 @@
+# t261028-12a6 GUI verify sweep (ALICE, 2026-10-29 05:12-05:18 JST, UE 5.8, editor DLL 2026-10-28 21:29 = submodule c9ca5c7 tree)
+# Driver: .agents/tasks/evidence/_harness/mcp.py (HTTP JSON-RPC to http://127.0.0.1:8001/mcp)
+## Setup (before restart, editor PID 27548)
+AssetTools.duplicate /Game/GameData/DI_ItemRarity -> /Game/__Verify/DI_VItemRarity ; rows renamed VCommon..VLegendary (ImportRepositoryJSON)
+BlueprintTools.create /Game/__Verify/BP_VSwitch (Actor)
+  Switch on Primary Key: Repository=DI_VItemRarity, add_node_pin x2 -> PinKeys [2B8F0001-..., 2B8F0002-...]
+  Select by Primary Key: Repository=DI_VItemRarity, PinKeys [2B8F0001-..., 2B8F0002-...]
+  BeginPlay.then -> Switch.execute ; Switch case 1 -> PrintString.execute ; Select.ReturnValue -> PrintString.InString
+compile_blueprint OK, save_assets true
+## Restart: Stop-Process 27548, relaunch (PID 34332, -ModelContextProtocolPort=8001)
+LogPython: DIAG490 loaded False                (DI_VItemRarity not loaded before opening the BP)
+LogPython: DIAG490 bp False True               (BP_VSwitch not loaded; DI_ItemRarity loaded at startup)
+OpenEditorForAsset /Game/__Verify/BP_VSwitch -> first load of BP + DI_VItemRarity (import) + load-time compile
+GetLogEntries(category=LogBlueprint, pattern="is not in") -> []          (AC2: 0 errors; before fix the same procedure gave 2, evidence/t261026-5a97/followup-02b-*)
+Screenshot gui-after-restart-case-pins.png: Switch case pins VCommon / VUncommon, Select pins VCommon / VUncommon (AC3; before fix: GUIDs, followup-after-restart-pins-show-guid.png)
+## AC4 (control for the log query)
+Switch PinKeys += AAAAAAAA-0000-4000-8000-00000000AAAA, compile_blueprint:
+LogBlueprint: Error: ... BP_VSwitch.uasset：[コンパイラ] PrimaryKey AAAAAAAA-0000-4000-8000-00000000AAAA is not in DI_VItemRarity in  Switch on Primary Key .
+GetLogEntries(same query) -> that 1 line (the query does see the error when it exists)
+## Teardown: editors closed, AssetTools.delete BP_VSwitch / DI_VItemRarity -> exists false
