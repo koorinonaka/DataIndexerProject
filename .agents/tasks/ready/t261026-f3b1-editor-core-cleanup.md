@@ -1,5 +1,5 @@
 ---
-status: ready
+status: verify_pending
 order: 170
 tier: standard
 screen: none
@@ -67,16 +67,57 @@ created_by: task-create
 - 新規テスト行なし。full: `DataIndexerEd` 全群。
 
 ## Verification
-- full の log。toolbar 1 組はエディタで目視するが証跡はスクリーンショット 1 枚で足りる (screen: none のまま、実行者が撮れれば添える)。
+- full の log: 済 (DataIndexerEd 75 Success / 0 Fail)。
+- 残: Repository を開く → 閉じる → 開くで toolbar が 1 組 (Reimport 1 + Data 5 ボタン) であることのエディタ目視。UE MCP (127.0.0.1:8001) 停止中のため未実施。
 
 ## Execution Log
-Not started.
+- 前提: t261026-6bf4 は verify_pending (検証未完) の上に構築。release/v1.0.2 は main マージ済み (ブランチ fix/audit-2026-10 は main から)。
+- R-E4: `HandleMessageTokenClicked` 宣言・定義と、そのためだけの `Misc/UObjectToken.h` / `Logging/TokenizedMessage.h` include を Toolkit.cpp から削除。PCH の `Misc/UObjectToken.h` は他 TU 用に残す。
+- R-E5: `UDataIndexerToolMenuContext` と `InitToolMenuContext` override を削除。header に UCLASS が無くなるため `DataIndexerEditorToolkit.generated.h` include と `ToolMenuContext.h` include も削除。
+- R-E7: `FLogger::AppendToLog` と `IMessageLogListing` include / 前方宣言を削除。`Logging/TokenizedMessage.h` は `EMessageSeverity` に要るので header に残す。
+- R-E8: Style の未使用 6 変数 (ScrollBar / NoBorder / NormalFont / Button / NormalEditableTextBoxStyle / InvertedForeground) を削除。
+- R-E9: Settings.cpp の `FileHelpers.h` include と `using namespace DataIndexer;` を削除。
+- P-E6: `DECLARE_STYLE_PROPERTY` を `inline const FName` に。
+- R-E10: menu overlay を "Schema:" ラベル 1 スロットの box に作り、分岐ごとの末尾スロットを `AddSlot()` で足す形へ。スロット順・属性は不変。
+- R-E11: toolbar 拡張を `FEditorToolkit::RegisterToolbar()` (static) に移し、`ExtendMenu("AssetEditor.DataIndexerEditor.ToolBar")` で 1 回だけ足す。名前は engine の `FAssetEditorToolkit::GetToolMenuToolbarName` と同じ (`AssetEditorToolkit.cpp:1319-1324`、非 simple editor なので `GetToolkitFName()`)。`GenerateToolbar` (`:1519-1523`) は未登録の拡張メニューを親付きで登録し直すので、起動時の拡張が先に在っても成立する。旧コードの `RegisterMenu(..., EMultiBoxType::ToolBar)` 分岐は `InitAssetEditor` 後に呼ばれ常に登録済みで死んでいた。`GetToolkitFName` は同じ定数 `ToolkitFName` を返す。
+- R-E13: `AssetDefinition_DataIndexerSchema.cpp` を `git mv` で `DataIndexerContentBrowserMenus.cpp` に改名し、Repository 側の Content Browser メニュー (`MenuExtension_DataIndexerRepository`) もここへ移した。2 つの `FDelayedAutoRegisterHelper` を `DataIndexer::ContentBrowserMenus::Register()` 1 本に。`FDataIndexerEdModule::StartupModule` が `UToolMenus::RegisterStartupCallback(CreateRaw(this, &RegisterMenus))`、`RegisterMenus` は `FToolMenuOwnerScoped(this)` 下で ContentBrowserMenus と toolbar を登録。`ShutdownModule` で `UnRegisterStartupCallback(this)` + `UnregisterOwner(this)`。Repository.cpp から不要になった include 3 個 (ContentBrowserMenuContexts / SlateApplication / ToolMenus) を削除。
+- R-E16: `#else` 分岐に「UE 5.7 ビルド用で死にではない」コメントを追記のみ。
+- R-E17: Toolkit デストラクタの `SaveConfig` を削除 (デストラクタは `= default` で out-of-line に残す)。`FSchemaLayout` に private `Save()` を置き、`ResetLayout` / `SetColumnVisibility` / `SetVisibleDetailCategories` / `SetColumnOrder` で即保存。
+- 既定 (R-E17 の幅): `SetColumnWidth` はグリップドラッグ中マウス移動ごとに呼ばれる (`SDataIndexerViewHeader.cpp` `OnWidthChanged` → `FViewModel::HandleColumnWidthChanged`) ので毎回 `SaveConfig` (ini 書き出し) はしない。`bWidthDirty` を立て、`~FSchemaLayout` (ViewModel が持つ。Toolkit を閉じる・schema 変更で解放) で保存する。旧挙動 (Toolkit を閉じたとき保存) と同じ時点。即保存へ変えるなら `SetColumnWidth` に `Save()` を 1 行足すだけ。
+- 6bf4 からの申し送り: `AssetDefinition_DataIndexerRepository.cpp` の `LoadSelectedObjects` 2 箇所は `ExecuteExportAsJSON` / `ExecuteImportAsJSON` (メニュー実行時) の中で、メニュー構築時には読まない。修正不要。関数ごと `DataIndexerContentBrowserMenus.cpp` へ移した。
+- ビルド: Editor target 3 回。1・2 回目 MSVC C1001 (内部コンパイラエラー、場所は `ContainerAllocationPolicies.h(687)` と `DataIndexerMigrationTests.cpp(15)` で毎回違う)、3 回目 無変更で `Result: Succeeded`。run notes の一過性 C1001 と同じと判断。Game target は editor モジュールしか触っていないので未ビルド。
+- テスト: `UnrealEditor-Cmd ... -ExecCmds="Automation RunTests DataIndexerEd; Quit"` → `Result={Success}` 75 / `Result={Fail` 0 / EXIT CODE 0。full は run 終端でも回る。
+- 受け入れ grep: `HandleMessageTokenClicked|UDataIndexerToolMenuContext|AppendToLog|FileHelpers.h` 0 件 / `inline const FName` (Style.h) 1 件 / `FDelayedAutoRegisterHelper` 0 件 / `UnregisterOwner` 1 件 (DataIndexerEd.cpp:53) / Toolkit.cpp の `SaveConfig` 0 件 / `AssetDefinition_DataIndexerSchema.cpp` 不在。
+- サブモジュール外の呼び手 (`Source/`, `Plugins/DataIndexerToolset`, `docs`) に削除シンボル・旧ファイル名の参照なし (rg 0 件)。
+- 自己レビュー (stat): 12 ファイル +217/-282、全て Scope の項目に対応。Toolkit.cpp の 244 行は overlay の組み直しが大半。
+- 検証待ち: toolbar 1 組の GUI 目視は UE MCP 停止で不可。
+- critic r1:
+  ```
+  PASS
+  NOTE: DataIndexerEditorToolkit.cpp:338 — the AC "open → close → open shows exactly one toolbar set" needs an on-screen check and is still unverified. When checking, confirm that the hardcoded "AssetEditor.%s.ToolBar" matches GetToolMenuToolbarName and that GenerateToolbar registers over the startup extension, so the Reimport and Data sections still appear.
+  NOTE: DataIndexerSchemaLayout.cpp:59 — column-width changes are now saved only in ~FSchemaLayout (before: the toolkit destructor). This assumes the ViewModel releases the layout on close or schema change. No other UDataIndexerEditorSettings writer loses its save.
+  NOTE: DataIndexerSchemaLayoutTests.cpp:49 — the test writes the user ini twice (SetColumnVisibility, ResetLayout). The final state has no test entry, so this is not a failure.
+  NOTE: BugReport.md:304 — this doc still mentions HandleMessageTokenClicked. No code depends on it.
+  Sweeps: no removed names remain except that BugReport.md line; AssetDefinition_DataIndexerSchema has no references; LOCTEXT "AssetTypeActions" keys are unchanged; every new definition has a caller; Out of Scope modules are untouched; the R-E16 #else is kept.
+  ```
 
 ## Summary
-Not started.
+Editor core の死にコード (R-E4/5/7/8/9)、style FName の static init (P-E6)、overlay 重複 (R-E10)、toolbar / Content Browser メニューの毎 open・個別 auto-register (R-E11/13 → モジュール起動時 1 回 + UnregisterOwner)、Toolkit 閉時の SaveConfig (R-E17 → SchemaLayout 書き込み側) を整理。R-E16 はコメントのみ。全 75 テスト通過。toolbar 1 組の GUI 目視だけ残る。
 
 ## Changed Files
-Not started.
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/AssetDefinition_DataIndexerRepository.cpp
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/AssetDefinition_DataIndexerSchema.cpp → DataIndexerContentBrowserMenus.cpp (改名)
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerContentBrowserMenus.h (新規)
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEd.cpp
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorSettings.cpp
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorStyle.cpp
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorStyle.h
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.cpp
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.h
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerLogger.cpp
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerLogger.h
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/DataIndexerSchemaLayout.cpp
+- Plugins/DataIndexer/Source/DataIndexerEd/Private/Views/DataIndexerSchemaLayout.h
 
 ## Blockers
-なし。
+検証待ち: Repository を開く → 閉じる → 開くで toolbar が 1 組であることの GUI 目視。UE MCP (127.0.0.1:8001) が停止中で撮れない。
