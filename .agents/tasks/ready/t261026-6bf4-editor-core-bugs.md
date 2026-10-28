@@ -1,5 +1,5 @@
 ---
-status: ready
+status: verify_pending
 order: 60
 tier: standard
 screen: required
@@ -63,15 +63,49 @@ SchemaClass 差し替え後の未追随、誤った tooltip、無駄な再構築
 
 ## Verification
 - AC の GUI 項目 3 つ (Undo 後の表、Validate 結果、SchemaClass 変更後の警告) のスクリーンショット。右クリックは log 抜粋。
+- 残り (2026-10-28 時点、すべて未実施。UE MCP 127.0.0.1:8001 が停止中のため):
+  1. 構造不一致の Repository を開き「Yes」でリセット → Ctrl+Z で行が戻ることのスクリーンショット。
+  2. 無効値を持つ `CommentOut` 行だけの Repository を Validate → Valid のスクリーンショット (自動テスト `DataIndexerEd.Schema.ValidatorSkipsCommentOutRows` では確認済み)。
+  3. Asset Details で `SchemaClass` を RowStruct 違いに変える → 不一致ダイアログのスクリーンショット。
+  4. 未ロード BP が多いフォルダで右クリック → log に対象 BP の `LoadPackage` が出ない抜粋。
 
 ## Execution Log
-Not started.
+- 2026-10-28 dispatch 7/18 (branch `fix/audit-2026-10`、両 repo)。前提 `release/v1.0.2` の main マージは run 前提として満たされている (前タスク群と同じ branch 上)。
+- B-E4: `AssetDefinition_DataIndexerSchema.cpp` に `IsSchemaBlueprint(FAssetData)` を追加。`FBlueprintTags::NativeParentClassPath` (無ければ `ParentClassPath`) を `FSoftClassPath(...).ResolveClass()` で引き、`UDataIndexerSchema` 派生かをタグだけで判定する (エンジンの `FAssetTypeActions_Blueprint::GetClassTypeActions` と同じ手)。メニュー構築時はロードしない。実行時のロードは `LoadSelectedAssets<T>(Context, Filter)` に寄せ、フィルタを通った資産だけを `FAssetData::GetAsset()` でロードする (UDS 側も同じ helper)。`rg LoadSelectedObjects` 0 件。5.7 にも `SelectedAssets` / `FBlueprintTags::NativeParentClassPath` があることを `D:\Apps\Epic Games\UE_5.7` で確認。
+- B-E7: リセット処理を `FEditorToolkit::ResolveStructureMismatch` (static) へ移し、`Modify()` + `EnsureStructureMatches` を `FScopedTransaction` ("Reset Rows To Schema") で囲んだ。`OpenAssets` はこれを呼ぶだけ。ダイアログ文言と LOCTEXT キーは元のまま。
+- B-E8: Validator で `CommentOut` 行を skip (Compiler / NotOverridable と同じ扱い)。EditorData 欠落時は `Invalid` を返す。Info など Error/Warning 以外は `Context.AddMessage(Severity, Text)` で元の重大度のまま報告 (`PerformanceWarning` は warning 扱い)。5.7 にも `AddMessage(EMessageSeverity::Type, FText)` がある。
+- B-E14: `BindSchemaDelegates` / `UnbindSchemaDelegates` / `HandleSchemaClassChanged` を追加。束縛先を `TWeakObjectPtr` で覚え、`RemoveAll(this)` で外す (SP lambda の `HasSameObject` は `ContextObject.Pin().Get() == this` で一致することをエンジンソースで確認)。`OnAssetFinishedChangingProperties` で `GetMemberPropertyName() == SchemaClass` のとき、`ResolveStructureMismatch` (OpenAssets と同じ警告) → 再束縛の順に呼ぶ。再束縛を後にするのは、リセットで RowStruct が変わるため。
+- B-E15: tooltip を "Move selected row up by one." / "down by one." / "Toggle CommentOut flag on selected rows." に修正。`rg 'DevOnlyRow|to top|to bottom'` 0 件。
+- B-E17: `ExecuteReimport` で `ImportFromFile` / `FReimportManager::Reimport` の bool を受け、true のときだけ `NotifyAssetChangedExternally`。
+- テスト (Tests 4 問): (1) Validator が CommentOut 行を検証しない契約、(2) skip を消す回帰で落ちる、(3) Validator を通す既存テストは無い、(4) 新しい口は不要 (`ValidateLoadedAsset_Implementation` は既に public)。`DataIndexerRowValidationTests.cpp` に `DataIndexerEd.Schema.ValidatorSkipsCommentOutRows` を追加。同じテスト内で live の無効行が Invalid + error>0 になる対照を先に確かめる。
+- before-fix: skip を `if ( false && ... )` で潰して build → 同テスト Fail (`Expected 'A commented out invalid row leaves the repository Valid' to be true` / `reports no error ... was 1`)。対照の 2 assert は通過。復元して再 build。
+- quick: `Build.bat DataIndexerProjectEditor Win64 Development` 成功 ×3 (22–24 s、うち 1 回は before-fix 用)。`Automation RunTests DataIndexerEd.Schema+DataIndexerEd.NotOverridable+DataIndexerEd.Compiler` → Success 19 / Fail 0 (Schema 7 + SchemaLayout 1 + NotOverridable 6 + Compiler 4 + 新規 1)。追加で `Automation RunTests DataIndexerEd` (全群) → Success 68 / Fail 0。full は run 終端。
+- Game target はビルドしていない: runtime 構造体・`WITH_EDITORONLY_DATA` に触れていない (変更は DataIndexerEd のみ)。
+- 自己レビュー: `git diff --stat` は Scope の 6 項目のファイル + テスト 1 本の計 7 ファイル、+230/-68。Scope 外のパスなし。
+- GUI Verification は UE MCP 停止のため未実施 → verify_pending。
+- critic r1 (task-critic):
+
+  ```
+  PASS
+  NOTE: DataIndexerEditorToolkit.cpp:330-340 — SchemaClass 変更後の警告と Ctrl+Z 復元は GUI でしか確かめられない。diff 上の経路 (OnAssetFinishedChangingProperties → HandleSchemaClassChanged → ResolveStructureMismatch → EnsureStructureMatches) は正しい。画面確認は verify_pending のまま。
+  NOTE: DataIndexerEditorToolkit.cpp:262-266 — SchemaClass 変更後に Yes でリセット → Ctrl+Z すると RowStruct は旧 struct に戻るが、delegate は新 struct に bind されたまま。undo 後に再 bind する経路が無い。
+  NOTE: AssetDefinition_DataIndexerSchema.cpp:126-129 — 実行時の RemoveAll(GeneratedClass 判定) は IsSchemaBlueprint 絞り込み後でほぼ重複。防御として害は無い。
+  NOTE: AssetDefinition_DataIndexerRepository.cpp:153,164 — LoadSelectedObjects がこのファイルに残る。AC の対象は Schema.cpp だけで 0 件。
+  Sweeps: 削除した文言の残存なし。LOCTEXT キーは不変。InitEditor の bind は BindSchemaDelegates で再生成。追加定義は全て参照あり。Out of Scope 不接触。
+  ```
+- critic NOTE 2 (undo 後の delegate 不整合) は follow-up `task化` 候補として report に回す (PostUndo で RowStruct 変化を検知して再 bind する設計判断が要るため fold しない)。
 
 ## Summary
-Not started.
+B-E4/E7/E8/E14/E15/E17 を実装。右クリックはタグ判定でロードしない、全行リセットは undo 可能、Validator は CommentOut 行を飛ばし Info を Info で報告、SchemaClass 変更で delegate を再束縛して不一致警告を出す、tooltip 修正、reimport 失敗/キャンセルで再構築しない。自動テストは全群 68/68 通過。GUI の証跡が残り (verify_pending)。
 
 ## Changed Files
-Not started.
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/AssetDefinition_DataIndexerSchema.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/AssetDefinition_DataIndexerRepository.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorValidator.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorToolkit.h`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/DataIndexerEditorCommands.cpp`
+- `Plugins/DataIndexer/Source/DataIndexerEd/Private/Tests/Core/DataIndexerRowValidationTests.cpp`
 
 ## Blockers
-なし。
+検証待ち: GUI Verification 4 項目 (上の Verification 残り)。UE MCP server (127.0.0.1:8001) がこの run で停止しており、エディタ GUI を操作・撮影できない。実装の残りは無い。
