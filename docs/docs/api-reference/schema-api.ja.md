@@ -82,9 +82,6 @@ UItemSchema::UItemSchema()
 
 マクロはこのシグネチャを **コンパイル時** に `static_assert` で検証します。戻り値は `FGuid`、row は `const` 参照渡し、関数の row 型は `RowType` 引数と一致している必要があります。不整合はエディタ検証の警告ではなくコンパイルエラーになります。
 
-!!! warning "非推奨オーバーロード"
-    旧来の `void RegisterFunction_BuildIndex(const FDataIndexerIndex&, FName)` オーバーロードは非推奨です。名前でのバインドは行いますが、コンパイル時のシグネチャ検証はありません。`DI_REGISTER_BUILD_INDEX` へ移行してください。
-
 Blueprint からバインドする場合、Schema の details パネルが候補関数をこのシグネチャで絞り込み、「Create matching function」が `const FRowStruct&` 引数のスタブを生成します。row は実際の struct なので `Get Instanced Struct Value` ノードは不要です。
 
 ---

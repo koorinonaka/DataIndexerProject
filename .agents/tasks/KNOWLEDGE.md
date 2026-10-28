@@ -8,3 +8,4 @@
 - 「問題なし」と確認した点は §4。再監査するときはそこを飛ばす。
 - `ExpandedStruct` の array/map/set 非対応は設計どおり (bug ではない)。
 - `task-dup-check.js` は `.agents/tasks` が無いと exit 2。初回起票 (2026-10-26) は corpus 0 で通過。
+- R-R11 (監査): runtime ヘッダ `DataIndexerRepository.h` が editor クラス 9 個を friend にしている。解消は設計変更 (accessor の新設) なので t261026-a134 では見送った。
