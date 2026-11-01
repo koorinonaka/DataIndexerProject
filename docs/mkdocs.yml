@@ -168,6 +168,6 @@ extra:
   di_version: v1.0.1
   # トップの動画。mp4 を docs/assets/ に置いたら、そのパスを書く (例: assets/videos/overview.mp4)。
   # 空のあいだは poster 画像 (editor-overview.png) だけを出す。
-  hero_video: ""
+  hero_video: assets/videos/overview.mp4
 
 copyright: Copyright &copy; 2026 Koorinonaka
