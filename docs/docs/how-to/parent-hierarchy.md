@@ -47,15 +47,16 @@ Press **Insert** in `DI_ShopA`'s Data View to add rows that exist only in the sh
 
 ## Override Mode { #override-mode }
 
-To change a field on a parent row — for example, reduce the `ShopPrice` for a sale — edit that row in the child's Data View:
+To change a field on a parent row — for example, reduce the `ShopPrice` for a sale — override that row in the child's Data View, then edit it:
 
 1. Open `DI_ShopA`
-2. Click a parent-sourced row in the grid
-3. The row enters **override mode** — editing any field creates a local copy in `DI_ShopA`'s `LocalEntries` without touching `DI_AllItems`
+2. Select a parent-sourced row in the grid
+3. Press **Override** (`Shift+O`). This creates a local copy in `DI_ShopA`'s `LocalEntries` without touching `DI_AllItems`
+4. Edit the fields
 
 The overridden row now belongs to both: `DI_AllItems` retains the original, and `DI_ShopA`'s local copy holds the modified version. Querying `DI_ShopA` returns the overridden value.
 
-To revert the override, select the row and press the **Reset to Parent** button in the toolbar.
+To revert the override, select the overridden row and press **Delete**. The local copy in `DI_ShopA` is removed and the row shows the parent's values again.
 
 ### Locking fields that must not be overridden
 

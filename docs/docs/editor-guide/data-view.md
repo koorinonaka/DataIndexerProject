@@ -157,7 +157,7 @@ Use the **Filters** dropdown in the toolbar to narrow which rows and columns are
 
 Rows from parent repositories appear in the Data View with a distinct background tint (enable **Filters → Show Inherited Rows** to see them). They cannot be edited in the child repository — double-click on them to navigate to the parent asset.
 
-To edit an inherited row in the child, select it and press **Override** (`Shift+O`). The row is copied into the child repository with the same primary key and can then be edited independently.
+To edit an inherited row in the child, select it and press **Override** (`Shift+O`). The row is copied into the child repository with the same primary key and can then be edited independently. Pressing **Delete** on an overridden row removes the copy and restores the parent's values.
 
 ## Reference Viewer
 
