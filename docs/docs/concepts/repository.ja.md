@@ -77,6 +77,6 @@ Repositoryは 1 つ以上の親Repositoryを参照できます。走査・クエ
 
 ## シリアライズ
 
-バイナリアセット形式はカスタムの `Serialize` オーバーライドで `LocalEntries`・`EntryOwners`・`ReverseLookups` をシリアライズします。`ReverseLookups` は保存時にSchemaの `BuildIndexFunctions` から再構築されます。
+バイナリアセット形式はカスタムの `Serialize` オーバーライドで `LocalEntries`・`EntryOwners`・`ReverseLookups` をシリアライズします。`ReverseLookups` はSchemaの `BuildIndexFunctions` から構築されます。エディタでは参照時に、パッケージビルドではクック時に構築されます。
 
 JSON エクスポートはRepositoryの内容を人間可読かつ差分確認に適した形式で出力します。[JSON サポート](../editor-guide/json-support.md) を参照してください。

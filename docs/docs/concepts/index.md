@@ -137,7 +137,7 @@ DataIndexer is built around four interconnected concepts. Understanding how they
     <ul>
       <li>Attribute → PrimaryKey set map</li>
       <li>Schema registers builder functions</li>
-      <li>Repository rebuilds on save</li>
+      <li>Repository compiles on access and at cook</li>
     </ul>
   </div>
   <div class="ov-chapter-arrow">

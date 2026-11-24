@@ -137,7 +137,7 @@ DataIndexer は 4 つの相互に関連するコンセプトで構成されて�
     <ul>
       <li>属性 → PrimaryKey セットのマップ</li>
       <li>Schema が builder を登録</li>
-      <li>保存時に Repository が再構築</li>
+      <li>参照時・クック時に Repository をコンパイル</li>
     </ul>
   </div>
   <div class="ov-chapter-arrow">

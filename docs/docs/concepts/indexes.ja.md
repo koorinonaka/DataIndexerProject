@@ -13,7 +13,7 @@ Indexはセカンダリ検索軸です。Indexを使うと、カテゴリ・陣�
 
 ## Indexの仕組み
 
-保存時にコンパイラが各行に対してすべての **BuildIndex** 関数を呼び出します。ビルダーはIndexKeyとなる `FGuid` を返し、任意でエディタ表示用の `FText` を設定します。結果はRepositoryの `ReverseLookups` テーブルに格納されます。
+コンパイル時（エディタでは参照時、パッケージビルドではクック時）にコンパイラが各行に対してすべての **BuildIndex** 関数を呼び出します。ビルダーはIndexKeyとなる `FGuid` を返し、任意でエディタ表示用の `FText` を設定します。結果はRepositoryの `ReverseLookups` テーブルに格納されます。
 
 ```
 ReverseLookups[FDataIndexerIndexKey] → { TMap<FGuid, TArray<FDataIndexerPrimaryKey>> }

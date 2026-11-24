@@ -56,7 +56,7 @@ TOptional<FGuid> BuildIndexCall(
 
 Calls the registered builder function for `IndexKey` with the given row entity. Returns the computed index key (`FGuid`), or `NullOpt` if no builder is registered for this index.
 
-Called by the compiler at save time. Not typically called directly from game code.
+Called by the compiler at compile time (on access in the editor, at cook time for packaged builds). Not typically called directly from game code.
 
 ---
 

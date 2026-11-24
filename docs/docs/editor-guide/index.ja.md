@@ -48,7 +48,7 @@ Repository アセットをダブルクリックすると 3 パネル構成のエ
 
     ---
 
-    コードレビューで差分を確認しやすい JSON へのエクスポートと、マージ操作としての JSON インポート。
+    コードレビューで差分を確認しやすい JSON へのエクスポートと、既存の行を全置換する JSON インポート。
 
 - :material-layers-triple:{ .lg .middle } &nbsp; **[Driven Collection](driven-collection.md)**
 

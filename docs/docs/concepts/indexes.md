@@ -13,7 +13,7 @@ Builder functions return a `FGuid`; the compiler converts it to `FDataIndexerInd
 
 ## How indexes work
 
-At save time, the compiler calls each registered **BuildIndex** function for every row. The builder returns a `FGuid` (the index key) and optionally sets a `FText` display name for editor labelling. The result is stored in the repository's `ReverseLookups` table:
+At compile time (on access in the editor, at cook time for packaged builds), the compiler calls each registered **BuildIndex** function for every row. The builder returns a `FGuid` (the index key) and optionally sets a `FText` display name for editor labelling. The result is stored in the repository's `ReverseLookups` table:
 
 ```
 ReverseLookups[FDataIndexerIndexKey] → { TMap<FGuid, TArray<FDataIndexerPrimaryKey>> }

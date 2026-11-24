@@ -48,7 +48,7 @@ Double-clicking a Repository asset opens a three-panel editor.
 
     ---
 
-    Export row data to a diff-friendly JSON format for code review, and import JSON back as a merge operation.
+    Export row data to a diff-friendly JSON format for code review, and import JSON back as a full replacement of existing rows.
 
 - :material-layers-triple:{ .lg .middle } &nbsp; **[Driven Collection](driven-collection.md)**
 
